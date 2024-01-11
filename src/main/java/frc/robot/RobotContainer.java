@@ -22,8 +22,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.DriveToAmplifier; // TJG
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -56,6 +56,9 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber flywheelSpeedInput =
       new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+
+  // Auto Commands
+  private final AutoCommands autoCommands;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -112,6 +115,9 @@ public class RobotContainer {
             .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
+    // Create auto commands
+    autoCommands = new AutoCommands(drive);
+
     // Set up feedforward characterization
     autoChooser.addOption(
         "Drive FF Characterization",
@@ -121,6 +127,8 @@ public class RobotContainer {
         "Flywheel FF Characterization",
         new FeedForwardCharacterization(
             flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+
+    autoChooser.addOption("Score Four", autoCommands.amplifierScoreFour());
 
     // Configure the button bindings
     configureButtonBindings();
@@ -140,7 +148,9 @@ public class RobotContainer {
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-    controller.y().whileTrue(new DriveToAmplifier(drive).withName("DriveToAmplifier")); // TJG
+    // controller.y().whileTrue(new DriveToAmplifier(drive).withName("DriveToAmplifier")); // TJG
+    controller.y().onTrue(autoCommands.amplifierScoreFour().withName("AmplifierScoreFour"));
+
     controller
         .b()
         .onTrue(
