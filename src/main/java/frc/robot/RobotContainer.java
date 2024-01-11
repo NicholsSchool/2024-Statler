@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveToAmplifier;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -35,6 +36,7 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.subsystems.flywheel.FlywheelIOSparkMax;
+import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -129,6 +131,11 @@ public class RobotContainer {
             flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
 
     autoChooser.addOption("Score Four", autoCommands.amplifierScoreFour());
+    autoChooser.addOption(
+        "Drive To Amplifier",
+        autoCommands.driveToPose(
+            AllianceFlipUtil.apply(
+                (new Pose2d(FieldConstants.amplifierTranslation, Rotation2d.fromDegrees(-90.0))))));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -148,8 +155,7 @@ public class RobotContainer {
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
-    // controller.y().whileTrue(new DriveToAmplifier(drive).withName("DriveToAmplifier")); // TJG
-    controller.y().onTrue(autoCommands.amplifierScoreFour().withName("AmplifierScoreFour"));
+    controller.y().whileTrue(new DriveToAmplifier(drive).withName("DriveToAmplifier"));
 
     controller
         .b()
