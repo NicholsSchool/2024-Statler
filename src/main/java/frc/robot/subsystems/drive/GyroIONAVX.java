@@ -25,8 +25,8 @@ public class GyroIONAVX implements GyroIO {
    */
   public void updateInputs(GyroIOInputs inputs) {
     inputs.connected = navx.isConnected();
-    inputs.yawPositionRad = Math.toRadians(navx.getYaw());
-    inputs.yawVelocityRadPerSec = Math.toRadians(navx.getRate());
-    // TODO: may be reversed
+    // navx uses positive yaw turn to right, so flip sign
+    inputs.yawPositionRad = -Math.toRadians(navx.getAngle());
+    inputs.yawVelocityRadPerSec = -Math.toRadians(navx.getRate());
   }
 }
