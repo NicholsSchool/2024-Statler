@@ -13,6 +13,8 @@
 
 package frc.robot;
 
+import com.revrobotics.CANSparkBase.IdleMode;
+
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -59,4 +61,29 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
+
+
+  // REV MAXSwerve Modules
+  public static final class SwerveModuleConstants {
+    public static final int DRIVING_MOTOR_PINION_TEETH = 12; // 12T, 13T, or 14T
+    public static final double DRIVING_MOTOR_FREE_SPIN_RPM = 5676; // NEO 550s max RPM
+    public static final double WHEEL_DIAMETER_IN_METERS = 0.0762; // 3 inch wheels
+    public static final double WHEEL_RADIUS_METERS = WHEEL_DIAMETER_IN_METERS/2.0;
+
+    public static final double DRIVING_P = 0.04;
+    public static final double DRIVING_I = 0.0;
+    public static final double DRIVING_D = 0.0;
+    public static final double DRIVING_FF = 1.0; // later offset by free spin rate
+
+    public static final double TURNING_P = 1.0;
+    public static final double TURNING_I = 0.0;
+    public static final double TURNING_D = 0.0;
+    public static final double TURNING_FF = 0.0;
+
+    public static final IdleMode DRIVING_MOTOR_IDLE_MODE = IdleMode.kBrake;
+    public static final IdleMode TURNING_MOTOR_IDLE_MODE = IdleMode.kBrake;
+
+    public static final int DRIVING_MOTOR_CURRENT_LIMIT = 24; // amps
+    public static final int TURNING_MOTOR_CURRENT_LIMIT = 12; // amps
+  }  
 }
