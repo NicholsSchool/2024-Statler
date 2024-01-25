@@ -151,7 +151,7 @@ public class Drive extends SubsystemBase {
     // Apply the twist (change since last loop cycle) to the current pose
     pose = pose.exp(twist);
 
-    // Update field velocity TJG
+    // Update field velocity
     ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(measuredStates);
     Translation2d linearFieldVelocity =
         new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)

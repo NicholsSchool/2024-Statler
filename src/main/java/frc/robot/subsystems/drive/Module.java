@@ -18,7 +18,6 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
@@ -44,9 +43,20 @@ public class Module {
     switch (Constants.currentMode) {
       case REAL:
       case REPLAY:
-        driveFeedforward = new SimpleMotorFeedforward(0.1, 0.13);
-        driveFeedback = new PIDController(0.05, 0.0, 0.0);
-        turnFeedback = new PIDController(7.0, 0.0, 0.0);
+        driveFeedforward =
+            new SimpleMotorFeedforward(
+                Constants.ModuleConstants.kDrivingStaticFF,
+                Constants.ModuleConstants.kDrivingVelocityFF);
+        driveFeedback =
+            new PIDController(
+                Constants.ModuleConstants.kDrivingP,
+                Constants.ModuleConstants.kDrivingI,
+                Constants.ModuleConstants.kDrivingD);
+        turnFeedback =
+            new PIDController(
+                Constants.ModuleConstants.kTurningP,
+                Constants.ModuleConstants.kTurningI,
+                Constants.ModuleConstants.kTurningD);
         break;
       case SIM:
         driveFeedforward = new SimpleMotorFeedforward(0.0, 0.13);
@@ -90,7 +100,8 @@ public class Module {
         double adjustSpeedSetpoint = speedSetpoint * Math.cos(turnFeedback.getPositionError());
 
         // Run drive controller
-        double velocityRadPerSec = adjustSpeedSetpoint / Constants.SwerveModuleConstants.WHEEL_RADIUS_METERS;
+        double velocityRadPerSec =
+            adjustSpeedSetpoint / Constants.ModuleConstants.kWheelRadiusMeters;
         io.setDriveVoltage(
             driveFeedforward.calculate(velocityRadPerSec)
                 + driveFeedback.calculate(inputs.driveVelocityRadPerSec, velocityRadPerSec));
@@ -148,12 +159,12 @@ public class Module {
 
   /** Returns the current drive position of the module in meters. */
   public double getPositionMeters() {
-    return inputs.drivePositionRad * Constants.SwerveModuleConstants.WHEEL_RADIUS_METERS;
+    return inputs.drivePositionRad * Constants.ModuleConstants.kWheelRadiusMeters;
   }
 
   /** Returns the current drive velocity of the module in meters per second. */
   public double getVelocityMetersPerSec() {
-    return inputs.driveVelocityRadPerSec * Constants.SwerveModuleConstants.WHEEL_RADIUS_METERS;
+    return inputs.driveVelocityRadPerSec * Constants.ModuleConstants.kWheelRadiusMeters;
   }
 
   /** Returns the module position (turn angle and drive position). */

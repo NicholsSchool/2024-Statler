@@ -14,7 +14,6 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
-
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -62,28 +61,40 @@ public final class Constants {
     REPLAY
   }
 
+  // CAN IDs (Controller Area Network)
+  public static final class CAN {
+    public static final int kRearRightDrivingCanId = 28;
+    public static final int kRearRightTurningCanId = 27;
+    public static final int kFrontRightDrivingCanId = 26;
+    public static final int kFrontRightTurningCanId = 25;
+    public static final int kFrontLeftDrivingCanId = 24;
+    public static final int kFrontLeftTurningCanId = 23;
+    public static final int kRearLeftDrivingCanId = 22;
+    public static final int kRearLeftTurningCanId = 21;
+  }
 
   // REV MAXSwerve Modules
-  public static final class SwerveModuleConstants {
-    public static final int DRIVING_MOTOR_PINION_TEETH = 12; // 12T, 13T, or 14T
-    public static final double DRIVING_MOTOR_FREE_SPIN_RPM = 5676; // NEO 550s max RPM
-    public static final double WHEEL_DIAMETER_IN_METERS = 0.0762; // 3 inch wheels
-    public static final double WHEEL_RADIUS_METERS = WHEEL_DIAMETER_IN_METERS/2.0;
+  public static final class ModuleConstants {
+    public static final double kWheelDiameterMeters = 0.0762; // 3 inch wheels
+    public static final double kWheelRadiusMeters = kWheelDiameterMeters / 2.0;
+    public static final double kDrivingMotorFreeSpinRPM = 5676; // NEO 550s max RPM
 
-    public static final double DRIVING_P = 0.04;
-    public static final double DRIVING_I = 0.0;
-    public static final double DRIVING_D = 0.0;
-    public static final double DRIVING_FF = 1.0; // later offset by free spin rate
+    public static final double kDrivingP = 0.04;
+    public static final double kDrivingI = 0.0;
+    public static final double kDrivingD = 0.0;
+    public static final double kDrivingFF = 0.0;
+    public static final double kDrivingStaticFF = 0.1;
+    public static final double kDrivingVelocityFF = 0.13;
 
-    public static final double TURNING_P = 1.0;
-    public static final double TURNING_I = 0.0;
-    public static final double TURNING_D = 0.0;
-    public static final double TURNING_FF = 0.0;
+    public static final double kTurningP = 1.0;
+    public static final double kTurningI = 0.0;
+    public static final double kTurningD = 0.0;
+    public static final double kTurningFF = 0.0;
 
-    public static final IdleMode DRIVING_MOTOR_IDLE_MODE = IdleMode.kBrake;
-    public static final IdleMode TURNING_MOTOR_IDLE_MODE = IdleMode.kBrake;
+    public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
+    public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
-    public static final int DRIVING_MOTOR_CURRENT_LIMIT = 24; // amps
-    public static final int TURNING_MOTOR_CURRENT_LIMIT = 12; // amps
-  }  
+    public static final int kDrivingMotorCurrentLimit = 24; // amps
+    public static final int kTurningMotorCurrentLimit = 12; // amps
+  }
 }
