@@ -30,12 +30,11 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONAVX;
 import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.drive.ModuleIOSparkMax;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
-import frc.robot.subsystems.flywheel.FlywheelIOSparkMax;
 import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -70,11 +69,12 @@ public class RobotContainer {
         drive =
             new Drive(
                 new GyroIONAVX(),
-                new ModuleIOSparkMax(0),
-                new ModuleIOSparkMax(1),
-                new ModuleIOSparkMax(2),
-                new ModuleIOSparkMax(3));
-        flywheel = new Flywheel(new FlywheelIOSparkMax());
+                new ModuleIOMaxSwerve(0),
+                new ModuleIOMaxSwerve(1),
+                new ModuleIOMaxSwerve(2),
+                new ModuleIOMaxSwerve(3));
+        // flywheel = new Flywheel(new FlywheelIOSparkMax());
+        flywheel = new Flywheel(new FlywheelIOSim());
         // drive = new Drive(
         // new GyroIOPigeon2(),
         // new ModuleIOTalonFX(0),
