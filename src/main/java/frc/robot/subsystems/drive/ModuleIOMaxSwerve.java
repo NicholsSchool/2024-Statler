@@ -1,7 +1,7 @@
 // Interface for a MAXSwerve Module:
 //    Configured with two SPARKS MAX,
 //    a NEO as the driving motor (build-in hall effect encoder),
-//    a NEO 550 as the turning motor,
+//    a NEO 550 as the turning motor (azimuth),
 //    and a REV Through Bore Encoder as the absolute turning encoder.
 //
 
