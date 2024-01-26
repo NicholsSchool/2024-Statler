@@ -16,9 +16,9 @@ public interface GyroIO {
     public boolean connected = false;
     public double rollPositionRad = 0.0;
     public double pitchPositionRad = 0.0;
-    public double yawPositionRad = 0.0;
+    public double yawPositionRad = 0.0; // cumulative yaw angle of robot. positive turn to left
     public double rollVelocityRadPerSec = 0.0;
     public double pitchVelocityRadPerSec = 0.0;
-    public double yawVelocityRadPerSec = 0.0;
+    public double yawVelocityRadPerSec = 0.0; // current yaw velocity, positive turn to left.
   }
 }
