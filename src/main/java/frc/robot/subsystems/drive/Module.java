@@ -122,13 +122,33 @@ public class Module {
     return optimizedState;
   }
 
-  /** Runs the module with the specified voltage while controlling to zero degrees. */
+  /** Runs the module drive with the specified voltage while controlling to zero degrees. */
   public void runCharacterization(double volts) {
     // Closed loop turn control
     angleSetpoint = new Rotation2d();
 
     // Open loop drive control
     io.setDriveVoltage(volts);
+    speedSetpoint = null;
+  }
+
+  /** Runs the module drive motor with no turn command. */
+  public void runDriveMotor(double volts) {
+    // No turn command
+    angleSetpoint = null;
+
+    // Open loop drive control
+    io.setDriveVoltage(volts);
+    speedSetpoint = null;
+  }
+
+  /** Runs the module turn motor with the specified voltage with no drive command */
+  public void runTurnMotor(double volts) {
+    // Open loop turn control
+    angleSetpoint = null;
+    io.setTurnVoltage(volts);
+
+    // no drive command.
     speedSetpoint = null;
   }
 

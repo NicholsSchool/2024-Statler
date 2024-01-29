@@ -26,6 +26,7 @@ import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToAmplifier;
 import frc.robot.commands.FeedForwardCharacterization;
+import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONAVX;
@@ -112,22 +113,15 @@ public class RobotContainer {
     // Create auto commands
     autoCommands = new AutoCommands(drive);
 
-    // Set up feedforward characterization
-    autoChooser.addOption(
-        "Drive FF Characterization",
-        new FeedForwardCharacterization(
-            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    autoChooser.addOption(
-        "Flywheel FF Characterization",
-        new FeedForwardCharacterization(
-            flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
-
     autoChooser.addOption("Score Four", autoCommands.amplifierScoreFour());
     autoChooser.addOption(
         "Drive To Amplifier",
         autoCommands.driveToPose(
             AllianceFlipUtil.apply(
                 (new Pose2d(FieldConstants.amplifierTranslation, Rotation2d.fromDegrees(-90.0))))));
+
+    // add testing auto functions
+    addTestingAutos();
 
     // Configure the button bindings
     configureButtonBindings();
@@ -172,5 +166,24 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  private void addTestingAutos() {
+    // Set up feedforward characterization
+    autoChooser.addOption(
+        "Drive FF Characterization",
+        new FeedForwardCharacterization(
+            drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+    autoChooser.addOption(
+        "Flywheel FF Characterization",
+        new FeedForwardCharacterization(
+            flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+
+    autoChooser.addOption(
+        "Module Drive Ramp Test",
+        new VoltageCommandRamp(drive, drive::runDriveCommandRampVolts, 0.5, 5.0));
+    autoChooser.addOption(
+        "Module Turn Ramp Test",
+        new VoltageCommandRamp(drive, drive::runTurnCommandRampVolts, 0.5, 5.0));
   }
 }
