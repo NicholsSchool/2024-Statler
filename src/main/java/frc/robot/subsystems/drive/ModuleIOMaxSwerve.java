@@ -44,7 +44,7 @@ public class ModuleIOMaxSwerve implements ModuleIO {
    */
   public ModuleIOMaxSwerve(int index) {
 
-    if (index > 3) {
+    if (index > 3 || index < 0) {
       throw new RuntimeException("Invalid module index");
     }
 
