@@ -40,9 +40,9 @@ public class Module {
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
-    switch (Constants.currentMode) {
-      case REAL:
-      case REPLAY:
+    switch (Constants.getRobot()) {
+      case ROBOT_REAL:
+      case ROBOT_REPLAY:
         driveFeedforward =
             new SimpleMotorFeedforward(
                 Constants.ModuleConstants.kDrivingStaticFF,
@@ -58,7 +58,7 @@ public class Module {
                 Constants.ModuleConstants.kTurningI,
                 Constants.ModuleConstants.kTurningD);
         break;
-      case SIM:
+      case ROBOT_SIM:
         driveFeedforward = new SimpleMotorFeedforward(0.0, 0.13);
         driveFeedback = new PIDController(0.1, 0.0, 0.0);
         turnFeedback = new PIDController(10.0, 0.0, 0.0);
