@@ -86,7 +86,7 @@ public final class Constants {
     public static final double kDrivingStaticFF = 0.1;
     public static final double kDrivingVelocityFF = 0.13;
 
-    public static final double kTurningP = 1.0;
+    public static final double kTurningP = 0.0005; // changed
     public static final double kTurningI = 0.0;
     public static final double kTurningD = 0.0;
     public static final double kTurningFF = 0.0;

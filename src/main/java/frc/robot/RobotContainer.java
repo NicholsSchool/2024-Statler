@@ -18,6 +18,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -30,11 +31,9 @@ import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONAVX;
-import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.flywheel.Flywheel;
-import frc.robot.subsystems.flywheel.FlywheelIO;
 import frc.robot.subsystems.flywheel.FlywheelIOSim;
 import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -64,43 +63,39 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    switch (Constants.currentMode) {
-      case REAL:
-        // Real robot, instantiate hardware IO implementations
-        drive =
-            new Drive(
-                new GyroIONAVX(),
-                new ModuleIOMaxSwerve(0),
-                new ModuleIOMaxSwerve(1),
-                new ModuleIOMaxSwerve(2),
-                new ModuleIOMaxSwerve(3));
-        flywheel = new Flywheel(new FlywheelIOSim());
-        break;
-
-      case SIM:
-        // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
-        flywheel = new Flywheel(new FlywheelIOSim());
-        break;
-
-      default:
-        // Replayed robot, disable IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {},
-                new ModuleIO() {});
-        flywheel = new Flywheel(new FlywheelIO() {});
-        break;
+    if (RobotBase.isReal()) {
+      // Real robot, instantiate hardware IO implementations
+      drive =
+          new Drive(
+              new GyroIONAVX(),
+              new ModuleIOMaxSwerve(0),
+              new ModuleIOMaxSwerve(1),
+              new ModuleIOMaxSwerve(2),
+              new ModuleIOMaxSwerve(3));
+      flywheel = new Flywheel(new FlywheelIOSim());
+    } else {
+      // Sim robot, instantiate physics sim IO implementations
+      drive =
+          new Drive(
+              new GyroIO() {},
+              new ModuleIOSim(),
+              new ModuleIOSim(),
+              new ModuleIOSim(),
+              new ModuleIOSim());
+      flywheel = new Flywheel(new FlywheelIOSim());
     }
+    //   default:
+    //     // Replayed robot, disable IO implementations
+    //     drive =
+    //         new Drive(
+    //             new GyroIO() {},
+    //             new ModuleIO() {},
+    //             new ModuleIO() {},
+    //             new ModuleIO() {},
+    //             new ModuleIO() {});
+    //     flywheel = new Flywheel(new FlywheelIO() {});
+    //     break;
+    // }
 
     // Set up auto routines
     NamedCommands.registerCommand(

@@ -24,7 +24,7 @@ public interface ModuleIO {
     public double driveAppliedVolts = 0.0;
     public double[] driveCurrentAmps = new double[] {};
 
-    // turnAbsolutePosition: 
+    // turnAbsolutePosition:
     // 0rad forward, +pi/2 to left, +pi
     // 0rad forward, -pi/2 to right, -pi
     // Used by module at initialization to determine angular
