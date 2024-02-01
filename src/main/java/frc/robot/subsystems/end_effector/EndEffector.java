@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
-public class EndEffector extends SubsystemBase {
+public class EndEffector extends SubsystemBase { //TODO: add beambreak functionality
   private final EndEffectorIO io;
   private final SimpleMotorFeedforward ffModel;
 
