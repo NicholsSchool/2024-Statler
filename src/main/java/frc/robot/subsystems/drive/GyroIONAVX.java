@@ -11,7 +11,7 @@ public class GyroIONAVX implements GyroIO {
 
   /** Constructor to initialize the NAVX */
   public GyroIONAVX() {
-    if (Objects.requireNonNull(Constants.getRobot()) == Constants.RobotType.ROBOT_2024C) {
+    if (Objects.requireNonNull(Constants.getRobot()) == Constants.RobotType.ROBOT_REAL) {
       navx = new AHRS(SPI.Port.kMXP);
     } else {
       throw new RuntimeException("Invalid robot for NAVX");

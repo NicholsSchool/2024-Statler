@@ -207,16 +207,20 @@ public class Drive extends SubsystemBase {
   /** Sets voltage ramp command for testing. */
   public void runDriveCommandRampVolts(double volts) {
     int moduleIndex = (int) moduleTestIndex.get();
-    if (moduleIndex < kNumModules) {
-      modules[moduleIndex].runDriveMotor(volts);
+
+    for (int i = 0; i < 4; i++) {
+      if (i == moduleIndex) modules[moduleIndex].runDriveMotor(volts);
+      else modules[i].stop();
     }
   }
 
   /** Sets voltage ramp command for testing. */
   public void runTurnCommandRampVolts(double volts) {
     int moduleIndex = (int) moduleTestIndex.get();
-    if (moduleIndex < kNumModules) {
-      modules[moduleIndex].runTurnMotor(volts);
+
+    for (int i = 0; i < 4; i++) {
+      if (i == moduleIndex) modules[moduleIndex].runTurnMotor(volts);
+      else modules[i].stop();
     }
   }
 

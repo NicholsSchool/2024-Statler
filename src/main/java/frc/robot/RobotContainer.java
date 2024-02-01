@@ -64,8 +64,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    switch (Constants.currentMode) {
-      case REAL:
+    switch (Constants.getRobot()) {
+      case ROBOT_REAL:
         // Real robot, instantiate hardware IO implementations
         drive =
             new Drive(
@@ -74,10 +74,11 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(1),
                 new ModuleIOMaxSwerve(2),
                 new ModuleIOMaxSwerve(3));
+        // We have no flywheel, so create a simulated just for example.
         flywheel = new Flywheel(new FlywheelIOSim());
         break;
 
-      case SIM:
+      case ROBOT_SIM:
         // Sim robot, instantiate physics sim IO implementations
         drive =
             new Drive(
@@ -89,8 +90,10 @@ public class RobotContainer {
         flywheel = new Flywheel(new FlywheelIOSim());
         break;
 
+      case ROBOT_REPLAY:
       default:
-        // Replayed robot, disable IO implementations
+        // Replayed robot, disable IO implementations since the replay
+        // will supply the data.
         drive =
             new Drive(
                 new GyroIO() {},

@@ -25,40 +25,22 @@ import edu.wpi.first.wpilibj.RobotBase;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final Mode currentMode = Mode.SIM;
-  private static final RobotType robot = RobotType.ROBOT_SIMBOT; // TJG
-  public static final boolean tuningMode = false; // TJG
-  public static final double loopPeriodSecs = 0.02; // TJG
+  private static final RobotType robot = RobotType.ROBOT_REAL;
+  public static final boolean tuningMode = false;
+  public static final double loopPeriodSecs = 0.02;
 
-  // TJG
   public static RobotType getRobot() {
     if (RobotBase.isReal()) {
-      if (robot == RobotType.ROBOT_SIMBOT) { // Invalid robot selected
-        return RobotType.ROBOT_2024C;
-      } else {
-        return robot;
-      }
+      return robot;
     } else {
-      return RobotType.ROBOT_SIMBOT;
+      return RobotType.ROBOT_SIM;
     }
   }
 
-  // TJG
   public static enum RobotType {
-    ROBOT_2024C, // competition
-    ROBOT_2024P, // practice
-    ROBOT_SIMBOT // simulation
-  }
-
-  public static enum Mode {
-    /** Running on a real robot. */
-    REAL,
-
-    /** Running a physics simulator. */
-    SIM,
-
-    /** Replaying from a log file. */
-    REPLAY
+    ROBOT_REAL, // a real robot
+    ROBOT_REPLAY, // data file replay (could be on real bot or simulation)
+    ROBOT_SIM // simulation
   }
 
   // CAN IDs (Controller Area Network)
