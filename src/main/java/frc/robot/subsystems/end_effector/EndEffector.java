@@ -6,7 +6,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
-public class EndEffector extends SubsystemBase { // TODO: add beambreak functionality
+public class EndEffector extends SubsystemBase {
+  // TODO: add beambreak functionality
   private final EndEffectorIO io;
   private final SimpleMotorFeedforward ffModel;
 
@@ -63,4 +64,30 @@ public class EndEffector extends SubsystemBase { // TODO: add beambreak function
   //   public double getCharacterizationVelocity() {
   //     return 0.0; //TODO: removed code for auto logging inputs, should this still exist???
   //   }
+
+  public void playFiddle() {
+    if(io instanceof EndEffectorIOTalonFX)
+      ((EndEffectorIOTalonFX)io).playFiddle();
+  }
+
+  public void pauseFiddle() {
+    if(io instanceof EndEffectorIOTalonFX)
+      ((EndEffectorIOTalonFX)io).pauseFiddle();
+  }
+
+  public void stopFiddle() {
+    if(io instanceof EndEffectorIOTalonFX)
+      ((EndEffectorIOTalonFX)io).stop();
+  }
+
+  public boolean isPlayingFiddle() {
+    if(io instanceof EndEffectorIOTalonFX)
+      return ((EndEffectorIOTalonFX)io).isPlayingFiddle();
+    return false;
+  }
+
+  public void nextSong() {
+    if(io instanceof EndEffectorIOTalonFX)
+      ((EndEffectorIOTalonFX)io).nextSong();
+  }
 }

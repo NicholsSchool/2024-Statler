@@ -103,5 +103,12 @@ public final class Constants {
     public static final boolean kIsInverted = false;
     public static final double kNominalVoltage = 12.0; // TODO: correct voltage?
     public static final int kCurrentLimit = 30; // TODO: correct current limit?
+    
+    public static final class FiddleSongs {
+      public static final String ALL_STAR = "all-star.chrp";
+      public static final String SPEED_OF_LIGHT = "AtTheSpeedOfLight.chrp";
+      public static final String IMPERIAL_MARCH = "Imperial-March.chrp";
+      public static final String WII_SONG = "Wii-Song.chrp";
+    }
   }
 }

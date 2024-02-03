@@ -1,5 +1,6 @@
 package frc.robot.subsystems.end_effector;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -12,8 +13,6 @@ import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 
 public class EndEffectorIOTalonFX implements EndEffectorIO {
-  // TODO: add falcon fiddle
-
   private static final double GEAR_RATIO = Constants.EffectorTalonConstants.kGearRatio;
 
   private final TalonFX motor =
@@ -23,6 +22,14 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   private final StatusSignal<Double> velocity = motor.getVelocity();
   private final StatusSignal<Double> appliedVolts = motor.getMotorVoltage();
   private final StatusSignal<Double> current = motor.getStatorCurrent();
+
+  private final Orchestra orchestra;
+  private String[] songs = {
+    Constants.EffectorTalonConstants.FiddleSongs.ALL_STAR, 
+    Constants.EffectorTalonConstants.FiddleSongs.SPEED_OF_LIGHT,
+    Constants.EffectorTalonConstants.FiddleSongs.IMPERIAL_MARCH,
+    Constants.EffectorTalonConstants.FiddleSongs.WII_SONG};
+    private int songIndex;
 
   public EndEffectorIOTalonFX() {
     var config = new TalonFXConfiguration();
@@ -36,6 +43,12 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
 
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, velocity, appliedVolts, current);
     motor.optimizeBusUtilization();
+
+    orchestra = new Orchestra();
+    orchestra.addInstrument(motor);
+
+    songIndex = 0;
+    orchestra.loadMusic(songs[songIndex]);
   }
 
   @Override
@@ -78,5 +91,26 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
     config.kI = kI;
     config.kD = kD;
     motor.getConfigurator().apply(config);
+  }
+
+  public void playFiddle() {
+    orchestra.play();
+  }
+
+  public void pauseFiddle() {
+    orchestra.pause();
+  }
+
+  public void stopFiddle() {
+    orchestra.stop();
+  }
+
+  public boolean isPlayingFiddle() {
+    return orchestra.isPlaying();
+  }
+
+  public void nextSong() {
+    songIndex = (songIndex + 1) % songs.length;
+    orchestra.loadMusic(songs[songIndex]);
   }
 }
