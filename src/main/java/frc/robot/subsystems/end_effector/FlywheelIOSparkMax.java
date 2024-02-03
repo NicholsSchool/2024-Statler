@@ -13,7 +13,7 @@ import frc.robot.Constants;
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
  * "CANSparkFlex".
  */
-public class EndEffectorIOSparkMax implements EndEffectorIO {
+public class FlywheelIOSparkMax implements FlywheelIO {
   private static final double GEAR_RATIO = Constants.EffectorSparkConstants.kGearRatio;
 
   private final CANSparkMax motor =
@@ -21,7 +21,7 @@ public class EndEffectorIOSparkMax implements EndEffectorIO {
   private final RelativeEncoder encoder = motor.getEncoder();
   private final SparkPIDController pid = motor.getPIDController();
 
-  public EndEffectorIOSparkMax() {
+  public FlywheelIOSparkMax() {
     motor.restoreFactoryDefaults();
 
     motor.setCANTimeout(250);

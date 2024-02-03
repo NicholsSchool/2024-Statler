@@ -2,7 +2,7 @@ package frc.robot.subsystems.end_effector;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface EndEffectorIO {
+public interface FlywheelIO {
   @AutoLog
   public static class EndEffectorIOInputs {
     public double positionRad = 0.0;

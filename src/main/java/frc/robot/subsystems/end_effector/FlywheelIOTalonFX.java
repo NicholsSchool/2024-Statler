@@ -1,7 +1,7 @@
 package frc.robot.subsystems.end_effector;
 
-import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,7 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 
-public class EndEffectorIOTalonFX implements EndEffectorIO {
+public class FlywheelIOTalonFX implements FlywheelIO {
   private static final double GEAR_RATIO = Constants.EffectorTalonConstants.kGearRatio;
 
   private final TalonFX motor =
@@ -25,13 +25,14 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
 
   private final Orchestra orchestra;
   private String[] songs = {
-    Constants.EffectorTalonConstants.FiddleSongs.ALL_STAR, 
+    Constants.EffectorTalonConstants.FiddleSongs.ALL_STAR,
     Constants.EffectorTalonConstants.FiddleSongs.SPEED_OF_LIGHT,
     Constants.EffectorTalonConstants.FiddleSongs.IMPERIAL_MARCH,
-    Constants.EffectorTalonConstants.FiddleSongs.WII_SONG};
-    private int songIndex;
+    Constants.EffectorTalonConstants.FiddleSongs.WII_SONG
+  };
+  private int songIndex;
 
-  public EndEffectorIOTalonFX() {
+  public FlywheelIOTalonFX() {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.StatorCurrentLimit =
         Constants.EffectorTalonConstants.kCurrentLimit; // TODO: correct current limit

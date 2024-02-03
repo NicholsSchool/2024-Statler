@@ -1,6 +1,6 @@
 package frc.robot.subsystems.end_effector;
 
-public class EndEffectorIOSim implements EndEffectorIO {
+public class FlywheelIOSim implements FlywheelIO {
 
   @Override
   public void updateInputs(EndEffectorIOInputs inputs) {}

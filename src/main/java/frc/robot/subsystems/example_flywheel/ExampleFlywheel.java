@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.subsystems.flywheel;
+package frc.robot.subsystems.example_flywheel;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
@@ -20,13 +20,13 @@ import frc.robot.Constants;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-public class Flywheel extends SubsystemBase {
-  private final FlywheelIO io;
+public class ExampleFlywheel extends SubsystemBase {
+  private final ExampleFlywheelIO io;
   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
   private final SimpleMotorFeedforward ffModel;
 
   /** Creates a new Flywheel. */
-  public Flywheel(FlywheelIO io) {
+  public ExampleFlywheel(ExampleFlywheelIO io) {
     this.io = io;
 
     // Switch constants based on mode (the physics simulator is treated as a
