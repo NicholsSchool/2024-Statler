@@ -9,13 +9,14 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 
 public class EndEffectorIOTalonFX implements EndEffectorIO {
   // TODO: add falcon fiddle
 
-  private static final double GEAR_RATIO = 1.5; // TODO: correct gear ratio IN Constants.java
+  private static final double GEAR_RATIO = Constants.EffectorTalonConstants.kGearRatio;
 
-  private final TalonFX motor = new TalonFX(0); // TODO: correct ID's in Constants.java
+  private final TalonFX motor = new TalonFX(Constants.CAN.kEffectorTalonCanId); // TODO: correct ID's in Constants.java
 
   private final StatusSignal<Double> position = motor.getPosition();
   private final StatusSignal<Double> velocity = motor.getVelocity();
@@ -24,12 +25,12 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
 
   public EndEffectorIOTalonFX() {
     var config = new TalonFXConfiguration();
-    config.CurrentLimits.StatorCurrentLimit = 30.0; // TODO: correct current limit
+    config.CurrentLimits.StatorCurrentLimit = Constants.EffectorTalonConstants.kCurrentLimit; // TODO: correct current limit
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     motor.getConfigurator().apply(config);
 
-    motor.setInverted(false); // TODO: direction in CONSTANTS
+    motor.setInverted(Constants.EffectorTalonConstants.kIsInverted); // TODO: direction in CONSTANTS
 
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, velocity, appliedVolts, current);
     motor.optimizeBusUtilization();

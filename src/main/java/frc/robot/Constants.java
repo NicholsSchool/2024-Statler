@@ -45,6 +45,8 @@ public final class Constants {
 
   // CAN IDs (Controller Area Network)
   public static final class CAN {
+    public static final int kEffectorTalonCanId = 0; //TODO: Make sure this is correct
+    public static final int kEffectorSparkCanId = 0; //TODO: Make sure this is correct
     public static final int kRearRightDrivingCanId = 28;
     public static final int kRearRightTurningCanId = 27;
     public static final int kFrontRightDrivingCanId = 26;
@@ -78,5 +80,19 @@ public final class Constants {
 
     public static final int kDrivingMotorCurrentLimit = 24; // amps
     public static final int kTurningMotorCurrentLimit = 12; // amps
+  }
+
+  public static final class EffectorSparkConstants {
+    public static final double kGearRatio = 1.5; //TODO: Verify Gear Ratio Constant
+    public static final boolean kIsInverted = false;
+    public static final double kNominalVoltage = 12.0; // TODO: correct voltage?
+    public static final int kCurrentLimit = 30; // TODO: correct current limit?
+  }
+
+  public static final class EffectorTalonConstants {
+    public static final double kGearRatio = 1.5; //TODO: Verify Gear Ratio Constant
+    public static final boolean kIsInverted = false;
+    public static final double kNominalVoltage = 12.0; // TODO: correct voltage?
+    public static final int kCurrentLimit = 30; // TODO: correct current limit?
   }
 }

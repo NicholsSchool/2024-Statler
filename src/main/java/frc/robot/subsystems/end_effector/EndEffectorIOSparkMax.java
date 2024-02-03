@@ -7,16 +7,17 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 
 /**
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
  * "CANSparkFlex".
  */
 public class EndEffectorIOSparkMax implements EndEffectorIO {
-  private static final double GEAR_RATIO = 1.5; // TODO: gear ratio in CONSTANTS
+  private static final double GEAR_RATIO = Constants.EffectorSparkConstants.kGearRatio;
 
   private final CANSparkMax motor =
-      new CANSparkMax(0, MotorType.kBrushless); // TODO: id in CONSTANTS
+      new CANSparkMax(Constants.CAN.kEffectorSparkCanId, MotorType.kBrushless);
   private final RelativeEncoder encoder = motor.getEncoder();
   private final SparkPIDController pid = motor.getPIDController();
 
@@ -25,10 +26,10 @@ public class EndEffectorIOSparkMax implements EndEffectorIO {
 
     motor.setCANTimeout(250);
 
-    motor.setInverted(false); // TODO: direction in Constants
+    motor.setInverted(Constants.EffectorSparkConstants.kIsInverted);
 
-    motor.enableVoltageCompensation(12.0); // TODO: correct voltage?
-    motor.setSmartCurrentLimit(30); // TODO: correct current limit?
+    motor.enableVoltageCompensation(Constants.EffectorSparkConstants.kNominalVoltage);
+    motor.setSmartCurrentLimit(Constants.EffectorSparkConstants.kCurrentLimit);
 
     motor.burnFlash();
   }
