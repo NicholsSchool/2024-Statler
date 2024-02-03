@@ -16,7 +16,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
 
   private static final double GEAR_RATIO = Constants.EffectorTalonConstants.kGearRatio;
 
-  private final TalonFX motor = new TalonFX(Constants.CAN.kEffectorTalonCanId); // TODO: correct ID's in Constants.java
+  private final TalonFX motor =
+      new TalonFX(Constants.CAN.kEffectorTalonCanId); // TODO: correct ID's in Constants.java
 
   private final StatusSignal<Double> position = motor.getPosition();
   private final StatusSignal<Double> velocity = motor.getVelocity();
@@ -25,7 +26,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
 
   public EndEffectorIOTalonFX() {
     var config = new TalonFXConfiguration();
-    config.CurrentLimits.StatorCurrentLimit = Constants.EffectorTalonConstants.kCurrentLimit; // TODO: correct current limit
+    config.CurrentLimits.StatorCurrentLimit =
+        Constants.EffectorTalonConstants.kCurrentLimit; // TODO: correct current limit
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     motor.getConfigurator().apply(config);

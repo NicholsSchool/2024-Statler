@@ -45,8 +45,8 @@ public final class Constants {
 
   // CAN IDs (Controller Area Network)
   public static final class CAN {
-    public static final int kEffectorTalonCanId = 0; //TODO: Make sure this is correct
-    public static final int kEffectorSparkCanId = 0; //TODO: Make sure this is correct
+    public static final int kEffectorTalonCanId = 0; // TODO: Make sure this is correct
+    public static final int kEffectorSparkCanId = 0; // TODO: Make sure this is correct
     public static final int kRearRightDrivingCanId = 28;
     public static final int kRearRightTurningCanId = 27;
     public static final int kFrontRightDrivingCanId = 26;
@@ -55,6 +55,12 @@ public final class Constants {
     public static final int kFrontLeftTurningCanId = 23;
     public static final int kRearLeftDrivingCanId = 22;
     public static final int kRearLeftTurningCanId = 21;
+  }
+
+  public static final class DriveConstants {
+    public static final double kMAX_LINEAR_SPEED = 4.8;
+    public static final double kTRACK_WIDTH_X = 0.653;
+    public static final double kTRACK_WIDTH_Y = 0.653;
   }
 
   // REV MAXSwerve Modules
@@ -80,17 +86,20 @@ public final class Constants {
 
     public static final int kDrivingMotorCurrentLimit = 24; // amps
     public static final int kTurningMotorCurrentLimit = 12; // amps
+
+    public static final double kDRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
+    public static final double kTURN_GEAR_RATIO = 150.0 / 7.0;
   }
 
   public static final class EffectorSparkConstants {
-    public static final double kGearRatio = 1.5; //TODO: Verify Gear Ratio Constant
+    public static final double kGearRatio = 1.5; // TODO: Verify Gear Ratio Constant
     public static final boolean kIsInverted = false;
     public static final double kNominalVoltage = 12.0; // TODO: correct voltage?
     public static final int kCurrentLimit = 30; // TODO: correct current limit?
   }
 
   public static final class EffectorTalonConstants {
-    public static final double kGearRatio = 1.5; //TODO: Verify Gear Ratio Constant
+    public static final double kGearRatio = 1.5; // TODO: Verify Gear Ratio Constant
     public static final boolean kIsInverted = false;
     public static final double kNominalVoltage = 12.0; // TODO: correct voltage?
     public static final int kCurrentLimit = 30; // TODO: correct current limit?
