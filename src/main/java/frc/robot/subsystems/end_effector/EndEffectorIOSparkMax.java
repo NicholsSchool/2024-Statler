@@ -1,16 +1,3 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot.subsystems.end_effector;
 
 import com.revrobotics.CANSparkBase.ControlType;
@@ -40,8 +27,8 @@ public class EndEffectorIOSparkMax implements EndEffectorIO {
 
     motor.setInverted(false); // TODO: direction in Constants
 
-    motor.enableVoltageCompensation(12.0);
-    motor.setSmartCurrentLimit(30);
+    motor.enableVoltageCompensation(12.0); // TODO: correct voltage?
+    motor.setSmartCurrentLimit(30); // TODO: correct current limit?
 
     motor.burnFlash();
   }

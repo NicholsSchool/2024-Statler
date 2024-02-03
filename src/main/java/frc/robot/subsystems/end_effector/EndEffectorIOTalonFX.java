@@ -11,6 +11,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 
 public class EndEffectorIOTalonFX implements EndEffectorIO {
+  // TODO: add falcon fiddle
+
   private static final double GEAR_RATIO = 1.5; // TODO: correct gear ratio IN Constants.java
 
   private final TalonFX motor = new TalonFX(0); // TODO: correct ID's in Constants.java
@@ -49,7 +51,7 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
 
   @Override
   public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    motor.setControl( // TODO: takl with Mr. Grier about this
+    motor.setControl( // TODO: talk with Mr. Grier about this
         new VelocityVoltage(
             Units.radiansToRotations(velocityRadPerSec),
             0.0,

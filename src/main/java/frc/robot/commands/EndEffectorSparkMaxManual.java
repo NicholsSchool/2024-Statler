@@ -27,7 +27,7 @@ public class EndEffectorSparkMaxManual extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    endEffector.runVolts(controller.getLeftX() * 12.0);
+    // endEffector.runVolts(controller.getLeftX() * 12.0);
   }
 
   // Called once the command ends or is interrupted.

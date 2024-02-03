@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
-public class EndEffector extends SubsystemBase { //TODO: add beambreak functionality
+public class EndEffector extends SubsystemBase { // TODO: add beambreak functionality
   private final EndEffectorIO io;
   private final SimpleMotorFeedforward ffModel;
 
@@ -32,9 +32,7 @@ public class EndEffector extends SubsystemBase { //TODO: add beambreak functiona
   }
 
   @Override
-  public void periodic() {
-
-  }
+  public void periodic() {}
 
   /** Run open loop at the specified voltage. */
   public void runVolts(double volts) {
@@ -55,14 +53,14 @@ public class EndEffector extends SubsystemBase { //TODO: add beambreak functiona
     io.stop();
   }
 
-//   /** Returns the current velocity in RPM. */
-//   @AutoLogOutput
-//   public double getVelocityRPM() {
-//     return 0.0; //TODO: removed code for auto logging inputs, should this still exist???
-//   }
+  //   /** Returns the current velocity in RPM. */
+  //   @AutoLogOutput
+  //   public double getVelocityRPM() {
+  //     return 0.0; //TODO: removed code for auto logging inputs, should this still exist???
+  //   }
 
-//   /** Returns the current velocity in radians per second. */
-//   public double getCharacterizationVelocity() {
-//     return 0.0; //TODO: removed code for auto logging inputs, should this still exist???
-//   }
+  //   /** Returns the current velocity in radians per second. */
+  //   public double getCharacterizationVelocity() {
+  //     return 0.0; //TODO: removed code for auto logging inputs, should this still exist???
+  //   }
 }
