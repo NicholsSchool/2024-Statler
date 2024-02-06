@@ -24,9 +24,8 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   private final StatusSignal<Double> current = motor.getStatorCurrent();
 
   private final Orchestra orchestra;
-  private String[] songs = {
+  private final String[] songs = {
     Constants.EffectorTalonConstants.FiddleSongs.ALL_STAR,
-    Constants.EffectorTalonConstants.FiddleSongs.SPEED_OF_LIGHT,
     Constants.EffectorTalonConstants.FiddleSongs.IMPERIAL_MARCH,
     Constants.EffectorTalonConstants.FiddleSongs.WII_SONG
   };

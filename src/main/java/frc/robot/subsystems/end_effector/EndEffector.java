@@ -78,24 +78,23 @@ public class EndEffector extends SubsystemBase {
   }
 
   public void playFiddle() {
-    if (outtake instanceof FlywheelIOTalonFX) ((FlywheelIOTalonFX) outtake).playFiddle();
+    if (outtake instanceof FlywheelIOTalonFX outtake) outtake.playFiddle();
   }
 
   public void pauseFiddle() {
-    if (outtake instanceof FlywheelIOTalonFX) ((FlywheelIOTalonFX) outtake).pauseFiddle();
+    if (outtake instanceof FlywheelIOTalonFX outtake) outtake.pauseFiddle();
   }
 
   public void stopFiddle() {
-    if (outtake instanceof FlywheelIOTalonFX) ((FlywheelIOTalonFX) outtake).stop();
+    if (outtake instanceof FlywheelIOTalonFX outtake) outtake.stop();
   }
 
   public boolean isPlayingFiddle() {
-    if (outtake instanceof FlywheelIOTalonFX)
-      return ((FlywheelIOTalonFX) outtake).isPlayingFiddle();
+    if (outtake instanceof FlywheelIOTalonFX outtake) return outtake.isPlayingFiddle();
     return false;
   }
 
   public void nextSong() {
-    if (outtake instanceof FlywheelIOTalonFX) ((FlywheelIOTalonFX) outtake).nextSong();
+    if (outtake instanceof FlywheelIOTalonFX outtake) outtake.nextSong();
   }
 }

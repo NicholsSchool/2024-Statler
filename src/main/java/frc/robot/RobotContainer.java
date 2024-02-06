@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToAmplifier;
-import frc.robot.commands.EndEffectorSparkMaxManual;
+import frc.robot.commands.EndEffectorTest;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.subsystems.drive.Drive;
@@ -163,7 +163,7 @@ public class RobotContainer {
                 exampleFlywheel::stop,
                 exampleFlywheel));
 
-    endEffector.setDefaultCommand(new EndEffectorSparkMaxManual(endEffector, controller));
+    endEffector.setDefaultCommand(new EndEffectorTest(endEffector, controller));
 
     controller.povUp().onTrue(new InstantCommand(() -> endEffector.playFiddle(), endEffector));
     controller.povDown().onTrue(new InstantCommand(() -> endEffector.pauseFiddle(), endEffector));
