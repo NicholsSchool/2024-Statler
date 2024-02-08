@@ -36,9 +36,9 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class Drive extends SubsystemBase {
-  private static final double MAX_LINEAR_SPEED = 4.8;
-  private static final double TRACK_WIDTH_X = 0.653;
-  private static final double TRACK_WIDTH_Y = 0.653;
+  private static final double MAX_LINEAR_SPEED = Constants.DriveConstants.kMAX_LINEAR_SPEED;
+  private static final double TRACK_WIDTH_X = Constants.DriveConstants.kTRACK_WIDTH_X;
+  private static final double TRACK_WIDTH_Y = Constants.DriveConstants.kTRACK_WIDTH_Y;
   private static final double DRIVE_BASE_RADIUS =
       Math.hypot(TRACK_WIDTH_X / 2.0, TRACK_WIDTH_Y / 2.0);
   private static final double MAX_ANGULAR_SPEED = MAX_LINEAR_SPEED / DRIVE_BASE_RADIUS;

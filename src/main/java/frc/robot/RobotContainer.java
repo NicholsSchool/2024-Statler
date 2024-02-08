@@ -1,16 +1,3 @@
-// Copyright 2021-2023 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -21,10 +8,12 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToAmplifier;
+import frc.robot.commands.EndEffectorTest;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.subsystems.drive.Drive;
@@ -33,9 +22,14 @@ import frc.robot.subsystems.drive.GyroIONAVX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.flywheel.Flywheel;
-import frc.robot.subsystems.flywheel.FlywheelIO;
-import frc.robot.subsystems.flywheel.FlywheelIOSim;
+import frc.robot.subsystems.end_effector.EndEffector;
+import frc.robot.subsystems.end_effector.FlywheelIO;
+import frc.robot.subsystems.end_effector.FlywheelIOSim;
+import frc.robot.subsystems.end_effector.FlywheelIOSparkMax;
+import frc.robot.subsystems.end_effector.FlywheelIOTalonFX;
+import frc.robot.subsystems.example_flywheel.ExampleFlywheel;
+import frc.robot.subsystems.example_flywheel.ExampleFlywheelIO;
+import frc.robot.subsystems.example_flywheel.ExampleFlywheelIOSim;
 import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -49,7 +43,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final Flywheel flywheel;
+  private final ExampleFlywheel exampleFlywheel;
+  private final EndEffector endEffector;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -75,7 +70,8 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(2),
                 new ModuleIOMaxSwerve(3));
         // We have no flywheel, so create a simulated just for example.
-        flywheel = new Flywheel(new FlywheelIOSim());
+        exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
+        endEffector = new EndEffector(new FlywheelIOSparkMax(), new FlywheelIOTalonFX());
         break;
 
       case ROBOT_SIM:
@@ -87,7 +83,8 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
-        flywheel = new Flywheel(new FlywheelIOSim());
+        exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
+        endEffector = new EndEffector(new FlywheelIOSim(), new FlywheelIOSim());
         break;
 
       case ROBOT_REPLAY:
@@ -101,7 +98,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        flywheel = new Flywheel(new FlywheelIO() {});
+        exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIO() {});
+        endEffector = new EndEffector(new FlywheelIO() {}, new FlywheelIO() {});
         break;
     }
 
@@ -109,7 +107,9 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Run Flywheel",
         Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel)
+                () -> exampleFlywheel.runVelocity(flywheelSpeedInput.get()),
+                exampleFlywheel::stop,
+                exampleFlywheel)
             .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -159,7 +159,16 @@ public class RobotContainer {
         .a()
         .whileTrue(
             Commands.startEnd(
-                () -> flywheel.runVelocity(flywheelSpeedInput.get()), flywheel::stop, flywheel));
+                () -> exampleFlywheel.runVelocity(flywheelSpeedInput.get()),
+                exampleFlywheel::stop,
+                exampleFlywheel));
+
+    endEffector.setDefaultCommand(new EndEffectorTest(endEffector, controller));
+
+    controller.povUp().onTrue(new InstantCommand(() -> endEffector.playFiddle(), endEffector));
+    controller.povDown().onTrue(new InstantCommand(() -> endEffector.pauseFiddle(), endEffector));
+    controller.povLeft().onTrue(new InstantCommand(() -> endEffector.stopFiddle(), endEffector));
+    controller.povRight().onTrue(new InstantCommand(() -> endEffector.nextSong(), endEffector));
   }
 
   /**
@@ -180,7 +189,9 @@ public class RobotContainer {
     autoChooser.addOption(
         "Flywheel FF Characterization",
         new FeedForwardCharacterization(
-            flywheel, flywheel::runVolts, flywheel::getCharacterizationVelocity));
+            exampleFlywheel,
+            exampleFlywheel::runVolts,
+            exampleFlywheel::getCharacterizationVelocity));
 
     autoChooser.addOption(
         "Module Drive Ramp Test",
