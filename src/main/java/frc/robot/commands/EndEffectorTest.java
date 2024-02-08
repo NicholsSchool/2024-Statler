@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.end_effector.EndEffector;
 
-public class EndEffectorSparkMaxManual extends Command {
+public class EndEffectorTest extends Command {
   EndEffector endEffector;
   CommandXboxController controller;
 
   /** Creates a new EndEffectorManualControl. */
-  public EndEffectorSparkMaxManual(EndEffector endEffector, CommandXboxController controller) {
+  public EndEffectorTest(EndEffector endEffector, CommandXboxController controller) {
     this.endEffector = endEffector;
     this.controller = controller;
     addRequirements(endEffector);
@@ -27,13 +27,15 @@ public class EndEffectorSparkMaxManual extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // endEffector.runVolts(controller.getLeftX() * 12.0);
+    endEffector.runIntakeVolts(controller.getLeftX() * 12.0);
+    endEffector.runOuttakeVolts(controller.getRightX() * 12.0);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    endEffector.runVelocity(0.0);
+    endEffector.runIntakeVelocity(0.0);
+    endEffector.runOuttakeVelocity(0.0);
   }
 
   // Returns true when the command should end.

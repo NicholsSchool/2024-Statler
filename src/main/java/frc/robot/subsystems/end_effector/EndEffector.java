@@ -7,24 +7,28 @@ import frc.robot.Constants;
 import org.littletonrobotics.junction.Logger;
 
 public class EndEffector extends SubsystemBase {
-  // TODO: add beambreak functionality
-  private final EndEffectorIO io;
+  // TODO: add beambreak and network tables
+  private final FlywheelIO intake;
+  private final FlywheelIO outtake;
   private final SimpleMotorFeedforward ffModel;
 
   /** Creates a new End Effector. */
-  public EndEffector(EndEffectorIO io) {
-    this.io = io;
+  public EndEffector(FlywheelIO intake, FlywheelIO outtake) {
+    this.intake = intake;
+    this.outtake = outtake;
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
     switch (Constants.getRobot()) {
       case ROBOT_REAL:
         ffModel = new SimpleMotorFeedforward(0.1, 0.05);
-        io.configurePID(1.0, 0.0, 0.0);
+        intake.configurePID(1.0, 0.0, 0.0);
+        outtake.configurePID(1.0, 0.0, 0.0);
         break;
       case ROBOT_SIM:
         ffModel = new SimpleMotorFeedforward(0.0, 0.03);
-        io.configurePID(0.5, 0.0, 0.0);
+        intake.configurePID(0.5, 0.0, 0.0);
+        outtake.configurePID(0.5, 0.0, 0.0);
         break;
       default:
         ffModel = new SimpleMotorFeedforward(0.0, 0.0);
@@ -36,58 +40,61 @@ public class EndEffector extends SubsystemBase {
   public void periodic() {}
 
   /** Run open loop at the specified voltage. */
-  public void runVolts(double volts) {
-    io.setVoltage(volts);
+  public void runIntakeVolts(double volts) {
+    intake.setVoltage(volts);
+  }
+
+  /** Run open loop at the specified voltage. */
+  public void runOuttakeVolts(double volts) {
+    outtake.setVoltage(volts);
   }
 
   /** Run closed loop at the specified velocity. */
-  public void runVelocity(double velocityRPM) {
+  public void runIntakeVelocity(double velocityRPM) {
     var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
-    io.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
+    intake.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
 
     // Log flywheel setpoint
-    Logger.recordOutput("Flywheel/SetpointRPM", velocityRPM);
+    Logger.recordOutput("Intake Flywheel/SetpointRPM", velocityRPM);
+  }
+
+  /** Run closed loop at the specified velocity. */
+  public void runOuttakeVelocity(double velocityRPM) {
+    var velocityRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(velocityRPM);
+    outtake.setVelocity(velocityRadPerSec, ffModel.calculate(velocityRadPerSec));
+
+    // Log flywheel setpoint
+    Logger.recordOutput("Outtake Flywheel/SetpointRPM", velocityRPM);
   }
 
   /** Stops the flywheel. */
-  public void stop() {
-    io.stop();
+  public void stopIntake() {
+    intake.stop();
   }
 
-  //   /** Returns the current velocity in RPM. */
-  //   @AutoLogOutput
-  //   public double getVelocityRPM() {
-  //     return 0.0; //TODO: removed code for auto logging inputs, should this still exist???
-  //   }
-
-  //   /** Returns the current velocity in radians per second. */
-  //   public double getCharacterizationVelocity() {
-  //     return 0.0; //TODO: removed code for auto logging inputs, should this still exist???
-  //   }
+  /** Stops the flywheel. */
+  public void stopOuttake() {
+    outtake.stop();
+  }
 
   public void playFiddle() {
-    if(io instanceof EndEffectorIOTalonFX)
-      ((EndEffectorIOTalonFX)io).playFiddle();
+    if (outtake instanceof FlywheelIOTalonFX outtake) outtake.playFiddle();
   }
 
   public void pauseFiddle() {
-    if(io instanceof EndEffectorIOTalonFX)
-      ((EndEffectorIOTalonFX)io).pauseFiddle();
+    if (outtake instanceof FlywheelIOTalonFX outtake) outtake.pauseFiddle();
   }
 
   public void stopFiddle() {
-    if(io instanceof EndEffectorIOTalonFX)
-      ((EndEffectorIOTalonFX)io).stop();
+    if (outtake instanceof FlywheelIOTalonFX outtake) outtake.stop();
   }
 
   public boolean isPlayingFiddle() {
-    if(io instanceof EndEffectorIOTalonFX)
-      return ((EndEffectorIOTalonFX)io).isPlayingFiddle();
+    if (outtake instanceof FlywheelIOTalonFX outtake) return outtake.isPlayingFiddle();
     return false;
   }
 
   public void nextSong() {
-    if(io instanceof EndEffectorIOTalonFX)
-      ((EndEffectorIOTalonFX)io).nextSong();
+    if (outtake instanceof FlywheelIOTalonFX outtake) outtake.nextSong();
   }
 }

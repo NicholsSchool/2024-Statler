@@ -1,7 +1,7 @@
 package frc.robot.subsystems.end_effector;
 
-import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,11 +12,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants;
 
-public class EndEffectorIOTalonFX implements EndEffectorIO {
+public class FlywheelIOTalonFX implements FlywheelIO {
   private static final double GEAR_RATIO = Constants.EffectorTalonConstants.kGearRatio;
 
   private final TalonFX motor =
-      new TalonFX(Constants.CAN.kEffectorTalonCanId); // TODO: correct ID's in Constants.java
+      new TalonFX(Constants.CAN.kEffectorTalonCanId);
 
   private final StatusSignal<Double> position = motor.getPosition();
   private final StatusSignal<Double> velocity = motor.getVelocity();
@@ -24,22 +24,22 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
   private final StatusSignal<Double> current = motor.getStatorCurrent();
 
   private final Orchestra orchestra;
-  private String[] songs = {
-    Constants.EffectorTalonConstants.FiddleSongs.ALL_STAR, 
-    Constants.EffectorTalonConstants.FiddleSongs.SPEED_OF_LIGHT,
+  private final String[] songs = {
+    Constants.EffectorTalonConstants.FiddleSongs.ALL_STAR,
     Constants.EffectorTalonConstants.FiddleSongs.IMPERIAL_MARCH,
-    Constants.EffectorTalonConstants.FiddleSongs.WII_SONG};
-    private int songIndex;
+    Constants.EffectorTalonConstants.FiddleSongs.WII_SONG
+  };
+  private int songIndex;
 
-  public EndEffectorIOTalonFX() {
+  public FlywheelIOTalonFX() {
     var config = new TalonFXConfiguration();
     config.CurrentLimits.StatorCurrentLimit =
-        Constants.EffectorTalonConstants.kCurrentLimit; // TODO: correct current limit
+        Constants.EffectorTalonConstants.kCurrentLimit;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     motor.getConfigurator().apply(config);
 
-    motor.setInverted(Constants.EffectorTalonConstants.kIsInverted); // TODO: direction in CONSTANTS
+    motor.setInverted(Constants.EffectorTalonConstants.kIsInverted);
 
     BaseStatusSignal.setUpdateFrequencyForAll(50.0, position, velocity, appliedVolts, current);
     motor.optimizeBusUtilization();
@@ -67,7 +67,8 @@ public class EndEffectorIOTalonFX implements EndEffectorIO {
 
   @Override
   public void setVelocity(double velocityRadPerSec, double ffVolts) {
-    motor.setControl( // TODO: talk with Mr. Grier about this
+    motor.setControl(
+      // TODO: talk with Mr. Grier about this
         new VelocityVoltage(
             Units.radiansToRotations(velocityRadPerSec),
             0.0,
