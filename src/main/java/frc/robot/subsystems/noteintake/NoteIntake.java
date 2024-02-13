@@ -2,8 +2,8 @@ package frc.robot.subsystems.noteintake;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.*;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -111,14 +111,27 @@ public class NoteIntake extends SubsystemBase {
   }
 
   public Command runEatCommand() {
-    // Run eat until a note is obtained
-    return new StartEndCommand(() -> this.eat(), () -> this.stop(), this).until(this::hasNote);
+    // run eat mode until a note is obtained
+    return new FunctionalCommand(
+        () -> System.out.println("Starting to Eat"),
+        () -> this.eat(),
+        interrupted -> this.stop(),
+        this::hasNote,
+        this);
   }
 
   public Command runVomitCommand() {
     // Run eat until a note is expelled.
-    // TODO: May need more time after note is not detected to keep running motors to fully expel.
-    return new StartEndCommand(() -> this.vomit(), () -> this.stop(), this).until(this::hasNoNote);
+
+    // run a sequence that runs vomit mode until note is moved off sensor,
+    // then keep running motors for a second to keep advancing,
+    // then stop.
+    return new SequentialCommandGroup(
+            new InstantCommand(() -> System.out.println("Starting to Vomit")),
+            new RunCommand(() -> this.vomit()).until(this::hasNoNote),
+            new WaitCommand(1.0) // run a bit more to advance the note
+            )
+        .finallyDo(() -> this.stop());
   }
 
   public Command runDigestCommand() {
