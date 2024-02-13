@@ -1,21 +1,21 @@
-package frc.robot.subsystems.noteintake;
+package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
 
-public class NoteIntakeIOSim implements NoteIntakeIO {
+public class IntakeIOSim implements IntakeIO {
 
   private double appliedVolts = 0.0;
   private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 1.5, 0.004);
 
-  public NoteIntakeIOSim() {
-    System.out.println("[Init] Creating NoteIntakeIOSim");
+  public IntakeIOSim() {
+    System.out.println("[Init] Creating IntakeIOSim");
   }
 
   @Override
-  public void updateInputs(NoteIntakeIOInputs inputs) {
+  public void updateInputs(IntakeIOInputs inputs) {
     sim.update(Constants.loopPeriodSecs);
 
     inputs.velocityRPMs = sim.getAngularVelocityRadPerSec();

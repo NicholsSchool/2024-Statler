@@ -1,18 +1,18 @@
-package frc.robot.subsystems.noteintake;
+package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.EffectorTalonConstants.NoteIntakeConstants;
 
-public class NoteIntakeIOReal implements NoteIntakeIO {
+public class IntakeIOReal implements IntakeIO {
   private DigitalInput breamBreak;
 
-  public NoteIntakeIOReal() {
+  public IntakeIOReal() {
     breamBreak = new DigitalInput(NoteIntakeConstants.kBeamBreakChannel);
-    System.out.println("[Init] Creating NoteIntakeIOReal");
+    System.out.println("[Init] Creating IntakeIOReal");
   }
 
   @Override
-  public void updateInputs(NoteIntakeIOInputs inputs) {
+  public void updateInputs(IntakeIOInputs inputs) {
     inputs.velocityRPMs = 0.0;
     inputs.appliedVolts = 0.0;
     inputs.currentAmps = 0.0;

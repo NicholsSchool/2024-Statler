@@ -1,4 +1,4 @@
-package frc.robot.subsystems.noteouttake;
+package frc.robot.subsystems.outtake;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -6,18 +6,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
-public class NoteOuttake extends SubsystemBase {
-  private NoteOuttakeIO io;
-  private final NoteOuttakeIOInputsAutoLogged inputs = new NoteOuttakeIOInputsAutoLogged();
+public class Outtake extends SubsystemBase {
+  private OuttakeIO io;
+  private final OuttakeIOInputsAutoLogged inputs = new OuttakeIOInputsAutoLogged();
 
   private static final LoggedTunableNumber ampVelocity =
-      new LoggedTunableNumber("NoteIntake/EatVelocityRPMs");
+      new LoggedTunableNumber("Outtake/EatVelocityRPMs");
   private static final LoggedTunableNumber speakerVelocity =
-      new LoggedTunableNumber("NoteIntake/VomitVelocityRPMs");
+      new LoggedTunableNumber("Outtake/VomitVelocityRPMs");
   private static final LoggedTunableNumber trapVelocity =
-      new LoggedTunableNumber("NoteIntake/DigestVelocityRPMs");
-  private static final LoggedTunableNumber kP = new LoggedTunableNumber("NoteIntake/kP");
-  private static final LoggedTunableNumber kD = new LoggedTunableNumber("NoteIntake/kD");
+      new LoggedTunableNumber("Outtake/DigestVelocityRPMs");
+  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Outtake/kP");
+  private static final LoggedTunableNumber kD = new LoggedTunableNumber("Outtake/kD");
 
   private PIDController controller = new PIDController(0.0, 0.0, 0.0);
 
@@ -39,8 +39,8 @@ public class NoteOuttake extends SubsystemBase {
     kD.initDefault(0.0);
   }
 
-  public NoteOuttake(NoteOuttakeIO io) {
-    System.out.println("[Init] Creating NoteOuttake");
+  public Outtake(OuttakeIO io) {
+    System.out.println("[Init] Creating Outtake");
     this.io = io;
     io.setBrakeMode(false);
   }
@@ -49,7 +49,7 @@ public class NoteOuttake extends SubsystemBase {
   public void periodic() {
     double setpoint = 0.0;
     io.updateInputs(inputs);
-    Logger.processInputs("NoteOuttake", inputs);
+    Logger.processInputs("Outtake", inputs);
 
     // Update tunable numbers
     if (kP.hasChanged(hashCode()) || kD.hasChanged(hashCode())) {

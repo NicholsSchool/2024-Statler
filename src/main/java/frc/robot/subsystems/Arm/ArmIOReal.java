@@ -1,20 +1,19 @@
-package frc.robot.subsystems.Arm;
+package frc.robot.subsystems.arm;
 
 public class ArmIOReal implements ArmIO {
 
   public ArmIOReal() {
-    System.out.println("[Init] Creating NoteIntakeIOReal");
+    System.out.println("[Init] Creating ArmIOReal");
   }
 
   @Override
   public void updateInputs(ArmIOInputs inputs) {
-    inputs.velocityRPMs = 0.0;
-    inputs.appliedVolts = 0.0;
-    inputs.currentAmps = 0.0;
+    inputs.angle = 0.0;
+    inputs.isExtended = false;
   }
 
   @Override
-  public void setVoltage(double voltage) {}
+  public void stop() {}
 
   @Override
   public void setBrakeMode(boolean brake) {}

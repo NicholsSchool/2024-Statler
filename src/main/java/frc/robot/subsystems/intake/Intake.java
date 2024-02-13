@@ -1,4 +1,4 @@
-package frc.robot.subsystems.noteintake;
+package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -8,18 +8,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
-public class NoteIntake extends SubsystemBase {
-  private NoteIntakeIO io;
-  private final NoteIntakeIOInputsAutoLogged inputs = new NoteIntakeIOInputsAutoLogged();
+public class Intake extends SubsystemBase {
+  private IntakeIO io;
+  private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   private static final LoggedTunableNumber eatVelocity =
-      new LoggedTunableNumber("NoteIntake/EatVelocityRPMs");
+      new LoggedTunableNumber("Intake/EatVelocityRPMs");
   private static final LoggedTunableNumber vomitVelocity =
-      new LoggedTunableNumber("NoteIntake/VomitVelocityRPMs");
+      new LoggedTunableNumber("Intake/VomitVelocityRPMs");
   private static final LoggedTunableNumber digestVelocity =
-      new LoggedTunableNumber("NoteIntake/DigestVelocityRPMs");
-  private static final LoggedTunableNumber kP = new LoggedTunableNumber("NoteIntake/kP");
-  private static final LoggedTunableNumber kD = new LoggedTunableNumber("NoteIntake/kD");
+      new LoggedTunableNumber("Intake/DigestVelocityRPMs");
+  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Intake/kP");
+  private static final LoggedTunableNumber kD = new LoggedTunableNumber("Intake/kD");
 
   private PIDController controller = new PIDController(0.0, 0.0, 0.0);
 
@@ -41,8 +41,8 @@ public class NoteIntake extends SubsystemBase {
     kD.initDefault(0.0);
   }
 
-  public NoteIntake(NoteIntakeIO io) {
-    System.out.println("[Init] Creating NoteIntake");
+  public Intake(IntakeIO io) {
+    System.out.println("[Init] Creating Intake");
     this.io = io;
     io.setBrakeMode(false);
   }
@@ -51,7 +51,7 @@ public class NoteIntake extends SubsystemBase {
   public void periodic() {
     double setpoint = 0.0;
     io.updateInputs(inputs);
-    Logger.processInputs("NoteIntake", inputs);
+    Logger.processInputs("Intake", inputs);
 
     // Update tunable numbers
     if (kP.hasChanged(hashCode()) || kD.hasChanged(hashCode())) {
