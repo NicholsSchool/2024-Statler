@@ -105,6 +105,10 @@ public final class Constants {
     public static final double kNominalVoltage = 12.0; // TODO: correct voltage?
     public static final int kCurrentLimit = 30; // TODO: correct current limit?
 
+    public static final class NoteIntakeConstants {
+      public static final int kBeamBreakChannel = 2;
+    }
+
     public static final class FiddleSongs {
       public static final String ALL_STAR = "all-star.chrp";
       public static final String IMPERIAL_MARCH = "Imperial-March.chrp";

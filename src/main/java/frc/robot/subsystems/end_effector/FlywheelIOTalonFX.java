@@ -15,8 +15,7 @@ import frc.robot.Constants;
 public class FlywheelIOTalonFX implements FlywheelIO {
   private static final double GEAR_RATIO = Constants.EffectorTalonConstants.kGearRatio;
 
-  private final TalonFX motor =
-      new TalonFX(Constants.CAN.kEffectorTalonCanId);
+  private final TalonFX motor = new TalonFX(Constants.CAN.kEffectorTalonCanId);
 
   private final StatusSignal<Double> position = motor.getPosition();
   private final StatusSignal<Double> velocity = motor.getVelocity();
@@ -33,8 +32,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
 
   public FlywheelIOTalonFX() {
     var config = new TalonFXConfiguration();
-    config.CurrentLimits.StatorCurrentLimit =
-        Constants.EffectorTalonConstants.kCurrentLimit;
+    config.CurrentLimits.StatorCurrentLimit = Constants.EffectorTalonConstants.kCurrentLimit;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
     config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     motor.getConfigurator().apply(config);
@@ -68,7 +66,7 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   @Override
   public void setVelocity(double velocityRadPerSec, double ffVolts) {
     motor.setControl(
-      // TODO: talk with Mr. Grier about this
+        // TODO: talk with Mr. Greier about this
         new VelocityVoltage(
             Units.radiansToRotations(velocityRadPerSec),
             0.0,

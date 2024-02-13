@@ -21,7 +21,7 @@ public class NoteIntakeIOSim implements NoteIntakeIO {
     inputs.velocityRPMs = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = sim.getCurrentDrawAmps();
-    inputs.hasNote = false;
+    inputs.hasNote = false; // TODO: make fancy pretending
   }
 
   @Override

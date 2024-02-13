@@ -53,7 +53,8 @@ public class NoteIntake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("NoteIntake", inputs);
 
-    // Placeholder: Update tunable numbers
+    controller.setP(kP.get());
+    controller.setD(kD.get());
 
     // Reset when disabled
     if (DriverStation.isDisabled()) {
