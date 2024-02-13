@@ -6,6 +6,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
+
+//TODO: we need to change the code because it is based off the intake code
+// The GoToPos and Extend/Pistion Stuff need to change so that they work for the arm
+
 public class Arm extends SubsystemBase {
   private ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
