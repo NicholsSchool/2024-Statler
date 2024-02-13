@@ -53,12 +53,16 @@ public class NoteIntake extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("NoteIntake", inputs);
 
-    controller.setP(kP.get());
-    controller.setD(kD.get());
+    // Update tunable numbers
+    if (kP.hasChanged(hashCode()) || kD.hasChanged(hashCode())) {
+      controller.setP(kP.get());
+      controller.setD(kD.get());
+    }
 
     // Reset when disabled
     if (DriverStation.isDisabled()) {
       io.setVoltage(0.0);
+      controller.reset();
       mode = IntakeMode.kStopped;
     } else {
       switch (mode) {
