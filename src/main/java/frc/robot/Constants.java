@@ -109,6 +109,8 @@ public final class Constants {
       public static final int kBeamBreakChannel = 2;
     }
 
+    public static final class NoteOuttakeConstants {}
+
     public static final class FiddleSongs {
       public static final String ALL_STAR = "all-star.chrp";
       public static final String IMPERIAL_MARCH = "Imperial-March.chrp";
