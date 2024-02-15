@@ -92,21 +92,21 @@ public final class Constants {
     public static final double kTURN_GEAR_RATIO = 150.0 / 7.0;
   }
 
-    public static final class IntakeConstants {
-      public static final int kBeamBreakChannel = 2;
-      public static final double kVomitDelay = 0.5;
-      public static final double kP = 6.0;
-      public static final double kD = 0.0;
-    }
+  public static final class IntakeConstants {
+    public static final int kBeamBreakChannel = 2;
+    public static final double kVomitDelay = 0.5;
+    public static final double kP = 6.0;
+    public static final double kD = 0.0;
+  }
 
-    public static final class OuttakeConstants {
-      public static final double kP = 6.0;
-      public static final double kD = 0.0;
-    }
+  public static final class OuttakeConstants {
+    public static final double kP = 6.0;
+    public static final double kD = 0.0;
+  }
 
-    public static final class FiddleSongs {
-      public static final String ALL_STAR = "all-star.chrp";
-      public static final String IMPERIAL_MARCH = "Imperial-March.chrp";
-      public static final String WII_SONG = "Wii-Song.chrp";
-    }
+  public static final class FiddleSongs {
+    public static final String ALL_STAR = "all-star.chrp";
+    public static final String IMPERIAL_MARCH = "Imperial-March.chrp";
+    public static final String WII_SONG = "Wii-Song.chrp";
+  }
 }
