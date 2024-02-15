@@ -8,12 +8,10 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToAmplifier;
-import frc.robot.commands.EndEffectorTest;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.subsystems.drive.Drive;
@@ -22,11 +20,6 @@ import frc.robot.subsystems.drive.GyroIONAVX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.end_effector.EndEffector;
-import frc.robot.subsystems.end_effector.FlywheelIO;
-import frc.robot.subsystems.end_effector.FlywheelIOSim;
-import frc.robot.subsystems.end_effector.FlywheelIOSparkMax;
-import frc.robot.subsystems.end_effector.FlywheelIOTalonFX;
 import frc.robot.subsystems.example_flywheel.ExampleFlywheel;
 import frc.robot.subsystems.example_flywheel.ExampleFlywheelIO;
 import frc.robot.subsystems.example_flywheel.ExampleFlywheelIOSim;
@@ -44,7 +37,6 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final ExampleFlywheel exampleFlywheel;
-  private final EndEffector endEffector;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -71,7 +63,6 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(3));
         // We have no flywheel, so create a simulated just for example.
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
-        endEffector = new EndEffector(new FlywheelIOSparkMax(), new FlywheelIOTalonFX());
         break;
 
       case ROBOT_SIM:
@@ -84,7 +75,6 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
-        endEffector = new EndEffector(new FlywheelIOSim(), new FlywheelIOSim());
         break;
 
       case ROBOT_REPLAY:
@@ -99,7 +89,6 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIO() {});
-        endEffector = new EndEffector(new FlywheelIO() {}, new FlywheelIO() {});
         break;
     }
 
@@ -162,13 +151,6 @@ public class RobotContainer {
                 () -> exampleFlywheel.runVelocity(flywheelSpeedInput.get()),
                 exampleFlywheel::stop,
                 exampleFlywheel));
-
-    endEffector.setDefaultCommand(new EndEffectorTest(endEffector, controller));
-
-    controller.povUp().onTrue(new InstantCommand(() -> endEffector.playFiddle(), endEffector));
-    controller.povDown().onTrue(new InstantCommand(() -> endEffector.pauseFiddle(), endEffector));
-    controller.povLeft().onTrue(new InstantCommand(() -> endEffector.stopFiddle(), endEffector));
-    controller.povRight().onTrue(new InstantCommand(() -> endEffector.nextSong(), endEffector));
   }
 
   /**
