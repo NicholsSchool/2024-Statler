@@ -9,9 +9,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import java.util.List;
 
 /**
  * Contains various field dimensions and useful reference points. Dimensions are in meters, and sets
@@ -31,7 +36,9 @@ public final class FieldConstants {
 
   public static final Translation2d amplifierTranslation = new Translation2d(1.828, 7.704);
 
-  /* 2023 sample
+  // TODO: We need to change the loadign zone cords
+  // TODO: We need to change the cords for each april tag
+  // TODO: Something that I am forgettting
   // Dimensions for loading zone and substations, including the tape
   public static final class LoadingZone {
     // Region dimensions
@@ -53,6 +60,7 @@ public final class FieldConstants {
           new Translation2d(innerX, rightY),
         };
 
+    // TODO: change substations to speaker, amp, nad stage
     // Double substation dimensions
     public static final double doubleSubstationLength = Units.inchesToMeters(14.0);
     public static final double doubleSubstationX = innerX - doubleSubstationLength;
@@ -93,127 +101,122 @@ public final class FieldConstants {
     }
   }
 
-    public static final AprilTagFieldLayout aprilTags =
-        isWPIField
-            ? new AprilTagFieldLayout(
-                List.of(
-                    new AprilTag(
-                        1,
-                        new Pose3d(
-                            Units.inchesToMeters(610.125),
-                            Units.inchesToMeters(43.5),
-                            Units.inchesToMeters(19.25),
-                            new Rotation3d(0.0, 0.0, Math.PI))),
-                    new AprilTag(
-                        2,
-                        new Pose3d(
-                            Units.inchesToMeters(610.375),
-                            Units.inchesToMeters(109.5),
-                            Units.inchesToMeters(19.25),
-                            new Rotation3d(0.0, 0.0, Math.PI))),
-                    new AprilTag(
-                        3,
-                        new Pose3d(
-                            Units.inchesToMeters(610.0),
-                            Units.inchesToMeters(176.0),
-                            Units.inchesToMeters(19.25),
-                            new Rotation3d(0.0, 0.0, Math.PI))),
-                    new AprilTag(
-                        4,
-                        new Pose3d(
-                            Units.inchesToMeters(635.375),
-                            Units.inchesToMeters(272.0),
-                            Units.inchesToMeters(27.25),
-                            new Rotation3d(0.0, 0.0, Math.PI))),
-                    new AprilTag(
-                        5,
-                        new Pose3d(
-                            Units.inchesToMeters(14.25),
-                            LoadingZone.doubleSubstationCenterY,
-                            Units.inchesToMeters(27.38),
-                            new Rotation3d())),
-                    new AprilTag(
-                        6,
-                        new Pose3d(
-                            Units.inchesToMeters(40.45),
-                            Grids.nodeY[7],
-                            Units.inchesToMeters(18.22),
-                            new Rotation3d())),
-                    new AprilTag(
-                        7,
-                        new Pose3d(
-                            Units.inchesToMeters(40.45),
-                            Grids.nodeY[4],
-                            Units.inchesToMeters(18.22),
-                            new Rotation3d())),
-                    new AprilTag(
-                        8,
-                        new Pose3d(
-                            Units.inchesToMeters(40.45),
-                            Grids.nodeY[1],
-                            Units.inchesToMeters(18.22),
-                            new Rotation3d()))),
-                fieldLength,
-                fieldWidth)
-            : new AprilTagFieldLayout(
-                List.of(
-                    new AprilTag(
-                        1,
-                        new Pose3d(
-                            Units.inchesToMeters(610.77),
-                            Grids.nodeY[1],
-                            Units.inchesToMeters(18.22),
-                            new Rotation3d(0.0, 0.0, Math.PI))),
-                    new AprilTag(
-                        2,
-                        new Pose3d(
-                            Units.inchesToMeters(610.77),
-                            Grids.nodeY[4],
-                            Units.inchesToMeters(18.22),
-                            new Rotation3d(0.0, 0.0, Math.PI))),
-                    new AprilTag(
-                        3,
-                        new Pose3d(
-                            Units.inchesToMeters(610.77),
-                            Grids.nodeY[7],
-                            Units.inchesToMeters(18.22),
-                            new Rotation3d(0.0, 0.0, Math.PI))),
-                    new AprilTag(
-                        4,
-                        new Pose3d(
-                            Units.inchesToMeters(636.96),
-                            LoadingZone.doubleSubstationCenterY,
-                            Units.inchesToMeters(27.38),
-                            new Rotation3d(0.0, 0.0, Math.PI))),
-                    new AprilTag(
-                        5,
-                        new Pose3d(
-                            Units.inchesToMeters(14.25),
-                            LoadingZone.doubleSubstationCenterY,
-                            Units.inchesToMeters(27.38),
-                            new Rotation3d())),
-                    new AprilTag(
-                        6,
-                        new Pose3d(
-                            Units.inchesToMeters(40.45),
-                            Grids.nodeY[7],
-                            Units.inchesToMeters(18.22),
-                            new Rotation3d())),
-                    new AprilTag(
-                        7,
-                        new Pose3d(
-                            Units.inchesToMeters(40.45),
-                            Grids.nodeY[4],
-                            Units.inchesToMeters(18.22),
-                            new Rotation3d())),
-                    new AprilTag(
-                        8,
-                        new Pose3d(
-                            Units.inchesToMeters(40.45),
-                            Grids.nodeY[1],
-                            Units.inchesToMeters(18.22),
-                            new Rotation3d()))),
-                fieldLength,
-                fieldWidth);
-  */
+  public static final AprilTagFieldLayout aprilTags =
+      new AprilTagFieldLayout(
+          List.of(
+              new AprilTag(
+                  // TODO: Grid Nodes have to change
+                  1,
+                  new Pose3d(
+                      Units.inchesToMeters(593.68),
+                      Units.inchesToMeters(9.68),
+                      Units.inchesToMeters(53.38),
+                      new Rotation3d(0.0, 0.0, Math.PI))),
+              new AprilTag(
+                  2,
+                  new Pose3d(
+                      Units.inchesToMeters(637.21),
+                      Units.inchesToMeters(34.79),
+                      Units.inchesToMeters(53.38),
+                      new Rotation3d(0.0, 0.0, Math.PI))),
+              new AprilTag(
+                  3,
+                  new Pose3d(
+                      Units.inchesToMeters(652.73),
+                      Units.inchesToMeters(196.17),
+                      Units.inchesToMeters(57.13),
+                      new Rotation3d(0.0, 0.0, Math.PI))),
+              new AprilTag(
+                  4,
+                  new Pose3d(
+                      Units.inchesToMeters(652.73),
+                      Units.inchesToMeters(218.42),
+                      Units.inchesToMeters(57.13),
+                      new Rotation3d(0.0, 0.0, Math.PI))),
+              new AprilTag(
+                  5,
+                  new Pose3d(
+                      Units.inchesToMeters(14.25),
+                      Units.inchesToMeters(218.42),
+                      Units.inchesToMeters(27.38),
+                      new Rotation3d())),
+              new AprilTag(
+                  6,
+                  new Pose3d(
+                      Units.inchesToMeters(40.45),
+                      Units.inchesToMeters(218.42),
+                      Units.inchesToMeters(18.22),
+                      new Rotation3d())),
+              new AprilTag(
+                  7,
+                  new Pose3d(
+                      Units.inchesToMeters(40.45),
+                      Units.inchesToMeters(218.42),
+                      Units.inchesToMeters(18.22),
+                      new Rotation3d())),
+              new AprilTag(
+                  8,
+                  new Pose3d(
+                      Units.inchesToMeters(40.45),
+                      Units.inchesToMeters(218.42),
+                      Units.inchesToMeters(18.22),
+                      new Rotation3d())),
+              new AprilTag(
+                  9,
+                  new Pose3d(
+                      Units.inchesToMeters(610.125),
+                      Units.inchesToMeters(43.5),
+                      Units.inchesToMeters(19.25),
+                      new Rotation3d(0.0, 0.0, Math.PI))),
+              new AprilTag(
+                  10,
+                  new Pose3d(
+                      Units.inchesToMeters(610.375),
+                      Units.inchesToMeters(109.5),
+                      Units.inchesToMeters(19.25),
+                      new Rotation3d(0.0, 0.0, Math.PI))),
+              new AprilTag(
+                  11,
+                  new Pose3d(
+                      Units.inchesToMeters(610.0),
+                      Units.inchesToMeters(176.0),
+                      Units.inchesToMeters(19.25),
+                      new Rotation3d(0.0, 0.0, Math.PI))),
+              new AprilTag(
+                  12,
+                  new Pose3d(
+                      Units.inchesToMeters(635.375),
+                      Units.inchesToMeters(272.0),
+                      Units.inchesToMeters(27.25),
+                      new Rotation3d(0.0, 0.0, Math.PI))),
+              new AprilTag(
+                  13,
+                  new Pose3d(
+                      Units.inchesToMeters(14.25),
+                      LoadingZone.doubleSubstationCenterY,
+                      Units.inchesToMeters(27.38),
+                      new Rotation3d())),
+              new AprilTag(
+                  14,
+                  new Pose3d(
+                      Units.inchesToMeters(40.45),
+                      Units.inchesToMeters(272.0),
+                      Units.inchesToMeters(18.22),
+                      new Rotation3d())),
+              new AprilTag(
+                  15,
+                  new Pose3d(
+                      Units.inchesToMeters(40.45),
+                      Units.inchesToMeters(272.0),
+                      Units.inchesToMeters(18.22),
+                      new Rotation3d())),
+              new AprilTag(
+                  16,
+                  new Pose3d(
+                      Units.inchesToMeters(40.45),
+                      Units.inchesToMeters(272.0),
+                      Units.inchesToMeters(18.22),
+                      new Rotation3d()))), // TODO:error here no clue why
+          fieldLength,
+          fieldWidth);
 }

@@ -8,7 +8,7 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-  // TODO: do fancy pretending for hasNote
+    // TODO: do fancy pretending for hasNote
     inputs.velocityRPMs = 0.0;
     inputs.appliedVolts = 0.0;
     inputs.currentAmps = 0.0;
