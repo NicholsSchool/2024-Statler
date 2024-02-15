@@ -127,8 +127,8 @@ public class Intake extends SubsystemBase {
     // then keep running motors for a second to keep advancing,
     // then stop.
     return new SequentialCommandGroup(
-            new InstantCommand(() -> System.out.println("Starting to Vomit")),
-            new RunCommand(() -> this.vomit()).until(this::hasNoNote),
+            new InstantCommand(() -> System.out.println("Starting to Vomit"), this),
+            new RunCommand(() -> this.vomit(), this).until(this::hasNoNote),
             new WaitCommand(1.0) // run a bit more to advance the note
             )
         .finallyDo(() -> this.stop());
