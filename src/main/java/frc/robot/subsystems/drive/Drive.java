@@ -18,6 +18,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -54,6 +55,15 @@ public class Drive extends SubsystemBase {
 
   private Twist2d fieldVelocity = new Twist2d(); // TJG
   private ChassisSpeeds setpoint = new ChassisSpeeds(); // TJG
+
+  SwerveModulePosition[] positions =
+      new SwerveModulePosition[] {
+        new SwerveModulePosition(), new SwerveModulePosition(),
+        new SwerveModulePosition(), new SwerveModulePosition()
+      };
+
+  private SwerveDrivePoseEstimator poseEstimator =
+      new SwerveDrivePoseEstimator(kinematics, lastGyroRotation, positions, pose);
 
   private final LoggedDashboardNumber moduleTestIndex = // drive module to test with voltage ramp
       new LoggedDashboardNumber("Module Test Index (0-3)", 0);
@@ -141,6 +151,7 @@ public class Drive extends SubsystemBase {
     for (int i = 0; i < kNumModules; i++) {
       wheelDeltas[i] = modules[i].getPositionDelta();
     }
+
     // The twist represents the motion of the robot since the last
     // loop cycle in x, y, and theta based only on the modules,
     // without the gyro. The gyro is always disconnected in simulation.
@@ -152,9 +163,22 @@ public class Drive extends SubsystemBase {
       twist =
           new Twist2d(twist.dx, twist.dy, currentGyroRotation.minus(lastGyroRotation).getRadians());
       lastGyroRotation = currentGyroRotation;
+    } else {
+      // no gyro in simulation, faking using odometry twist
+      lastGyroRotation = new Rotation2d(twist.dtheta + lastGyroRotation.getRadians());
     }
+
+    SwerveModulePosition[] wheelAbsolutes = new SwerveModulePosition[4];
+    for (int i = 0; i < kNumModules; i++) {
+      wheelAbsolutes[i] = modules[i].getPosition();
+    }
+
+    // updating the pose estimator
+    pose = poseEstimator.update(lastGyroRotation, wheelAbsolutes);
+
+    // Previous method of updating pose:
     // Apply the twist (change since last loop cycle) to the current pose
-    pose = pose.exp(twist);
+    // pose = pose.exp(twist);
 
     // Update field velocity
     ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(measuredStates);
@@ -256,7 +280,14 @@ public class Drive extends SubsystemBase {
 
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
+    // TODO: actually make it offset the pose estimator
+    // poseEstimator.resetPosition(pose.getRotation(), positions, pose);
     this.pose = pose;
+  }
+
+  /** Adds vision data to the pose esimation. */
+  public void addVisionData(Pose2d aprilTagPose, double timestampSecond) {
+    poseEstimator.addVisionMeasurement(aprilTagPose, timestampSecond);
   }
 
   /** Returns the maximum linear speed in meters per sec. */
