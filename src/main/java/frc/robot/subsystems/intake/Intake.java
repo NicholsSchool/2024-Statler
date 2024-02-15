@@ -3,8 +3,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.*;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -34,11 +33,11 @@ public class Intake extends SubsystemBase {
 
   // initialize tunable values
   static {
-    eatVelocity.initDefault(1000.0);
-    vomitVelocity.initDefault(-1000.0);
-    digestVelocity.initDefault(500.0);
-    kP.initDefault(6.0);
-    kD.initDefault(0.0);
+    eatVelocity.initDefault(0.0);
+    vomitVelocity.initDefault(0.0);
+    digestVelocity.initDefault(0.0);
+    kP.initDefault(IntakeConstants.kP);
+    kD.initDefault(IntakeConstants.kD);
   }
 
   public Intake(IntakeIO io) {
@@ -76,9 +75,7 @@ public class Intake extends SubsystemBase {
           setpoint = digestVelocity.get();
           break;
         case kStopped:
-        default:
           setpoint = 0.0;
-          break;
       }
 
       controller.setSetpoint(setpoint);
@@ -129,7 +126,7 @@ public class Intake extends SubsystemBase {
     return new SequentialCommandGroup(
             new InstantCommand(() -> System.out.println("Starting to Vomit"), this),
             new RunCommand(() -> this.vomit(), this).until(this::hasNoNote),
-            new WaitCommand(1.0) // run a bit more to advance the note
+            new WaitCommand(IntakeConstants.kVomitDelay) // run a bit more to advance the note
             )
         .finallyDo(() -> this.stop());
   }

@@ -13,7 +13,4 @@ public interface ArmIO {
 
   /** Stops all motors */
   public void stop();
-
-  /** Enable or disable brake mode on the motors. */
-  public void setBrakeMode(boolean brake);
 }

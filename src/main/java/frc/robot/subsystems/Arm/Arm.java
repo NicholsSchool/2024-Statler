@@ -25,7 +25,6 @@ public class Arm extends SubsystemBase {
   public Arm(ArmIO io) {
     System.out.println("[Init] Creating Arm");
     this.io = io;
-    io.setBrakeMode(false);
   }
 
   @Override
@@ -45,16 +44,12 @@ public class Arm extends SubsystemBase {
         case kOveride:
           break;
         case kStopped:
-        default:
-          break;
       }
 
       switch (pistionMode) {
         case kExtended:
           break;
         case kRetracted:
-        default:
-          break;
       }
     }
   }

@@ -1,13 +1,13 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.Constants.EffectorTalonConstants.NoteIntakeConstants;
+import frc.robot.Constants.IntakeConstants;
 
 public class IntakeIOReal implements IntakeIO {
   private DigitalInput breamBreak;
 
   public IntakeIOReal() {
-    breamBreak = new DigitalInput(NoteIntakeConstants.kBeamBreakChannel);
+    breamBreak = new DigitalInput(IntakeConstants.kBeamBreakChannel);
     System.out.println("[Init] Creating IntakeIOReal");
   }
 
@@ -24,4 +24,7 @@ public class IntakeIOReal implements IntakeIO {
 
   @Override
   public void setBrakeMode(boolean brake) {}
+
+  @Override
+  public void setDirection(boolean forward) {}
 }

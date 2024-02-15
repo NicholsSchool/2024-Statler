@@ -3,7 +3,7 @@ package frc.robot.subsystems.climb;
 public class ClimbIOReal implements ClimbIO {
 
   public ClimbIOReal() {
-    System.out.println("[Init] Creating ClimbIOSReal");
+    System.out.println("[Init] Creating ClimbIOReal");
   }
 
   @Override

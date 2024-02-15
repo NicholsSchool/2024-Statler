@@ -13,7 +13,4 @@ public class ArmIOSim implements ArmIO {
 
   @Override
   public void stop() {}
-
-  @Override
-  public void setBrakeMode(boolean brake) {}
 }

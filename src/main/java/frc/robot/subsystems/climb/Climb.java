@@ -38,9 +38,7 @@ public class Climb extends SubsystemBase {
         case kFullyExtend:
           break;
         case kStopped:
-        default:
           io.stop();
-          break;
       }
     }
   }

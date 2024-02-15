@@ -18,4 +18,7 @@ public class OuttakeIOSim implements OuttakeIO {
 
   @Override
   public void setBrakeMode(boolean brake) {}
+
+  @Override
+  public void setDirection(boolean forward) {}
 }

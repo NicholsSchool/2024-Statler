@@ -92,29 +92,21 @@ public final class Constants {
     public static final double kTURN_GEAR_RATIO = 150.0 / 7.0;
   }
 
-  public static final class EffectorSparkConstants {
-    public static final double kGearRatio = 1.5; // TODO: Verify Gear Ratio Constant
-    public static final boolean kIsInverted = false;
-    public static final double kNominalVoltage = 12.0; // TODO: correct voltage?
-    public static final int kCurrentLimit = 30; // TODO: correct current limit?
-  }
-
-  public static final class EffectorTalonConstants {
-    public static final double kGearRatio = 1.5; // TODO: Verify Gear Ratio Constant
-    public static final boolean kIsInverted = false;
-    public static final double kNominalVoltage = 12.0; // TODO: correct voltage?
-    public static final int kCurrentLimit = 30; // TODO: correct current limit?
-
-    public static final class NoteIntakeConstants {
+    public static final class IntakeConstants {
       public static final int kBeamBreakChannel = 2;
+      public static final double kVomitDelay = 0.5;
+      public static final double kP = 6.0;
+      public static final double kD = 0.0;
     }
 
-    public static final class NoteOuttakeConstants {}
+    public static final class OuttakeConstants {
+      public static final double kP = 6.0;
+      public static final double kD = 0.0;
+    }
 
     public static final class FiddleSongs {
       public static final String ALL_STAR = "all-star.chrp";
       public static final String IMPERIAL_MARCH = "Imperial-March.chrp";
       public static final String WII_SONG = "Wii-Song.chrp";
     }
-  }
 }
