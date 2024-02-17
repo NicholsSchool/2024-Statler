@@ -1,9 +1,7 @@
-package frc.robot.subsystems.armor;
+package frc.robot.subsystems.arm;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.arm.ArmIOInputsAutoLogged;
-
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends SubsystemBase {
