@@ -5,6 +5,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -37,6 +39,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final ExampleFlywheel exampleFlywheel;
+  private final PowerDistribution pdh;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -63,6 +66,7 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(3));
         // We have no flywheel, so create a simulated just for example.
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
+        pdh = new PowerDistribution(Constants.CAN.kPowerDistributionHub, ModuleType.kRev);
         break;
 
       case ROBOT_SIM:
@@ -75,6 +79,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
+        pdh = new PowerDistribution();
         break;
 
       case ROBOT_REPLAY:
@@ -89,6 +94,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIO() {});
+        pdh = new PowerDistribution();
         break;
     }
 
