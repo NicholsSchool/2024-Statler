@@ -1,12 +1,3 @@
-// Copyright (c) 2023 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// Use of this source code is governed by an MIT-style
-// license that can be found in the LICENSE file at
-// the root directory of this project.
-
-// TJG
-
 package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTag;
@@ -36,100 +27,57 @@ public final class FieldConstants {
 
   public static final Translation2d amplifierTranslation = new Translation2d(1.828, 7.704);
 
-  //   // TODO: We need to change the loadign zone cords
-  //   // TODO: We need to change the cords for each april tag
-  //   // Dimensions for loading zone and substations, including the tape
-  //   public static final class LoadingZone {
-  //     // Region dimensions
-  //     public static final double width = Units.inchesToMeters(99.0);
-  //     public static final double innerX = FieldConstants.fieldLength;
-  //     public static final double midX = fieldLength - Units.inchesToMeters(132.25);
-  //     public static final double outerX = fieldLength - Units.inchesToMeters(264.25);
-  //     public static final double leftY = FieldConstants.fieldWidth;
-  //     public static final double midY = leftY - Units.inchesToMeters(50.5);
-  //     public static final double rightY = leftY - width;
-  //     public static final Translation2d[] regionCorners =
-  //         new Translation2d[] {
-  //           new Translation2d(
-  //               midX, rightY), // Start at lower left next to border with opponent community
-  //           new Translation2d(midX, midY),
-  //           new Translation2d(outerX, midY),
-  //           new Translation2d(outerX, leftY),
-  //           new Translation2d(innerX, leftY),
-  //           new Translation2d(innerX, rightY),
-  //         };
-
-  //     // TODO: change substations to speaker, amp, nad stage
-  //     // Double substation dimensions
-  //     public static final double doubleSubstationLength = Units.inchesToMeters(14.0);
-  //     public static final double doubleSubstationX = innerX - doubleSubstationLength;
-  //     public static final double doubleSubstationShelfZ = Units.inchesToMeters(37.375);
-  //     public static final double doubleSubstationCenterY = fieldWidth -
-  // Units.inchesToMeters(49.76);
-
-  //     // Single substation dimensions
-  //     public static final double singleSubstationWidth = Units.inchesToMeters(22.75);
-  //     public static final double singleSubstationLeftX =
-  //         FieldConstants.fieldLength - doubleSubstationLength - Units.inchesToMeters(88.77);
-  //     public static final double singleSubstationCenterX =
-  //         singleSubstationLeftX + (singleSubstationWidth / 2.0);
-  //     public static final double singleSubstationRightX =
-  //         singleSubstationLeftX + singleSubstationWidth;
-  //     public static final Translation2d singleSubstationTranslation =
-  //         new Translation2d(singleSubstationCenterX, leftY);
-
-  //     public static final double singleSubstationHeight = Units.inchesToMeters(18.0);
-  //     public static final double singleSubstationLowZ = Units.inchesToMeters(27.125);
-  //     public static final double singleSubstationCenterZ =
-  //         singleSubstationLowZ + (singleSubstationHeight / 2.0);
-  //     public static final double singleSubstationHighZ =
-  //         singleSubstationLowZ + singleSubstationHeight;
-  //   }
-
-  //   // Locations of staged game pieces
-  //   public static final class StagingLocations {
-  //     public static final double centerOffsetX = Units.inchesToMeters(47.36);
-  //     public static final double positionX = fieldLength / 2.0 - Units.inchesToMeters(47.36);
-  //     public static final double firstY = Units.inchesToMeters(36.19);
-  //     public static final double separationY = Units.inchesToMeters(48.0);
-  //     public static final Translation2d[] translations = new Translation2d[4];
-
-  //     static {
-  //       for (int i = 0; i < translations.length; i++) {
-  //         translations[i] = new Translation2d(positionX, firstY + (i * separationY));
-  //       }
-  //     }
-  //   }
-
-  // Locations of all the game pieces on the feild in auto
+  // Locations of all the game pieces on the field in auto
   public static final class NoteLocations {
+    public static final Translation2d ampNote = new Translation2d(
+        Units.inchesToMeters(114.0),
+        Units.inchesToMeters(277.74)
+    );
 
-    public static final double noteStageX = Units.inchesToMeters(114.0);
-    public static final double noteStageY = Units.inchesToMeters(163.74);
-    public static final double noteSpeakerX = Units.inchesToMeters(114.0);
-    public static final double noteSpeakerY = Units.inchesToMeters(220.74);
-    public static final double noteAmpX = Units.inchesToMeters(114.0);
-    public static final double noteAmpY = Units.inchesToMeters(277.74);
+    public static final Translation2d speakerNote = new Translation2d(
+        Units.inchesToMeters(114.0),
+        Units.inchesToMeters(220.74)
+    );
 
-    // TODO: Y cordinates might be backwards in order
+    public static final Translation2d stageNote = new Translation2d(
+        Units.inchesToMeters(114.0),
+        Units.inchesToMeters(163.74)
+    );
 
-    public static final double noteLeftX = Units.inchesToMeters(335.3);
-    public static final double noteLeftY = Units.inchesToMeters(293.64);
-    public static final double noteCenterLeftX = Units.inchesToMeters(335.3);
-    public static final double noteCenterLeftY = Units.inchesToMeters(227.64);
-    public static final double noteCenterX = Units.inchesToMeters(335.3);
-    public static final double noteCenterY = Units.inchesToMeters(161.64);
-    public static final double noteCenterRightX = Units.inchesToMeters(335.3);
-    public static final double noteCenterRightY = Units.inchesToMeters(95.64);
-    public static final double noteRightX = Units.inchesToMeters(335.3);
-    public static final double noteRightY = Units.inchesToMeters(29.64);
+    //the 5 center notes are ordered starting with the amp side
+    //https://firstfrc.blob.core.windows.net/frc2024/FieldAssets/2024LayoutMarkingDiagram.pdf
+    //page 6
+
+    public static final Translation2d centerNote1 = new Translation2d(
+        Units.inchesToMeters(335.3),
+        Units.inchesToMeters(293.64)
+    );
+
+    public static final Translation2d centerNote2 = new Translation2d(
+        Units.inchesToMeters(335.3),
+        Units.inchesToMeters(227.64)
+    );
+
+    public static final Translation2d centerNote3 = new Translation2d(
+        Units.inchesToMeters(335.3),
+        Units.inchesToMeters(161.64)
+    );
+
+    public static final Translation2d centerNote4 = new Translation2d(
+        Units.inchesToMeters(335.3),
+        Units.inchesToMeters(95.64)
+    );
+
+    public static final Translation2d centerNote5 = new Translation2d(
+        Units.inchesToMeters(335.3),
+        Units.inchesToMeters(29.64)
+    );
   }
 
   public static final AprilTagFieldLayout aprilTags =
       new AprilTagFieldLayout(
           List.of(
               new AprilTag(
-                  // TODO: Grid Nodes have to change
                   1,
                   new Pose3d(
                       Units.inchesToMeters(593.68),
@@ -240,7 +188,7 @@ public final class FieldConstants {
                       Units.inchesToMeters(182.73),
                       Units.inchesToMeters(146.19),
                       Units.inchesToMeters(52.00),
-                      new Rotation3d(240.0, 0.0, Math.PI)))), // TODO:error here no clue why
+                      new Rotation3d(240.0, 0.0, Math.PI)))),
           fieldLength,
           fieldWidth);
 }
