@@ -259,4 +259,8 @@ public class DriveToPose extends Command {
   public boolean isRunning() {
     return running;
   }
+
+  public boolean isFinished() {
+    return !running;
+  }
 }

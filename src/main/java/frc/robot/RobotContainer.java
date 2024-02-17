@@ -106,6 +106,7 @@ public class RobotContainer {
     autoCommands = new AutoCommands(drive);
 
     autoChooser.addOption("Score Four", autoCommands.amplifierScoreFour());
+    autoChooser.addOption("auto field test", autoCommands.autoTest());
     autoChooser.addOption(
         "Drive To Amplifier",
         autoCommands.driveToPose(

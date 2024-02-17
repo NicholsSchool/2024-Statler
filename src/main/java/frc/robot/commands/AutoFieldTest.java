@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.FieldConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -104,6 +106,60 @@ public class AutoFieldTest extends SequentialCommandGroup {
             () -> {
               return AllianceFlipUtil.apply(
                   FieldConstants.aprilTags.getTagPose(16).get().toPose2d());
+            }),
+        new DriveToPose(
+            drive,
+            () -> {
+              return new Pose2d(
+                  AllianceFlipUtil.apply(FieldConstants.NoteLocations.ampNote), new Rotation2d());
+            }),
+        new DriveToPose(
+            drive,
+            () -> {
+              return new Pose2d(
+                  AllianceFlipUtil.apply(FieldConstants.NoteLocations.speakerNote),
+                  new Rotation2d());
+            }),
+        new DriveToPose(
+            drive,
+            () -> {
+              return new Pose2d(
+                  AllianceFlipUtil.apply(FieldConstants.NoteLocations.stageNote), new Rotation2d());
+            }),
+        new DriveToPose(
+            drive,
+            () -> {
+              return new Pose2d(
+                  AllianceFlipUtil.apply(FieldConstants.NoteLocations.centerNote1),
+                  new Rotation2d());
+            }),
+        new DriveToPose(
+            drive,
+            () -> {
+              return new Pose2d(
+                  AllianceFlipUtil.apply(FieldConstants.NoteLocations.centerNote2),
+                  new Rotation2d());
+            }),
+        new DriveToPose(
+            drive,
+            () -> {
+              return new Pose2d(
+                  AllianceFlipUtil.apply(FieldConstants.NoteLocations.centerNote3),
+                  new Rotation2d());
+            }),
+        new DriveToPose(
+            drive,
+            () -> {
+              return new Pose2d(
+                  AllianceFlipUtil.apply(FieldConstants.NoteLocations.centerNote4),
+                  new Rotation2d());
+            }),
+        new DriveToPose(
+            drive,
+            () -> {
+              return new Pose2d(
+                  AllianceFlipUtil.apply(FieldConstants.NoteLocations.centerNote5),
+                  new Rotation2d());
             }));
   }
 }
