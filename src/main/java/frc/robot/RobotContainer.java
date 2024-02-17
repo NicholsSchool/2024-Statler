@@ -79,7 +79,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
-        pdh = new PowerDistribution(Constants.CAN.kPowerDistributionHub, ModuleType.kRev);
+        pdh = new PowerDistribution();
         break;
 
       case ROBOT_REPLAY:
@@ -94,7 +94,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIO() {});
-        pdh = new PowerDistribution(Constants.CAN.kPowerDistributionHub, ModuleType.kRev);
+        pdh = new PowerDistribution();
         break;
     }
 
