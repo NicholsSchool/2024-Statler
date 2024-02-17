@@ -29,49 +29,33 @@ public final class FieldConstants {
 
   // Locations of all the game pieces on the field in auto
   public static final class NoteLocations {
-    public static final Translation2d ampNote = new Translation2d(
-        Units.inchesToMeters(114.0),
-        Units.inchesToMeters(277.74)
-    );
+    public static final Translation2d ampNote =
+        new Translation2d(Units.inchesToMeters(114.0), Units.inchesToMeters(277.74));
 
-    public static final Translation2d speakerNote = new Translation2d(
-        Units.inchesToMeters(114.0),
-        Units.inchesToMeters(220.74)
-    );
+    public static final Translation2d speakerNote =
+        new Translation2d(Units.inchesToMeters(114.0), Units.inchesToMeters(220.74));
 
-    public static final Translation2d stageNote = new Translation2d(
-        Units.inchesToMeters(114.0),
-        Units.inchesToMeters(163.74)
-    );
+    public static final Translation2d stageNote =
+        new Translation2d(Units.inchesToMeters(114.0), Units.inchesToMeters(163.74));
 
-    //the 5 center notes are ordered starting with the amp side
-    //https://firstfrc.blob.core.windows.net/frc2024/FieldAssets/2024LayoutMarkingDiagram.pdf
-    //page 6
+    // the 5 center notes are ordered starting with the amp side
+    // https://firstfrc.blob.core.windows.net/frc2024/FieldAssets/2024LayoutMarkingDiagram.pdf
+    // page 6
 
-    public static final Translation2d centerNote1 = new Translation2d(
-        Units.inchesToMeters(335.3),
-        Units.inchesToMeters(293.64)
-    );
+    public static final Translation2d centerNote1 =
+        new Translation2d(Units.inchesToMeters(335.3), Units.inchesToMeters(293.64));
 
-    public static final Translation2d centerNote2 = new Translation2d(
-        Units.inchesToMeters(335.3),
-        Units.inchesToMeters(227.64)
-    );
+    public static final Translation2d centerNote2 =
+        new Translation2d(Units.inchesToMeters(335.3), Units.inchesToMeters(227.64));
 
-    public static final Translation2d centerNote3 = new Translation2d(
-        Units.inchesToMeters(335.3),
-        Units.inchesToMeters(161.64)
-    );
+    public static final Translation2d centerNote3 =
+        new Translation2d(Units.inchesToMeters(335.3), Units.inchesToMeters(161.64));
 
-    public static final Translation2d centerNote4 = new Translation2d(
-        Units.inchesToMeters(335.3),
-        Units.inchesToMeters(95.64)
-    );
+    public static final Translation2d centerNote4 =
+        new Translation2d(Units.inchesToMeters(335.3), Units.inchesToMeters(95.64));
 
-    public static final Translation2d centerNote5 = new Translation2d(
-        Units.inchesToMeters(335.3),
-        Units.inchesToMeters(29.64)
-    );
+    public static final Translation2d centerNote5 =
+        new Translation2d(Units.inchesToMeters(335.3), Units.inchesToMeters(29.64));
   }
 
   public static final AprilTagFieldLayout aprilTags =
