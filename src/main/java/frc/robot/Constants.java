@@ -55,6 +55,7 @@ public final class Constants {
     public static final int kFrontLeftTurningCanId = 23;
     public static final int kRearLeftDrivingCanId = 22;
     public static final int kRearLeftTurningCanId = 21;
+    public static final int kPowerDistributionHub = 50;
   }
 
   public static final class DriveConstants {

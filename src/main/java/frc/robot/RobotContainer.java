@@ -20,6 +20,7 @@ import frc.robot.subsystems.drive.GyroIONAVX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
 import frc.robot.subsystems.drive.ModuleIOSim;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import frc.robot.subsystems.example_flywheel.ExampleFlywheel;
 import frc.robot.subsystems.example_flywheel.ExampleFlywheelIO;
 import frc.robot.subsystems.example_flywheel.ExampleFlywheelIOSim;
@@ -37,6 +38,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final ExampleFlywheel exampleFlywheel;
+  private final PowerDistribution pdh;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -63,6 +65,7 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(3));
         // We have no flywheel, so create a simulated just for example.
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
+        pdh = new PowerDistribution( Constants.CAN.kPowerDistributionHub, ModuleType.kRev);
         break;
 
       case ROBOT_SIM:
