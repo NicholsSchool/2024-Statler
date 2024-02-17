@@ -45,8 +45,6 @@ public final class Constants {
 
   // CAN IDs (Controller Area Network)
   public static final class CAN {
-    public static final int kEffectorTalonCanId = 10; // TODO: Make sure this is correct
-    public static final int kEffectorSparkCanId = 24; // TODO: Make sure this is correct
     public static final int kRearRightDrivingCanId = 28;
     public static final int kRearRightTurningCanId = 27;
     public static final int kFrontRightDrivingCanId = 26;
