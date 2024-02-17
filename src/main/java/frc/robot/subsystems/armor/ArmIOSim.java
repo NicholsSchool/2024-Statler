@@ -1,4 +1,4 @@
-package frc.robot.subsystems.arm;
+package frc.robot.subsystems.armor;
 
 public class ArmIOSim implements ArmIO {
   public ArmIOSim() {
