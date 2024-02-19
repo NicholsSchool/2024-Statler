@@ -261,6 +261,7 @@ public class DriveToPose extends Command {
   }
 
   public boolean isFinished() {
-    return !running;
+    running = this.withinTolerance(0.25, new Rotation2d(2.0));
+    return running;
   }
 }

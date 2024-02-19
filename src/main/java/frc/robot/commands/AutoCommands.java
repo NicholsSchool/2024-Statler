@@ -37,6 +37,10 @@ public class AutoCommands {
     return new AutoFieldTest(drive);
   }
 
+  public Command driveToNote() {
+    return new DriveToNote(drive);
+  }
+
   /** EXAMPLE!!!: Scores three game pieces on field-side (high cone, high cube, mid cube). */
   public Command amplifierScoreFour() {
     /*  return driveToPose(
