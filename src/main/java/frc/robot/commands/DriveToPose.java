@@ -248,7 +248,14 @@ public class DriveToPose extends Command {
     return running && driveController.atGoal() && thetaController.atGoal();
   }
 
-  /** Checks if the robot pose is within the allowed drive and theta tolerances. */
+  /**
+   * Checks if the robot pose is within the allowed drive and theta tolerances.
+   *
+   * <p>//TODO: @tom is this in meters
+   *
+   * @param driveTolerance the finish distance for drive in meters
+   * @param thetaTolerance the angle threashold
+   */
   public boolean withinTolerance(double driveTolerance, Rotation2d thetaTolerance) {
     return running
         && Math.abs(driveErrorAbs) < driveTolerance
@@ -261,7 +268,10 @@ public class DriveToPose extends Command {
   }
 
   public boolean isFinished() {
-    running = this.withinTolerance(0.25, new Rotation2d(2.0));
+    running =
+        this.withinTolerance(
+            Constants.AutoConstants.driveFinishThreshold,
+            new Rotation2d(Constants.AutoConstants.angleFinishThreshold));
     return running;
   }
 }

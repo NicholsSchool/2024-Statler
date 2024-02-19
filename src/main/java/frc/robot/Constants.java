@@ -104,6 +104,11 @@ public final class Constants {
     public static final double kD = 0.0;
   }
 
+  public static final class AutoConstants {
+    public static final double driveFinishThreshold = 0.2;
+    public static final double angleFinishThreshold = Math.PI / 12.0;
+  }
+
   public static final class FiddleSongs {
     public static final String ALL_STAR = "all-star.chrp";
     public static final String IMPERIAL_MARCH = "Imperial-March.chrp";

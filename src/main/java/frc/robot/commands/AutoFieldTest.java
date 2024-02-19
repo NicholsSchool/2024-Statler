@@ -10,7 +10,7 @@ import frc.robot.util.AllianceFlipUtil;
 public class AutoFieldTest extends SequentialCommandGroup {
   /** Automatically drives to the amplifier. */
   public AutoFieldTest(Drive drive) {
-    new SequentialCommandGroup(
+    addCommands(
         new DriveToPose(
             drive,
             () -> {
