@@ -62,7 +62,7 @@ public class Drive extends SubsystemBase {
         new SwerveModulePosition(), new SwerveModulePosition()
       };
 
-  private SwerveDrivePoseEstimator poseEstimator =
+  public SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, lastGyroRotation, positions, pose);
 
   private final LoggedDashboardNumber moduleTestIndex = // drive module to test with voltage ramp
