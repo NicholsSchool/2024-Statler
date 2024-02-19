@@ -1,4 +1,4 @@
-package frc.robot.subsystems.arm;
+package frc.robot.subsystems.Arm;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -54,8 +54,13 @@ public class Arm extends SubsystemBase {
     }
   }
 
-  public void goToPos() {
+  public void goToPos(double pos) {
     armMode = ArmMode.kGoToPos;
+  }
+
+  public void setPower(double power) {
+    armMode = ArmMode.kGoToPos;
+    // TODO: set power for manuel control
   }
 
   public void override() {
