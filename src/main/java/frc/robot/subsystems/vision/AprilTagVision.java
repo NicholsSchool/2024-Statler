@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import frc.robot.Constants;
@@ -18,7 +19,7 @@ public class AprilTagVision extends PhotonVisionSubsystemBase {
     }
 
     public Pose3d getBestPoseEstimate() {
-        var target = super.getBestTarget();
+        PhotonTrackedTarget target = super.getBestTarget();
         Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(
             target.getBestCameraToTarget(), 
             FieldConstants.aprilTags.getTagPose(target.getFiducialId()).get(), 
