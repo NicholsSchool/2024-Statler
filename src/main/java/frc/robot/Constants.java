@@ -103,6 +103,7 @@ public final class Constants {
     public static final double kP = 6.0;
     public static final double kD = 0.0;
   }
+
   public static final class ArmConstants { // TODO: make constants for arm angle
     public static final double armIntakePos = 0.0;
     public static final double armDrivePos = 0.0;

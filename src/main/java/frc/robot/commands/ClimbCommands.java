@@ -1,6 +1,6 @@
 package frc.robot.commands;
 
-import frc.robot.subsystems.Arm.Arm;
+import frc.robot.subsystems.arm.Arm;
 
 public class ClimbCommands {
   public static class LeftClimb {
