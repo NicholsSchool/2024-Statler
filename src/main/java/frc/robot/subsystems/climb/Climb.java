@@ -55,6 +55,10 @@ public class Climb extends SubsystemBase {
     mode = ClimbMode.kSetPosition;
   }
 
+  public void setPower(double power) {
+    mode = ClimbMode.kSetPosition;
+  }
+
   public void stop() {
     mode = ClimbMode.kStopped;
   }

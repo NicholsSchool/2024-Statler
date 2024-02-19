@@ -57,10 +57,16 @@ public final class Constants {
     public static final int kRearLeftTurningCanId = 21;
   }
 
+  public static final class RobotConstants {
+    public static final double robotSideLengthInches = 33.5;
+  }
+
   public static final class DriveConstants {
     public static final double kMAX_LINEAR_SPEED = 4.8;
     public static final double kTRACK_WIDTH_X = 0.653;
     public static final double kTRACK_WIDTH_Y = 0.653;
+
+    public static final double lowGearScaler = 0.5;
   }
 
   // REV MAXSwerve Modules
@@ -92,6 +98,14 @@ public final class Constants {
     public static final double kTURN_GEAR_RATIO = 150.0 / 7.0;
   }
 
+  public static final class ArmConstants { // TODO: make constants for arm angle
+    public static final double armIntakePos = 0.0;
+    public static final double armDrivePos = 0.0;
+    public static final double armAmpPos = 0.0;
+    public static final double armTrapPos = 0.0;
+    public static final double kManuelControlMax = 0.0;
+  }
+
   public static final class IntakeConstants {
     public static final int kBeamBreakChannel = 2;
     public static final double kVomitDelay = 0.5;
@@ -104,8 +118,12 @@ public final class Constants {
     public static final double kD = 0.0;
   }
 
+  public static final class ClimbConstants {
+    public static final double kMaxClimbSpeed = 0.0; // TODO: constants
+  }
+
   public static final class AutoConstants {
-    public static final double driveFinishThreshold = 0.2;
+    public static final double driveFinishThreshold = 0.075;
     public static final double angleFinishThreshold = Math.PI / 12.0;
   }
 
