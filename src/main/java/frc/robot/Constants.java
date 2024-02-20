@@ -14,7 +14,6 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
-
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -60,8 +59,9 @@ public final class Constants {
 
   public static final class RobotConstants {
     public static final double robotSideLengthInches = 33.5;
-    public static final Transform3d cameraToRobot = new Transform3d(); //TODO: find camera relative to robot 0,0
-    public static final String cameraName = ""; //TODO: add camera name for our camera via glass
+    public static final Transform3d cameraToRobot =
+        new Transform3d(); // TODO: find camera relative to robot 0,0
+    public static final String cameraName = ""; // TODO: add camera name for our camera via glass
   }
 
   public static final class DriveConstants {
