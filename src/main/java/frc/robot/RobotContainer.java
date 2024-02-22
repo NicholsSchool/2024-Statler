@@ -52,6 +52,8 @@ public class RobotContainer {
   private final Arm arm;
   private final Intake intake;
   private final ExampleFlywheel exampleFlywheel;
+  
+  @SuppressWarnings("unused")
   private final PowerDistribution pdh;
 
   // Controller
