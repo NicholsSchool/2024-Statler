@@ -22,6 +22,7 @@ import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ResetFieldOrientation;
 import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIO;
 import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.drive.Drive;
@@ -52,7 +53,7 @@ public class RobotContainer {
   private final Arm arm;
   private final Intake intake;
   private final ExampleFlywheel exampleFlywheel;
-  
+
   @SuppressWarnings("unused")
   private final PowerDistribution pdh;
 
@@ -115,7 +116,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIO() {});
         pdh = new PowerDistribution();
-        arm = new Arm(new ArmIOSim()); // TODO: make interfaces
+        arm = new Arm(new ArmIO() {}); // TODO: make interfaces
         intake = new Intake(new IntakeIOSim());
         break;
     }
@@ -185,12 +186,12 @@ public class RobotContainer {
     operatorController.start().onTrue(new ArmPneumatics.ArmRetract(arm));
     operatorController
         .povDown()
-        .onTrue(new ArmToPos(arm, Constants.ArmConstants.kManuelControlMax));
+        .onTrue(new ArmToPos(arm, Constants.ArmConstants.kManualControlMax));
     operatorController
         .povUp()
         .onTrue(
             new ArmToPos(
-                arm, -Constants.ArmConstants.kManuelControlMax)); // TODO: tune these negatives
+                arm, -Constants.ArmConstants.kManualControlMax)); // TODO: tune these negatives
     new ClimbCommands.LeftClimb(
         arm, operatorController.getLeftY() * Constants.ClimbConstants.kMaxClimbSpeed);
     new ClimbCommands.RightClimb(

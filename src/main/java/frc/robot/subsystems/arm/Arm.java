@@ -7,6 +7,7 @@ import org.littletonrobotics.junction.Logger;
 public class Arm extends SubsystemBase {
   private ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
+  double overrideInput;
 
   private static enum ArmMode {
     kStopped,
@@ -30,6 +31,7 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+    io.updateProfile();
     Logger.processInputs("Arm", inputs);
 
     // Reset when disabled
@@ -42,6 +44,9 @@ public class Arm extends SubsystemBase {
         case kGoToPos:
           break;
         case kOveride:
+        //TODO: abstracted input or just from the controller?
+        //TODO: does this work?
+          io.override(overrideInput);
           break;
         case kStopped:
       }
@@ -63,8 +68,9 @@ public class Arm extends SubsystemBase {
     // TODO: set power for manuel control
   }
 
-  public void override() {
+  public void override(double input) {
     armMode = ArmMode.kOveride;
+    overrideInput = input;
   }
 
   public void stop() {
