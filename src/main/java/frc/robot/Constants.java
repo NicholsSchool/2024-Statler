@@ -14,7 +14,6 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
-
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -117,24 +116,24 @@ public final class Constants {
     public static final double armTrapPos = 0.0;
     public static final double kManualControlMax = 0.0;
 
-    public static final double SOFT_LIMIT_REVERSE = -0.1; //TODO: correct soft limits
-    public static final double SOFT_LIMIT_FORWARD = 4.5; //TODO: correct soft limits
+    public static final double SOFT_LIMIT_REVERSE = -0.1; // TODO: correct soft limits
+    public static final double SOFT_LIMIT_FORWARD = 4.5; // TODO: correct soft limits
 
-    public static final int ARM_CURRENT_LIMIT = 34; //TODO: right limit
-    public static final double ARM_MANUAL_SCALED = 0.42; //TODO: right limit
+    public static final int ARM_CURRENT_LIMIT = 34; // TODO: right limit
+    public static final double ARM_MANUAL_SCALED = 0.42; // TODO: right limit
 
     public static final double ARM_GEAR_RATIO = 1.0 / 98.0; // 1:98 planetary gear ratio
     public static final double POSITION_CONVERSION_FACTOR = ARM_GEAR_RATIO * 2.0 * Math.PI;
     public static final double VELOCITY_CONVERSION_FACTOR = ARM_GEAR_RATIO * 2.0 * Math.PI / 60.0;
     public static final double ARM_FREE_SPEED = 5676.0 * VELOCITY_CONVERSION_FACTOR;
-    public static final double ARM_ZERO_COSINE_OFFSET = -Math.PI / 6; //TODO: what is this???
-    public static final ArmFeedforward ARM_FF = new ArmFeedforward(
-                          0.0, 0.4, 12.0 / ARM_FREE_SPEED, 0.0); //TODO: check coefficients
-    public static final double ARM_DEFAULT_P = 0.79; //TODO: these coefficients too
-    public static final double ARM_DEFAULT_I = 0.02; //TODO: these coefficients too
-    public static final double ARM_DEFAULT_D = 0.0; //TODO: these coefficients too
-    public static final Constraints ARM_MOTION_CONSTRAINTS = new Constraints(
-                0.66, 0.66); //TODO: check coefficients
+    public static final double ARM_ZERO_COSINE_OFFSET = -Math.PI / 6; // TODO: what is this???
+    public static final ArmFeedforward ARM_FF =
+        new ArmFeedforward(0.0, 0.4, 12.0 / ARM_FREE_SPEED, 0.0); // TODO: check coefficients
+    public static final double ARM_DEFAULT_P = 0.79; // TODO: these coefficients too
+    public static final double ARM_DEFAULT_I = 0.02; // TODO: these coefficients too
+    public static final double ARM_DEFAULT_D = 0.0; // TODO: these coefficients too
+    public static final Constraints ARM_MOTION_CONSTRAINTS =
+        new Constraints(0.66, 0.66); // TODO: check coefficients
   }
 
   public static final class OuttakeConstants {

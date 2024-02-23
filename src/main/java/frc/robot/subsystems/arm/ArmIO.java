@@ -15,18 +15,21 @@ public interface ArmIO {
   public default void updateProfile() {}
 
   /**
+   * sets the arm target position in unknown units
+   *
+   * @param target the target position in unknown units //TODO: change that
+   */
+  public default void setTargetPosition(double target) {}
+
+  /**
    * Arm manual override
-   * 
+   *
    * @param inputValue the input value from the joystick axis [-1, 1]
    */
   public default void override(double inputValue) {}
 
-  /**
-   * Arm go to position
-   * 
-   * @param targetPosition the target position in unknown units //TODO: change that
-   */
-  public default void goToPos(double targetPosition) {}
+  /** Arm go to position */
+  public default void goToPos() {}
 
   /** Stops all motors */
   public default void stop() {}

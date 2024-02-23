@@ -8,6 +8,7 @@ public class Arm extends SubsystemBase {
   private ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
   double overrideInput;
+  double targetPosition;
 
   private static enum ArmMode {
     kStopped,
@@ -31,8 +32,8 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    io.updateProfile();
     Logger.processInputs("Arm", inputs);
+    io.updateProfile();
 
     // Reset when disabled
     if (DriverStation.isDisabled()) {
@@ -42,13 +43,16 @@ public class Arm extends SubsystemBase {
     } else {
       switch (armMode) {
         case kGoToPos:
+          io.setTargetPosition(targetPosition);
+          io.goToPos();
           break;
         case kOveride:
-        //TODO: abstracted input or just from the controller?
-        //TODO: does this work?
+          // TODO: abstracted input or just from the controller?
+          // TODO: does this work?
           io.override(overrideInput);
           break;
         case kStopped:
+          io.stop();
       }
 
       switch (pistionMode) {
@@ -61,6 +65,7 @@ public class Arm extends SubsystemBase {
 
   public void goToPos(double pos) {
     armMode = ArmMode.kGoToPos;
+    targetPosition = pos;
   }
 
   public void setPower(double power) {
