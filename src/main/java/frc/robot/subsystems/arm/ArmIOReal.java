@@ -84,7 +84,7 @@ public class ArmIOReal implements ArmIO {
   }
 
   @Override
-  public void override(double powerProportion) {
+  public void runManuel(double powerProportion) {
     // get the current position of the encoder
     armSetpoint = armEncoder.getPosition();
     // create a new target state with the current encoder position and zero velocity

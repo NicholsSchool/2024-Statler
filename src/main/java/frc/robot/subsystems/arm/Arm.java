@@ -12,7 +12,7 @@ public class Arm extends SubsystemBase {
 
   private static enum ArmMode {
     kStopped,
-    kOveride,
+    kManuel,
     kGoToPos
   };
 
@@ -46,10 +46,10 @@ public class Arm extends SubsystemBase {
           io.setTargetPosition(targetPosition);
           io.goToPos();
           break;
-        case kOveride:
+        case kManuel:
           // TODO: abstracted input or just from the controller?
           // TODO: does this work?
-          io.override(overrideInput);
+          io.runManuel(overrideInput);
           break;
         case kStopped:
           io.stop();
@@ -68,13 +68,8 @@ public class Arm extends SubsystemBase {
     targetPosition = pos;
   }
 
-  public void setPower(double power) {
-    armMode = ArmMode.kGoToPos;
-    // TODO: set power for manuel control
-  }
-
-  public void override(double input) {
-    armMode = ArmMode.kOveride;
+  public void runManuel(double input) {
+    armMode = ArmMode.kManuel;
     overrideInput = input;
   }
 

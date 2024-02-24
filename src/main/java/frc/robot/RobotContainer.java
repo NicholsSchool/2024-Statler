@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.ArmPneumatics;
 import frc.robot.commands.ArmToPos;
 import frc.robot.commands.AutoCommands;
-import frc.robot.commands.ClimbCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToAmplifier;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -184,18 +183,6 @@ public class RobotContainer {
     operatorController.y().onTrue(new ArmToPos(arm, ArmToPos.ArmPos.ampPos));
     operatorController.back().onTrue(new ArmPneumatics.ArmExtend(arm));
     operatorController.start().onTrue(new ArmPneumatics.ArmRetract(arm));
-    operatorController
-        .povDown()
-        .onTrue(new ArmToPos(arm, Constants.ArmConstants.kManualControlMax));
-    operatorController
-        .povUp()
-        .onTrue(
-            new ArmToPos(
-                arm, -Constants.ArmConstants.kManualControlMax)); // TODO: tune these negatives
-    new ClimbCommands.LeftClimb(
-        arm, operatorController.getLeftY() * Constants.ClimbConstants.kMaxClimbSpeed);
-    new ClimbCommands.RightClimb(
-        arm, operatorController.getRightY() * Constants.ClimbConstants.kMaxClimbSpeed);
   }
 
   /**

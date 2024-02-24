@@ -26,7 +26,7 @@ public interface ArmIO {
    *
    * @param inputValue the input value from the joystick axis [-1, 1]
    */
-  public default void override(double inputValue) {}
+  public default void runManuel(double inputValue) {}
 
   /** Arm go to position */
   public default void goToPos() {}

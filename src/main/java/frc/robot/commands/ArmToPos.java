@@ -13,6 +13,7 @@ public class ArmToPos extends Command {
   }
 
   public ArmToPos(Arm arm, ArmPos armPos) {
+    addRequirements(arm);
 
     switch (armPos) {
       case ampPos:
@@ -27,9 +28,5 @@ public class ArmToPos extends Command {
       case trapPos:
         arm.goToPos(Constants.ArmConstants.armTrapPos);
     }
-  }
-
-  public ArmToPos(Arm arm, double power) {
-    arm.setPower(power);
   }
 }
