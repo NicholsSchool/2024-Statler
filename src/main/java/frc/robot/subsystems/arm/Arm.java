@@ -66,6 +66,10 @@ public class Arm extends SubsystemBase {
     this.manuelInput = manuelInput;
   }
 
+  public void setTargetPosToCurrent() {
+    this.targetPos = inputs.angle;
+  }
+
   public void setTargetPos(double targetPos) {
     this.targetPos = targetPos;
   }

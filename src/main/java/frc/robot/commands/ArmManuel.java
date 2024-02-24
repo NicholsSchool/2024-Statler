@@ -21,5 +21,6 @@ public class ArmManuel extends Command {
   @Override
   public void execute() {
     arm.setManuel(manuelInput);
+    arm.setTargetPosToCurrent();
   }
 }
