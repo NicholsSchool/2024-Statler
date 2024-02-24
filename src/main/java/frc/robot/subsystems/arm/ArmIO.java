@@ -12,25 +12,15 @@ public interface ArmIO {
   /** Updates the set of loggable inputs. */
   public default void updateInputs(ArmIOInputs inputs) {}
 
-  public default void updateProfile() {}
+  /** Manuel input for the arm */
+  public default void manuel(double manuelInput) {}
 
-  /**
-   * sets the arm target position in unknown units
-   *
-   * @param target the target position in unknown units //TODO: change that
-   */
-  public default void setTargetPosition(double target) {}
+  /** Go to position control for the arm */
+  public default void goToPos(double targetPosition) {}
 
-  /**
-   * Arm manual override
-   *
-   * @param inputValue the input value from the joystick axis [-1, 1]
-   */
-  public default void runManuel(double inputValue) {}
+  /** Retracts Pistons */
+  public default void retract() {}
 
-  /** Arm go to position */
-  public default void goToPos() {}
-
-  /** Stops all motors */
-  public default void stop() {}
+  /** Extends Pistons */
+  public default void extend() {}
 }

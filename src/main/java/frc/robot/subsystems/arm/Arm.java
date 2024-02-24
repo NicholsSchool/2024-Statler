@@ -7,22 +7,21 @@ import org.littletonrobotics.junction.Logger;
 public class Arm extends SubsystemBase {
   private ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
-  double overrideInput;
-  double targetPosition;
+  private double manuelInput;
+  private double targetPos;
 
-  private static enum ArmMode {
-    kStopped,
+  private static enum ArmState {
     kManuel,
     kGoToPos
   };
 
-  private static enum PistionMode {
+  private static enum PistonState {
     kExtended,
     kRetracted
   };
 
-  private ArmMode armMode = ArmMode.kStopped;
-  private PistionMode pistionMode = PistionMode.kRetracted;
+  private ArmState armState = ArmState.kGoToPos;
+  private PistonState pistonState = PistonState.kRetracted;
 
   public Arm(ArmIO io) {
     System.out.println("[Init] Creating Arm");
@@ -33,55 +32,56 @@ public class Arm extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
-    io.updateProfile();
 
     // Reset when disabled
     if (DriverStation.isDisabled()) {
-      io.stop();
-      armMode = ArmMode.kStopped;
-      pistionMode = PistionMode.kRetracted;
+      // TODO: NOTIFY ENTIRE TEAM... safety feature for preventing the arm crashing down on disable
+      // hopefully
+      armState = ArmState.kGoToPos;
+      io.goToPos(targetPos);
     } else {
-      switch (armMode) {
-        case kGoToPos:
-          io.setTargetPosition(targetPosition);
-          io.goToPos();
-          break;
+      switch (armState) {
         case kManuel:
-          // TODO: abstracted input or just from the controller?
-          // TODO: does this work?
-          io.runManuel(overrideInput);
+          io.manuel(manuelInput);
           break;
-        case kStopped:
-          io.stop();
+        case kGoToPos:
+          io.goToPos(targetPos);
+          break;
       }
+    }
 
-      switch (pistionMode) {
-        case kExtended:
-          break;
-        case kRetracted:
-      }
+    switch (pistonState) {
+      case kExtended:
+        io.extend();
+        break;
+      case kRetracted:
+        io.retract();
+        break;
     }
   }
 
-  public void goToPos(double pos) {
-    armMode = ArmMode.kGoToPos;
-    targetPosition = pos;
+  // called from run command
+  public void setManuel(double manuelInput) {
+    armState = ArmState.kManuel;
+    this.manuelInput = manuelInput;
   }
 
-  public void runManuel(double input) {
-    armMode = ArmMode.kManuel;
-    overrideInput = input;
+  public void setTargetPos(double targetPos) {
+    this.targetPos = targetPos;
   }
 
-  public void stop() {
-    armMode = ArmMode.kStopped;
+  // called from run command
+  public void setGoToPos() {
+    armState = ArmState.kGoToPos;
   }
 
-  public void extend() {
-    pistionMode = PistionMode.kExtended;
+  // called from instant command
+  public void setExtended() {
+    pistonState = PistonState.kExtended;
   }
 
-  public void retract() {
-    pistionMode = PistionMode.kRetracted;
+  // called from instant command
+  public void setRetracted() {
+    pistonState = PistonState.kRetracted;
   }
 }
