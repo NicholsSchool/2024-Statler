@@ -36,6 +36,9 @@ import frc.robot.subsystems.example_flywheel.ExampleFlywheelIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.vision.AprilTagVision;
+import frc.robot.subsystems.vision.AprilTagVisionIO;
+import frc.robot.subsystems.vision.AprilTagVisionReal;
 import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -53,6 +56,7 @@ public class RobotContainer {
   private final Intake intake;
   private final ExampleFlywheel exampleFlywheel;
   private final PowerDistribution pdh;
+  private final AprilTagVision vision;
 
   // Controller
   private final CommandXboxController driveController = new CommandXboxController(0);
@@ -83,6 +87,7 @@ public class RobotContainer {
         pdh = new PowerDistribution(Constants.CAN.kPowerDistributionHub, ModuleType.kRev);
         arm = new Arm(new ArmIOReal());
         intake = new Intake(new IntakeIOReal());
+        vision = new AprilTagVision( new AprilTagVisionReal( "", Constants.RobotConstants.cameraToRobot ) );
         break;
 
       case ROBOT_SIM:
@@ -98,6 +103,7 @@ public class RobotContainer {
         pdh = new PowerDistribution();
         arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
+        vision = new AprilTagVision( new AprilTagVisionIO() {});
         break;
 
       case ROBOT_REPLAY:
@@ -115,6 +121,7 @@ public class RobotContainer {
         pdh = new PowerDistribution();
         arm = new Arm(new ArmIOSim()); // TODO: make interfaces
         intake = new Intake(new IntakeIOSim());
+        vision = new AprilTagVision( new AprilTagVisionIO() {});
         break;
     }
 
