@@ -8,7 +8,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.Constants;
 import frc.robot.FieldConstants;
-
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -27,7 +26,7 @@ public class AprilTagVision extends PhotonVisionSubsystemBase {
     return super.getBestTarget();
   }
 
-  public Pose3d getBestPoseEstimate( PhotonTrackedTarget target ) {
+  public Pose3d getBestPoseEstimate(PhotonTrackedTarget target) {
     Pose3d robotPose =
         PhotonUtils.estimateFieldToRobotAprilTag(
             target.getBestCameraToTarget(),
@@ -36,15 +35,17 @@ public class AprilTagVision extends PhotonVisionSubsystemBase {
     return robotPose;
   }
 
-  public Matrix< N3, N1 > getEstimateStdDevs( PhotonTrackedTarget target ) //TODO: check if working and def not working so make work
-  {
+  public Matrix<N3, N1> getEstimateStdDevs(
+      PhotonTrackedTarget target) { // TODO: check if working and def not working so make work
     Transform3d bestTargetTransform = target.getBestCameraToTarget();
-    double distanceToTarget = Math.hypot(bestTargetTransform.getX(), bestTargetTransform.getY() );
+    double distanceToTarget = Math.hypot(bestTargetTransform.getX(), bestTargetTransform.getY());
     double angleToTarget = -target.getYaw();
-    Matrix< N3, N1 > estimateStdDevs = VecBuilder.fill( 
-      distanceToTarget * Constants.VisionConstants.xStdDevsScaler, 
-      distanceToTarget * Constants.VisionConstants.yStdDevsScaler, 
-      angleToTarget * Constants.VisionConstants.angleStdDevsScaler );
+    double poseAmbiguity = target.getPoseAmbiguity();
+    Matrix<N3, N1> estimateStdDevs =
+        VecBuilder.fill(
+            distanceToTarget * Constants.VisionConstants.xStdDevsScaler,
+            distanceToTarget * Constants.VisionConstants.yStdDevsScaler,
+            angleToTarget * Constants.VisionConstants.angleStdDevsScaler * poseAmbiguity);
     return estimateStdDevs;
   }
 }
