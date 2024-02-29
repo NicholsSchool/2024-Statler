@@ -41,6 +41,7 @@ public class Arm extends SubsystemBase {
       targetPos = inputs.angle;
     }
 
+    System.out.println("absracted arm input:  " + manuelInput);
     io.manuel(manuelInput);
 
     // switch (armState) {
