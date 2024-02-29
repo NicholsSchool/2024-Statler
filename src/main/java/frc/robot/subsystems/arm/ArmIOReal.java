@@ -10,7 +10,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
-import com.revrobotics.SparkPIDController.ArbFFUnits;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -35,17 +34,17 @@ public class ArmIOReal implements ArmIO {
     leader.restoreFactoryDefaults();
     armEncoder = leader.getAbsoluteEncoder(Type.kDutyCycle);
 
-    leader.setInverted(false); // TODO: check direction
+    leader.setInverted(false);
     leader.setSmartCurrentLimit(ARM_CURRENT_LIMIT);
     leader.enableSoftLimit(SoftLimitDirection.kForward, true);
     leader.setSoftLimit(SoftLimitDirection.kForward, (float) SOFT_LIMIT_FORWARD);
     leader.setIdleMode(IdleMode.kBrake);
     armEncoder.setPositionConversionFactor(2.0 * Math.PI);
     armEncoder.setVelocityConversionFactor(2.0 * Math.PI);
-    armPIDController = leader.getPIDController();
-    armPIDController.setP(ARM_DEFAULT_P);
-    armPIDController.setI(ARM_DEFAULT_I);
-    armPIDController.setD(ARM_DEFAULT_D);
+    // armPIDController = leader.getPIDController();
+    // armPIDController.setP(ARM_DEFAULT_P);
+    // armPIDController.setI(ARM_DEFAULT_I);
+    // armPIDController.setD(ARM_DEFAULT_D);
     leader.burnFlash();
 
     follower = new CANSparkMax(kArmFollowerCanId, MotorType.kBrushless);
@@ -71,6 +70,7 @@ public class ArmIOReal implements ArmIO {
     inputs.angle = armEncoder.getPosition();
     inputs.isExtended = piston.get(); // TODO: check that default is what we think
     inputs.hasReachedTarget = motorProfile.isFinished(timer.get());
+    inputs.voltageSetpoint = feedforward;
   }
 
   /** Manuel input for the arm */
@@ -79,10 +79,10 @@ public class ArmIOReal implements ArmIO {
     // currentState = motorProfile.calculate(timer.get(), targetState, targetState);
     // timer.reset();
 
-    feedforward = ARM_FF.calculate(armEncoder.getPosition(), armEncoder.getVelocity());
-    double power = (manuelInput * ARM_MANUAL_SCALED) + (feedforward / 12.0);
-    leader.set(power);
-    System.out.println("motor power:  " + power);
+    double maxVelRadPerSecond = 0.5;
+    feedforward = ARM_FF.calculate(armEncoder.getPosition(), maxVelRadPerSecond * manuelInput);
+    leader.setVoltage(feedforward);
+    System.out.println("velocity setpoint:  " + (maxVelRadPerSecond * manuelInput));
   }
 
   /** Go to position control for the arm */
@@ -95,12 +95,12 @@ public class ArmIOReal implements ArmIO {
     feedforward = ARM_FF.calculate(armEncoder.getPosition(), armEncoder.getVelocity());
 
     // set the arm motor speed to the target position
-    armPIDController.setReference(
-        targetState.position,
-        CANSparkMax.ControlType.kPosition,
-        0,
-        feedforward,
-        ArbFFUnits.kVoltage);
+    // armPIDController.setReference(
+    //     targetState.position,
+    //     CANSparkMax.ControlType.kPosition,
+    //     0,
+    //     feedforward,
+    //     ArbFFUnits.kVoltage);
   }
 
   /** Retracts Pistons */

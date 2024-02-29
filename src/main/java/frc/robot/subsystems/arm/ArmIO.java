@@ -8,6 +8,7 @@ public interface ArmIO {
     public double angle = 0.0;
     public boolean isExtended = false;
     public boolean hasReachedTarget = false;
+    public double voltageSetpoint = 0.0;
   }
 
   /** Updates the set of loggable inputs. */

@@ -37,18 +37,20 @@ public class Arm extends SubsystemBase {
 
     // Reset when disabled
     if (DriverStation.isDisabled()) {
-      manuelInput = 0.0;
+      // manuelInput = 0.0;
       targetPos = inputs.angle;
-    } else {
-      switch (armState) {
-        case kManuel:
-          io.manuel(manuelInput);
-          break;
-        case kGoToPos:
-          io.goToPos(targetPos);
-          break;
-      }
     }
+
+    io.manuel(manuelInput);
+
+    // switch (armState) {
+    //   case kManuel:
+    //     io.manuel(manuelInput);
+    //     break;
+    //   case kGoToPos:
+    //     io.goToPos(targetPos);
+    //     break;
+    // }
 
     switch (pistonState) {
       case kExtended:

@@ -8,6 +8,7 @@ public class ArmGoToPosTeleop extends InstantCommand {
 
   public ArmGoToPosTeleop(Arm arm) {
     this.arm = arm;
+    addRequirements(arm);
   }
 
   // Called when the command is initially scheduled.

@@ -8,6 +8,7 @@ public class ArmGoToPosAuto extends Command {
 
   public ArmGoToPosAuto(Arm arm) {
     this.arm = arm;
+    addRequirements(arm);
   }
 
   // Called when the command is initially scheduled.

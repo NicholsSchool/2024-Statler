@@ -14,6 +14,7 @@ public class ArmManuel extends Command {
   /** Creates a new ArmManuel. */
   public ArmManuel(Arm arm, DoubleSupplier manuelInput) {
     this.arm = arm;
+    addRequirements(arm);
     this.manuelInput = manuelInput;
   }
 
