@@ -47,8 +47,9 @@ public final class Constants {
 
   // CAN IDs (Controller Area Network)
   public static final class CAN {
-    public static final int kArmLeaderCanId = 30;
+    public static final int kArmLeaderCanId = 32;
     public static final int kArmFollowerCanId = 31;
+
     public static final int kRearRightDrivingCanId = 28;
     public static final int kRearRightTurningCanId = 27;
     public static final int kFrontRightDrivingCanId = 26;
@@ -57,6 +58,7 @@ public final class Constants {
     public static final int kFrontLeftTurningCanId = 23;
     public static final int kRearLeftDrivingCanId = 22;
     public static final int kRearLeftTurningCanId = 21;
+
     public static final int kPowerDistributionHub = 50;
   }
 
@@ -111,27 +113,28 @@ public final class Constants {
   public static final class ArmConstants {
     // TODO: make the correct constants for arm angles
     public static final double armIntakePos = 0.0;
-    public static final double armDrivePos = 0.0;
-    public static final double armAmpPos = 0.0;
+    public static final double armDrivePos = Math.PI / 4;
+    public static final double armAmpPos = Math.PI / 2;
     public static final double armTrapPos = 0.0;
 
-    public static final int ARM_SOLENOID_CHANNEL = 5;
+    public static final int ARM_SOLENOID_CHANNEL = 7;
 
-    public static final double SOFT_LIMIT_FORWARD =
-        4.5; // TODO: figure out the right angle/encoder position
+    public static final double SOFT_LIMIT_FORWARD = Math.PI;
+    // TODO: figure out the right angle/encoder position
 
     public static final int ARM_CURRENT_LIMIT = 35;
 
-    public static final double ARM_MANUAL_SCALED = 0.4; // TODO: tune it maybe
+    public static final double ARM_MANUAL_SCALED = 0.001; // TODO: tune it maybe
 
     public static final double ARM_GEAR_RATIO = 1.0 / 98.0; // 1:98 planetary gear ratio
+
     public static final double POSITION_CONVERSION_FACTOR = ARM_GEAR_RATIO * 2.0 * Math.PI;
     // normalizing based on the theoretical max radians per second of the arm motor
     public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR / 60.0;
 
     public static final double ARM_FREE_SPEED = 5676.0 * VELOCITY_CONVERSION_FACTOR;
     public static final ArmFeedforward ARM_FF =
-        new ArmFeedforward(0.0, 0.4, 12.0 / ARM_FREE_SPEED, 0.0);
+        new ArmFeedforward(0.0, 0.4, 12.0 / ARM_FREE_SPEED, 0.0); // tune feedforward
 
     public static final double ARM_DEFAULT_P = 0.79; // TODO: check these coefficients
     public static final double ARM_DEFAULT_I = 0.02; // TODO: check these coefficients

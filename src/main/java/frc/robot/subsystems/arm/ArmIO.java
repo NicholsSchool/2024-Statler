@@ -7,6 +7,7 @@ public interface ArmIO {
   public static class ArmIOInputs {
     public double angle = 0.0;
     public boolean isExtended = false;
+    public boolean hasReachedTarget = false;
   }
 
   /** Updates the set of loggable inputs. */

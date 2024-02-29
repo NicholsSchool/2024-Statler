@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.arm_commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.subsystems.arm.Arm;
@@ -10,7 +10,6 @@ public class ArmSetTargetPos extends InstantCommand {
   public ArmSetTargetPos(Arm arm, double targetPos) {
     this.arm = arm;
     this.targetPos = targetPos;
-    addRequirements(arm);
   }
 
   // Called when the command is initially scheduled.

@@ -11,9 +11,10 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.commands.*;
+import frc.robot.commands.arm_commands.ArmExtend;
+import frc.robot.commands.arm_commands.ArmManuel;
+import frc.robot.commands.arm_commands.ArmRetract;
 import frc.robot.subsystems.arm.*;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.example_flywheel.*;
@@ -102,8 +103,6 @@ public class RobotContainer {
         break;
     }
 
-    arm.setDefaultCommand(new ArmGoToPos(arm));
-
     // Set up auto routines
     NamedCommands.registerCommand(
         "Run Flywheel",
@@ -162,14 +161,18 @@ public class RobotContainer {
     driveController.leftBumper().whileTrue(new DriveToAmplifier(drive));
     // TOOD: add autoalign and nudge to swerve
 
-    operatorController.a().onTrue(new ArmSetTargetPos(arm, ArmConstants.armIntakePos));
-    operatorController.b().onTrue(new ArmSetTargetPos(arm, ArmConstants.armDrivePos));
-    operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armTrapPos));
-    operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armAmpPos));
+    // TODO: put back to go to pos
+    arm.setDefaultCommand(new ArmManuel(arm, () -> -operatorController.getRightY()));
+
+    // TODO: bring back these arm controls
+    // operatorController.a().onTrue(new ArmSetTargetPos(arm, ArmConstants.armIntakePos));
+    // operatorController.b().onTrue(new ArmSetTargetPos(arm, ArmConstants.armDrivePos));
+    // operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armTrapPos));
+    // operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armAmpPos));
 
     // // OPERATOR Right Stick: Direct control over the Arm.
-    new Trigger(() -> Math.abs(operatorController.getRightY()) > 0.05)
-        .whileTrue(new ArmManuel(arm, -operatorController.getRightY()));
+    // new Trigger(() -> Math.abs(operatorController.getRightY()) > 0.05)
+    //     .whileTrue(new ArmManuel(arm, () -> -operatorController.getRightY()));
 
     operatorController.back().onTrue(new ArmExtend(arm));
     operatorController.start().onTrue(new ArmRetract(arm));

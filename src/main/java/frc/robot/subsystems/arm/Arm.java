@@ -12,7 +12,7 @@ public class Arm extends SubsystemBase {
 
   private static enum ArmState {
     kManuel,
-    kGoToPos
+    kGoToPos,
   };
 
   private static enum PistonState {
@@ -20,12 +20,14 @@ public class Arm extends SubsystemBase {
     kRetracted
   };
 
-  private ArmState armState = ArmState.kGoToPos;
-  private PistonState pistonState = PistonState.kRetracted;
+  private ArmState armState;
+  private PistonState pistonState;
 
   public Arm(ArmIO io) {
     System.out.println("[Init] Creating Arm");
     this.io = io;
+    armState = ArmState.kGoToPos;
+    pistonState = PistonState.kRetracted;
   }
 
   @Override
@@ -35,10 +37,8 @@ public class Arm extends SubsystemBase {
 
     // Reset when disabled
     if (DriverStation.isDisabled()) {
-      // TODO: NOTIFY ENTIRE TEAM... safety feature for preventing the arm crashing down on disable
-      // hopefully
-      armState = ArmState.kGoToPos;
-      io.goToPos(targetPos);
+      manuelInput = 0.0;
+      targetPos = inputs.angle;
     } else {
       switch (armState) {
         case kManuel:
@@ -58,6 +58,10 @@ public class Arm extends SubsystemBase {
         io.retract();
         break;
     }
+  }
+
+  public boolean hasReachedTarget() {
+    return inputs.hasReachedTarget;
   }
 
   // called from run command

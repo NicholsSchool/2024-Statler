@@ -24,7 +24,7 @@ public class ArmIOReal implements ArmIO {
   private double feedforward;
   private Solenoid piston;
   private TrapezoidProfile motorProfile;
-  private TrapezoidProfile.State previousState;
+  private TrapezoidProfile.State currentState;
   private TrapezoidProfile.State targetState;
   private Timer timer;
 
@@ -32,6 +32,7 @@ public class ArmIOReal implements ArmIO {
     System.out.println("[Init] Creating ArmIOReal");
 
     leader = new CANSparkMax(kArmLeaderCanId, MotorType.kBrushless);
+    leader.restoreFactoryDefaults();
     armEncoder = leader.getAbsoluteEncoder(Type.kDutyCycle);
 
     leader.setInverted(false); // TODO: check direction
@@ -39,14 +40,16 @@ public class ArmIOReal implements ArmIO {
     leader.enableSoftLimit(SoftLimitDirection.kForward, true);
     leader.setSoftLimit(SoftLimitDirection.kForward, (float) SOFT_LIMIT_FORWARD);
     leader.setIdleMode(IdleMode.kBrake);
-    armEncoder.setPositionConversionFactor(POSITION_CONVERSION_FACTOR);
-    armEncoder.setVelocityConversionFactor(VELOCITY_CONVERSION_FACTOR);
+    armEncoder.setPositionConversionFactor(2.0 * Math.PI);
+    armEncoder.setVelocityConversionFactor(2.0 * Math.PI);
     armPIDController = leader.getPIDController();
     armPIDController.setP(ARM_DEFAULT_P);
     armPIDController.setI(ARM_DEFAULT_I);
     armPIDController.setD(ARM_DEFAULT_D);
     leader.burnFlash();
 
+    follower = new CANSparkMax(kArmFollowerCanId, MotorType.kBrushless);
+    follower.restoreFactoryDefaults();
     follower.follow(leader);
     follower.burnFlash();
 
@@ -55,8 +58,8 @@ public class ArmIOReal implements ArmIO {
     // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/trajectory/TrapezoidProfile.html
     // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/trapezoidal-profiles.html
     motorProfile = new TrapezoidProfile(ARM_MOTION_CONSTRAINTS);
-    previousState = new TrapezoidProfile.State(armEncoder.getPosition(), 0.0);
-    targetState = previousState;
+    currentState = new TrapezoidProfile.State(armEncoder.getPosition(), 0.0);
+    targetState = currentState;
 
     timer = new Timer();
     timer.start();
@@ -67,26 +70,30 @@ public class ArmIOReal implements ArmIO {
   public void updateInputs(ArmIOInputs inputs) {
     inputs.angle = armEncoder.getPosition();
     inputs.isExtended = piston.get(); // TODO: check that default is what we think
+    inputs.hasReachedTarget = motorProfile.isFinished(timer.get());
   }
 
   /** Manuel input for the arm */
   public void manuel(double manuelInput) {
-    previousState = new TrapezoidProfile.State(armEncoder.getPosition(), armEncoder.getVelocity());
-    targetState = new TrapezoidProfile.State(previousState.position, 0.0);
-    timer.reset();
+    // targetState = new TrapezoidProfile.State(armEncoder.getPosition(), 0.0);
+    // currentState = motorProfile.calculate(timer.get(), targetState, targetState);
+    // timer.reset();
 
     feedforward = ARM_FF.calculate(armEncoder.getPosition(), armEncoder.getVelocity());
-
-    leader.set((manuelInput * ARM_MANUAL_SCALED) + (feedforward / 12.0));
+    double power = (manuelInput * ARM_MANUAL_SCALED) + (feedforward / 12.0);
+    leader.set(power);
+    System.out.println("motor power:  " + power);
   }
 
   /** Go to position control for the arm */
   public void goToPos(double targetPosition) {
-    targetState = new TrapezoidProfile.State(targetPosition, 0.0);
-    previousState = motorProfile.calculate(timer.get(), previousState, targetState);
-    timer.reset();
+    // targetState = new TrapezoidProfile.State(targetPosition, 0.0);
+    // currentState = motorProfile.calculate(timer.get(), currentState, targetState);
+    // timer.reset();
 
+    // feedforward = ARM_FF.calculate(currentState.position, currentState.velocity);
     feedforward = ARM_FF.calculate(armEncoder.getPosition(), armEncoder.getVelocity());
+
     // set the arm motor speed to the target position
     armPIDController.setReference(
         targetState.position,
