@@ -16,9 +16,9 @@ public class Arm extends SubsystemBase {
   private double targetPos;
   private double feedforward;
 
-  private TrapezoidProfile motorProfile;
-  private TrapezoidProfile.State currentState;
-  private TrapezoidProfile.State targetState;
+  private TrapezoidProfile motorProfile = new TrapezoidProfile(ARM_MOTION_CONSTRAINTS);
+  private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
+  private TrapezoidProfile.State goal = new TrapezoidProfile.State();
   private Timer timer;
   private ArmFeedforward ARM_FF = new ArmFeedforward(0.0, 1.63, 1.91, 0.13);
 
@@ -40,12 +40,6 @@ public class Arm extends SubsystemBase {
     this.io = io;
     armState = ArmState.kManuel;
     pistonState = PistonState.kRetracted;
-
-    // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/trajectory/TrapezoidProfile.html
-    // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/trapezoidal-profiles.html
-    motorProfile = new TrapezoidProfile(ARM_MOTION_CONSTRAINTS);
-    currentState = new TrapezoidProfile.State(0.0, 0.0);
-    targetState = currentState;
 
     timer = new Timer();
     timer.start();
@@ -70,11 +64,9 @@ public class Arm extends SubsystemBase {
         io.setVoltage(this.feedforward);
         break;
       case kGoToPos:
-        targetState = new TrapezoidProfile.State(targetPos, inputs.velocity);
-        currentState = motorProfile.calculate(timer.get(), currentState, targetState);
-        timer.reset();
+        setpoint = motorProfile.calculate(timer.get(), setpoint, goal);
 
-        feedforward = ARM_FF.calculate(currentState.position, currentState.velocity);
+        feedforward = ARM_FF.calculate(setpoint.position, setpoint.velocity);
         io.setVoltage(this.feedforward);
         break;
     }
@@ -100,12 +92,18 @@ public class Arm extends SubsystemBase {
     this.manuelInput = manuelInput;
   }
 
+  // assumption is that this is called once to set the target position, not continuously.
   public void setTargetPosToCurrent() {
-    this.targetPos = inputs.angle;
+    timer.reset();
+    setpoint = new TrapezoidProfile.State(inputs.angle, inputs.velocity);
+    this.goal = new TrapezoidProfile.State(inputs.angle, 0.0);
   }
 
+  // assumption is that this is called once to set the target position, not continuously.
   public void setTargetPos(double targetPos) {
-    this.targetPos = targetPos;
+    timer.reset();
+    setpoint = new TrapezoidProfile.State(inputs.angle, inputs.velocity);
+    this.goal = new TrapezoidProfile.State(targetPos, 0.0);
   }
 
   // called from run command
