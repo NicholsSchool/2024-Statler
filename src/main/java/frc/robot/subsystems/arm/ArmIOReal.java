@@ -10,22 +10,16 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Timer;
 
 public class ArmIOReal implements ArmIO {
   private CANSparkMax leader;
   private CANSparkMax follower;
   private AbsoluteEncoder armEncoder;
   private SparkPIDController armPIDController;
-  private double feedforward;
+
   private Solenoid piston;
-  private TrapezoidProfile motorProfile;
-  private TrapezoidProfile.State currentState;
-  private TrapezoidProfile.State targetState;
-  private Timer timer;
 
   public ArmIOReal() {
     System.out.println("[Init] Creating ArmIOReal");
@@ -53,62 +47,32 @@ public class ArmIOReal implements ArmIO {
     follower.burnFlash();
 
     piston = new Solenoid(PneumaticsModuleType.CTREPCM, ARM_SOLENOID_CHANNEL);
-
-    // https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/math/trajectory/TrapezoidProfile.html
-    // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/trapezoidal-profiles.html
-    motorProfile = new TrapezoidProfile(ARM_MOTION_CONSTRAINTS);
-    currentState = new TrapezoidProfile.State(armEncoder.getPosition(), 0.0);
-    targetState = currentState;
-
-    timer = new Timer();
-    timer.start();
-    timer.reset();
   }
 
   /** Updates the set of loggable inputs. */
+  @Override
   public void updateInputs(ArmIOInputs inputs) {
-    inputs.angle = armEncoder.getPosition();
+    inputs.angleRads = armEncoder.getPosition();
+    inputs.velocityRadsPerSec = armEncoder.getVelocity();
+    inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
+    inputs.currentAmps = leader.getOutputCurrent();
     inputs.isExtended = piston.get(); // TODO: check that default is what we think
-    inputs.hasReachedTarget = motorProfile.isFinished(timer.get());
-    inputs.voltageSetpoint = feedforward;
   }
 
-  /** Manuel input for the arm */
-  public void manuel(double manuelInput) {
-    // targetState = new TrapezoidProfile.State(armEncoder.getPosition(), 0.0);
-    // currentState = motorProfile.calculate(timer.get(), targetState, targetState);
-    // timer.reset();
-
-    double maxVelRadPerSecond = 0.5;
-    feedforward = ARM_FF.calculate(armEncoder.getPosition(), maxVelRadPerSecond * manuelInput);
-    leader.setVoltage(feedforward);
-    System.out.println("velocity setpoint:  " + (maxVelRadPerSecond * manuelInput));
-  }
-
-  /** Go to position control for the arm */
-  public void goToPos(double targetPosition) {
-    // targetState = new TrapezoidProfile.State(targetPosition, 0.0);
-    // currentState = motorProfile.calculate(timer.get(), currentState, targetState);
-    // timer.reset();
-
-    // feedforward = ARM_FF.calculate(currentState.position, currentState.velocity);
-    feedforward = ARM_FF.calculate(armEncoder.getPosition(), armEncoder.getVelocity());
-
-    // set the arm motor speed to the target position
-    // armPIDController.setReference(
-    //     targetState.position,
-    //     CANSparkMax.ControlType.kPosition,
-    //     0,
-    //     feedforward,
-    //     ArbFFUnits.kVoltage);
+  @Override
+  public void setVoltage(double voltage) {
+    System.out.println("setVoltage:  " + voltage);
+    leader.setVoltage(voltage);
   }
 
   /** Retracts Pistons */
+  @Override
   public void retract() {
     piston.set(false); // TODO: confirm
   }
 
   /** Extends Pistons */
+  @Override
   public void extend() {
     piston.set(true); // TODO: confirm
   }
