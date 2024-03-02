@@ -2,7 +2,7 @@ package frc.robot.subsystems.vision;
 
 import org.littletonrobotics.junction.Logger;
 
-public class AprilTagVision{
+public class AprilTagVision {
 
   private AprilTagVisionIO io;
   private AprilTagVisionIOInputsAutoLogged inputs;

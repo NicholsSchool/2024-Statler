@@ -87,7 +87,8 @@ public class RobotContainer {
         pdh = new PowerDistribution(Constants.CAN.kPowerDistributionHub, ModuleType.kRev);
         arm = new Arm(new ArmIOReal());
         intake = new Intake(new IntakeIOReal());
-        vision = new AprilTagVision( new AprilTagVisionReal( "", Constants.RobotConstants.cameraToRobot ) );
+        vision =
+            new AprilTagVision(new AprilTagVisionReal("", Constants.RobotConstants.cameraToRobot));
         break;
 
       case ROBOT_SIM:
@@ -103,7 +104,7 @@ public class RobotContainer {
         pdh = new PowerDistribution();
         arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
-        vision = new AprilTagVision( new AprilTagVisionIO() {});
+        vision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
 
       case ROBOT_REPLAY:
@@ -121,7 +122,7 @@ public class RobotContainer {
         pdh = new PowerDistribution();
         arm = new Arm(new ArmIOSim()); // TODO: make interfaces
         intake = new Intake(new IntakeIOSim());
-        vision = new AprilTagVision( new AprilTagVisionIO() {});
+        vision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
     }
 
