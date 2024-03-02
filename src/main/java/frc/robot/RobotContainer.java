@@ -5,8 +5,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -55,7 +53,6 @@ public class RobotContainer {
   private final Arm arm;
   private final Intake intake;
   private final ExampleFlywheel exampleFlywheel;
-  private final PowerDistribution pdh;
   private final AprilTagVision vision;
 
   // Controller
@@ -84,7 +81,6 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(3));
         // We have no flywheel, so create a simulated just for example.
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
-        pdh = new PowerDistribution(Constants.CAN.kPowerDistributionHub, ModuleType.kRev);
         arm = new Arm(new ArmIOReal());
         intake = new Intake(new IntakeIOReal());
         vision =
@@ -101,13 +97,32 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
-        pdh = new PowerDistribution();
         arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
         vision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
 
-      case ROBOT_REPLAY:
+      case ROBOT_FOOTBALL:
+        drive =
+            new Drive(
+                new GyroIO() {},
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim());
+        exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
+        arm = new Arm(new ArmIOSim());
+        intake = new Intake(new IntakeIOSim());
+        vision =
+            new AprilTagVision(
+                new AprilTagVisionReal("AprilTagCam", Constants.RobotConstants.cameraToRobot));
+
+        // vision =
+        //     new AprilTagVision(
+        //         new AprilTagVisionReal("AprilTagCam", Constants.RobotConstants.cameraToRobot));
+        break;
+
+        //   case ROBOT_REPLAY:
       default:
         // Replayed robot, disable IO implementations since the replay
         // will supply the data.
@@ -119,7 +134,6 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIO() {});
-        pdh = new PowerDistribution();
         arm = new Arm(new ArmIOSim()); // TODO: make interfaces
         intake = new Intake(new IntakeIOSim());
         vision = new AprilTagVision(new AprilTagVisionIO() {});

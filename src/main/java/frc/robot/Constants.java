@@ -15,7 +15,6 @@ package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -26,22 +25,19 @@ import edu.wpi.first.wpilibj.RobotBase;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  private static final RobotType robot = RobotType.ROBOT_REAL;
+  private static final RobotType robot = RobotType.ROBOT_FOOTBALL;
   public static final boolean tuningMode = false;
   public static final double loopPeriodSecs = 0.02;
 
   public static RobotType getRobot() {
-    if (RobotBase.isReal()) {
-      return robot;
-    } else {
-      return RobotType.ROBOT_SIM;
-    }
+    return RobotType.ROBOT_FOOTBALL;
   }
 
   public static enum RobotType {
     ROBOT_REAL, // a real robot
     ROBOT_REPLAY, // data file replay (could be on real bot or simulation)
-    ROBOT_SIM // simulation
+    ROBOT_SIM, // simulation
+    ROBOT_FOOTBALL // Football for simulatiung
   }
 
   // CAN IDs (Controller Area Network)
