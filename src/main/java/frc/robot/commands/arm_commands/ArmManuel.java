@@ -21,8 +21,12 @@ public class ArmManuel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("double supplier input:  " + manuelInput.getAsDouble());
     arm.setManuel(manuelInput.getAsDouble());
     arm.setTargetPosToCurrent();
+  }
+
+  @Override
+  public void end(boolean interrupted) {
+    System.out.println("CANCELLED");
   }
 }

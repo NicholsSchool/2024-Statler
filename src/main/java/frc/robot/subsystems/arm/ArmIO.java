@@ -6,19 +6,16 @@ public interface ArmIO {
   @AutoLog
   public static class ArmIOInputs {
     public double angle = 0.0;
+    public double velocity = 0.0;
     public boolean isExtended = false;
-    public boolean hasReachedTarget = false;
-    public double voltageSetpoint = 0.0;
+    public double appliedVolts = 0.0;
   }
 
   /** Updates the set of loggable inputs. */
   public default void updateInputs(ArmIOInputs inputs) {}
 
-  /** Manuel input for the arm */
-  public default void manuel(double manuelInput) {}
-
-  /** Go to position control for the arm */
-  public default void goToPos(double targetPosition) {}
+  /** Set voltage command */
+  public default void setVoltage(double voltage) {}
 
   /** Retracts Pistons */
   public default void retract() {}

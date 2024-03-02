@@ -14,7 +14,6 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -134,7 +133,6 @@ public final class Constants {
 
     // public static final double ARM_FREE_SPEED = 5676.0 * VELOCITY_CONVERSION_FACTOR;
     // TODO: tune feedforward for coulsons
-    public static final ArmFeedforward ARM_FF = new ArmFeedforward(0.0, 1.63, 1.91, 0.13);
 
     // public static final double ARM_DEFAULT_P = 0.79; // TODO: check these coefficients
     // public static final double ARM_DEFAULT_I = 0.02; // TODO: check these coefficients
