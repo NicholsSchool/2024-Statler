@@ -52,10 +52,10 @@ public class ArmIOReal implements ArmIO {
   /** Updates the set of loggable inputs. */
   @Override
   public void updateInputs(ArmIOInputs inputs) {
-    inputs.angle = armEncoder.getPosition();
-    inputs.velocity = armEncoder.getVelocity();
+    inputs.angleRads = armEncoder.getPosition();
+    inputs.velocityRadsPerSec = armEncoder.getVelocity();
     inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
-
+    inputs.currentAmps = leader.getOutputCurrent();
     inputs.isExtended = piston.get(); // TODO: check that default is what we think
   }
 

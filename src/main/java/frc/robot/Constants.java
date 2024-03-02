@@ -29,6 +29,8 @@ public final class Constants {
   private static final RobotType robot = RobotType.ROBOT_REAL;
   public static final boolean tuningMode = false;
   public static final double loopPeriodSecs = 0.02;
+  public static final double MeterPerInch = 0.0254;
+  public static final double KgPerLb = 0.453592;
 
   public static RobotType getRobot() {
     if (RobotBase.isReal()) {
@@ -123,9 +125,20 @@ public final class Constants {
 
     public static final int ARM_CURRENT_LIMIT = 35;
 
-    public static final double ARM_MANUAL_SCALED = 0.001; // TODO: tune it maybe
+    public static final double MIN_ANGLE_RADS = 0.0;
+    public static final double MAX_ANGLE_RADS = Math.PI;
 
-    public static final double ARM_GEAR_RATIO = 1.0 / 98.0; // 1:98 planetary gear ratio
+    public static final double ARM_MASS_LBS = 25.0;
+    public static final double ARM_COM_DISTANCE_INCHES = 20.0;
+    public static final double ARM_LENGTH_METERS = ARM_COM_DISTANCE_INCHES * MeterPerInch;
+    public static final double ARM_GEAR_REDUCTION = 98.0;
+    public static final double ARM_GEAR_RATIO =
+        1.0 / ARM_GEAR_REDUCTION; // 1:98 planetary gear ratio
+
+    public static final double ARM_FF_KS = 0.0;
+    public static final double ARM_FF_KG = 1.05;
+    public static final double ARM_FF_KV = 1.91;
+    public static final double ARM_FF_KA = 0.05;
 
     // public static final double POSITION_CONVERSION_FACTOR = ARM_GEAR_RATIO * 2.0 * Math.PI;
     // // normalizing based on the theoretical max radians per second of the arm motor

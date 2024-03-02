@@ -13,14 +13,13 @@ public class Arm extends SubsystemBase {
   private ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
   private double manuelInput;
-  private double targetPos;
   private double feedforward;
 
   private TrapezoidProfile motorProfile = new TrapezoidProfile(ARM_MOTION_CONSTRAINTS);
   private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
   private TrapezoidProfile.State goal = new TrapezoidProfile.State();
   private Timer timer;
-  private ArmFeedforward ARM_FF = new ArmFeedforward(0.0, 1.63, 1.91, 0.13);
+  private ArmFeedforward ARM_FF = new ArmFeedforward(ARM_FF_KS, ARM_FF_KG, ARM_FF_KV, ARM_FF_KA);
 
   private static enum ArmState {
     kManuel,
@@ -54,13 +53,13 @@ public class Arm extends SubsystemBase {
     // Reset when disabled
     if (DriverStation.isDisabled()) {
       // manuelInput = 0.0;
-      targetPos = inputs.angle;
+      armState = ArmState.kManuel;
     }
 
     switch (armState) {
       case kManuel:
         double maxVelRadPerSecond = 0.5;
-        this.feedforward = ARM_FF.calculate(inputs.angle, maxVelRadPerSecond * manuelInput);
+        this.feedforward = ARM_FF.calculate(inputs.angleRads, maxVelRadPerSecond * manuelInput);
         io.setVoltage(this.feedforward);
         break;
       case kGoToPos:
@@ -87,7 +86,6 @@ public class Arm extends SubsystemBase {
 
   // called from run command
   public void setManuel(double manuelInput) {
-    System.out.println("setManuel:  " + manuelInput);
     armState = ArmState.kManuel;
     this.manuelInput = manuelInput;
   }
@@ -95,14 +93,14 @@ public class Arm extends SubsystemBase {
   // assumption is that this is called once to set the target position, not continuously.
   public void setTargetPosToCurrent() {
     timer.reset();
-    setpoint = new TrapezoidProfile.State(inputs.angle, inputs.velocity);
-    this.goal = new TrapezoidProfile.State(inputs.angle, 0.0);
+    setpoint = new TrapezoidProfile.State(inputs.angleRads, inputs.velocityRadsPerSec);
+    this.goal = new TrapezoidProfile.State(inputs.angleRads, 0.0);
   }
 
   // assumption is that this is called once to set the target position, not continuously.
   public void setTargetPos(double targetPos) {
     timer.reset();
-    setpoint = new TrapezoidProfile.State(inputs.angle, inputs.velocity);
+    setpoint = new TrapezoidProfile.State(inputs.angleRads, inputs.velocityRadsPerSec);
     this.goal = new TrapezoidProfile.State(targetPos, 0.0);
   }
 
