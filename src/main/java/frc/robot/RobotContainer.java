@@ -11,31 +11,14 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.ArmPneumatics;
-import frc.robot.commands.ArmToPos;
-import frc.robot.commands.AutoCommands;
-import frc.robot.commands.ClimbCommands;
-import frc.robot.commands.DriveCommands;
-import frc.robot.commands.DriveToAmplifier;
-import frc.robot.commands.FeedForwardCharacterization;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.ResetFieldOrientation;
-import frc.robot.commands.VoltageCommandRamp;
-import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIOReal;
-import frc.robot.subsystems.arm.ArmIOSim;
-import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIONAVX;
-import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
-import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.example_flywheel.ExampleFlywheel;
-import frc.robot.subsystems.example_flywheel.ExampleFlywheelIO;
-import frc.robot.subsystems.example_flywheel.ExampleFlywheelIOSim;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIOReal;
-import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.commands.*;
+import frc.robot.commands.arm_commands.ArmExtend;
+import frc.robot.commands.arm_commands.ArmManuel;
+import frc.robot.commands.arm_commands.ArmRetract;
+import frc.robot.subsystems.arm.*;
+import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.example_flywheel.*;
+import frc.robot.subsystems.intake.*;
 import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -52,7 +35,7 @@ public class RobotContainer {
   private final Arm arm;
   private final Intake intake;
   private final ExampleFlywheel exampleFlywheel;
-  
+
   @SuppressWarnings("unused")
   private final PowerDistribution pdh;
 
@@ -115,7 +98,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIO() {});
         pdh = new PowerDistribution();
-        arm = new Arm(new ArmIOSim()); // TODO: make interfaces
+        arm = new Arm(new ArmIO() {}); // TODO: make interfaces
         intake = new Intake(new IntakeIOSim());
         break;
     }
@@ -173,28 +156,26 @@ public class RobotContainer {
                 () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getRightX() * Constants.DriveConstants.lowGearScaler));
-    driveController.rightTrigger(0.9).onTrue(new IntakeCommand(arm, intake));
+
+    driveController.rightTrigger(0.9).onTrue(new IntakeCommand(intake));
     driveController.leftBumper().whileTrue(new DriveToAmplifier(drive));
     // TOOD: add autoalign and nudge to swerve
 
-    operatorController.a().onTrue(new ArmToPos(arm, ArmToPos.ArmPos.intakePos));
-    operatorController.b().onTrue(new ArmToPos(arm, ArmToPos.ArmPos.drivePos));
-    operatorController.x().onTrue(new ArmToPos(arm, ArmToPos.ArmPos.trapPos));
-    operatorController.y().onTrue(new ArmToPos(arm, ArmToPos.ArmPos.ampPos));
-    operatorController.back().onTrue(new ArmPneumatics.ArmExtend(arm));
-    operatorController.start().onTrue(new ArmPneumatics.ArmRetract(arm));
-    operatorController
-        .povDown()
-        .onTrue(new ArmToPos(arm, Constants.ArmConstants.kManuelControlMax));
-    operatorController
-        .povUp()
-        .onTrue(
-            new ArmToPos(
-                arm, -Constants.ArmConstants.kManuelControlMax)); // TODO: tune these negatives
-    new ClimbCommands.LeftClimb(
-        arm, operatorController.getLeftY() * Constants.ClimbConstants.kMaxClimbSpeed);
-    new ClimbCommands.RightClimb(
-        arm, operatorController.getRightY() * Constants.ClimbConstants.kMaxClimbSpeed);
+    // TODO: put back to go to pos
+    arm.setDefaultCommand(new ArmManuel(arm, () -> -operatorController.getRightY()));
+
+    // TODO: bring back these arm controls
+    // operatorController.a().onTrue(new ArmSetTargetPos(arm, ArmConstants.armIntakePos));
+    // operatorController.b().onTrue(new ArmSetTargetPos(arm, ArmConstants.armDrivePos));
+    // operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armTrapPos));
+    // operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armAmpPos));
+
+    // // OPERATOR Right Stick: Direct control over the Arm.
+    // new Trigger(() -> Math.abs(operatorController.getRightY()) > 0.05)
+    //     .whileTrue(new ArmManuel(arm, () -> -operatorController.getRightY()));
+
+    operatorController.back().onTrue(new ArmExtend(arm));
+    operatorController.start().onTrue(new ArmRetract(arm));
   }
 
   /**

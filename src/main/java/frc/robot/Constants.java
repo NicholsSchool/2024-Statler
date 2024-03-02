@@ -14,6 +14,7 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -28,6 +29,8 @@ public final class Constants {
   private static final RobotType robot = RobotType.ROBOT_REAL;
   public static final boolean tuningMode = false;
   public static final double loopPeriodSecs = 0.02;
+  public static final double MeterPerInch = 0.0254;
+  public static final double KgPerLb = 0.453592;
 
   public static RobotType getRobot() {
     if (RobotBase.isReal()) {
@@ -45,6 +48,9 @@ public final class Constants {
 
   // CAN IDs (Controller Area Network)
   public static final class CAN {
+    public static final int kArmLeaderCanId = 32;
+    public static final int kArmFollowerCanId = 31;
+
     public static final int kRearRightDrivingCanId = 28;
     public static final int kRearRightTurningCanId = 27;
     public static final int kFrontRightDrivingCanId = 26;
@@ -53,6 +59,7 @@ public final class Constants {
     public static final int kFrontLeftTurningCanId = 23;
     public static final int kRearLeftDrivingCanId = 22;
     public static final int kRearLeftTurningCanId = 21;
+
     public static final int kPowerDistributionHub = 50;
   }
 
@@ -104,12 +111,50 @@ public final class Constants {
     public static final double kD = 0.0;
   }
 
-  public static final class ArmConstants { // TODO: make constants for arm angle
+  public static final class ArmConstants {
+    // TODO: make the correct constants for arm angles
     public static final double armIntakePos = 0.0;
-    public static final double armDrivePos = 0.0;
-    public static final double armAmpPos = 0.0;
+    public static final double armDrivePos = Math.PI / 4;
+    public static final double armAmpPos = Math.PI / 2;
     public static final double armTrapPos = 0.0;
-    public static final double kManuelControlMax = 0.0;
+
+    public static final int ARM_SOLENOID_CHANNEL = 7;
+
+    public static final double SOFT_LIMIT_FORWARD = Math.PI;
+    // TODO: figure out the right angle/encoder position
+
+    public static final int ARM_CURRENT_LIMIT = 35;
+
+    public static final double MIN_ANGLE_RADS = 0.0;
+    public static final double MAX_ANGLE_RADS = Math.PI;
+
+    public static final double ARM_MASS_LBS = 25.0;
+    public static final double ARM_COM_DISTANCE_INCHES = 20.0;
+    public static final double ARM_LENGTH_METERS = ARM_COM_DISTANCE_INCHES * MeterPerInch;
+    public static final double ARM_GEAR_REDUCTION = 98.0;
+    public static final double ARM_GEAR_RATIO =
+        1.0 / ARM_GEAR_REDUCTION; // 1:98 planetary gear ratio
+
+    public static final double ARM_FF_KS = 0.0;
+    public static final double ARM_FF_KG = 1.05;
+    public static final double ARM_FF_KV = 1.91;
+    public static final double ARM_FF_KA = 0.05;
+
+    // public static final double POSITION_CONVERSION_FACTOR = ARM_GEAR_RATIO * 2.0 * Math.PI;
+    // // normalizing based on the theoretical max radians per second of the arm motor
+    // public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR / 60.0;
+
+    // public static final double ARM_FREE_SPEED = 5676.0 * VELOCITY_CONVERSION_FACTOR;
+    // TODO: tune feedforward for coulsons
+
+    // public static final double ARM_DEFAULT_P = 0.79; // TODO: check these coefficients
+    // public static final double ARM_DEFAULT_I = 0.02; // TODO: check these coefficients
+    // public static final double ARM_DEFAULT_D = 0.0; // TODO: check these coefficients
+
+    // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/trapezoidal-profiles.html
+    // units for the max values should be radians and radians per second
+    public static final Constraints ARM_MOTION_CONSTRAINTS =
+        new Constraints(0.66, 0.66); // TODO: check these coefficients
   }
 
   public static final class OuttakeConstants {
@@ -119,6 +164,9 @@ public final class Constants {
 
   public static final class ClimbConstants {
     public static final double kMaxClimbSpeed = 0.0; // TODO: constants
+
+    public static final int LEFT_CLIMB_SOLENOID_CHANNEL = 6;
+    public static final int RIGHT_CLIMB_SOLENOID_CHANNEL = 7;
   }
 
   public static final class AutoConstants {
