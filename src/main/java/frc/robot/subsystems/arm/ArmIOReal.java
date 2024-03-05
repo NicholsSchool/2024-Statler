@@ -9,7 +9,7 @@ import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
-import com.revrobotics.SparkPIDController;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 
@@ -17,7 +17,6 @@ public class ArmIOReal implements ArmIO {
   private CANSparkMax leader;
   private CANSparkMax follower;
   private AbsoluteEncoder armEncoder;
-  private SparkPIDController armPIDController;
 
   private Solenoid piston;
 
@@ -35,10 +34,6 @@ public class ArmIOReal implements ArmIO {
     leader.setIdleMode(IdleMode.kBrake);
     armEncoder.setPositionConversionFactor(2.0 * Math.PI);
     armEncoder.setVelocityConversionFactor(2.0 * Math.PI);
-    // armPIDController = leader.getPIDController();
-    // armPIDController.setP(ARM_DEFAULT_P);
-    // armPIDController.setI(ARM_DEFAULT_I);
-    // armPIDController.setD(ARM_DEFAULT_D);
     leader.burnFlash();
 
     follower = new CANSparkMax(kArmFollowerCanId, MotorType.kBrushless);
@@ -53,15 +48,15 @@ public class ArmIOReal implements ArmIO {
   @Override
   public void updateInputs(ArmIOInputs inputs) {
     inputs.angleRads = armEncoder.getPosition();
+    inputs.angleDegs = Units.radiansToDegrees(inputs.angleRads);
     inputs.velocityRadsPerSec = armEncoder.getVelocity();
     inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
-    inputs.currentAmps = leader.getOutputCurrent();
+    inputs.currentAmps = new double[] {leader.getOutputCurrent(), follower.getOutputCurrent()};
     inputs.isExtended = piston.get(); // TODO: check that default is what we think
   }
 
   @Override
   public void setVoltage(double voltage) {
-    System.out.println("setVoltage:  " + voltage);
     leader.setVoltage(voltage);
   }
 

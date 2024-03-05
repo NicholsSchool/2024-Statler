@@ -42,9 +42,10 @@ public class ArmIOSim implements ArmIO {
     sim.update(Constants.loopPeriodSecs);
 
     inputs.angleRads = sim.getAngleRads();
+    inputs.angleDegs = Units.radiansToDegrees(inputs.angleRads);
     inputs.velocityRadsPerSec = sim.getVelocityRadPerSec();
     inputs.appliedVolts = voltage;
-    inputs.currentAmps = sim.getCurrentDrawAmps();
+    inputs.currentAmps = new double[] {sim.getCurrentDrawAmps(), sim.getCurrentDrawAmps()};
     inputs.isExtended = false;
   }
 

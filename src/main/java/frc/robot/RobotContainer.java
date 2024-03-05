@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.*;
 import frc.robot.commands.*;
 import frc.robot.commands.arm_commands.ArmExtend;
 import frc.robot.commands.arm_commands.ArmManuel;
@@ -161,18 +163,17 @@ public class RobotContainer {
     driveController.leftBumper().whileTrue(new DriveToAmplifier(drive));
     // TOOD: add autoalign and nudge to swerve
 
-    // TODO: put back to go to pos
-    arm.setDefaultCommand(new ArmManuel(arm, () -> -operatorController.getRightY()));
-
-    // TODO: bring back these arm controls
-    // operatorController.a().onTrue(new ArmSetTargetPos(arm, ArmConstants.armIntakePos));
-    // operatorController.b().onTrue(new ArmSetTargetPos(arm, ArmConstants.armDrivePos));
-    // operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armTrapPos));
-    // operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armAmpPos));
-
-    // // OPERATOR Right Stick: Direct control over the Arm.
-    // new Trigger(() -> Math.abs(operatorController.getRightY()) > 0.05)
-    //     .whileTrue(new ArmManuel(arm, () -> -operatorController.getRightY()));
+    // Arm controls
+    arm.setDefaultCommand(
+        new ArmManuel(
+            arm,
+            () ->
+                MathUtil.applyDeadband(
+                    -operatorController.getRightY(), Constants.JOYSTICK_DEADBAND)));
+    operatorController.a().onTrue(arm.runGoToPosCommand(ArmConstants.armIntakePosDeg));
+    operatorController.b().onTrue(arm.runGoToPosCommand(ArmConstants.armDrivePosDeg));
+    operatorController.x().onTrue(arm.runGoToPosCommand(ArmConstants.armTrapPosDeg));
+    operatorController.y().onTrue(arm.runGoToPosCommand(ArmConstants.armAmpPosDeg));
 
     operatorController.back().onTrue(new ArmExtend(arm));
     operatorController.start().onTrue(new ArmRetract(arm));

@@ -14,7 +14,6 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -31,6 +30,8 @@ public final class Constants {
   public static final double loopPeriodSecs = 0.02;
   public static final double MeterPerInch = 0.0254;
   public static final double KgPerLb = 0.453592;
+
+  public static final double JOYSTICK_DEADBAND = 0.1;
 
   public static RobotType getRobot() {
     if (RobotBase.isReal()) {
@@ -113,10 +114,10 @@ public final class Constants {
 
   public static final class ArmConstants {
     // TODO: make the correct constants for arm angles
-    public static final double armIntakePos = 0.0;
-    public static final double armDrivePos = Math.PI / 4;
-    public static final double armAmpPos = Math.PI / 2;
-    public static final double armTrapPos = 0.0;
+    public static final double armIntakePosDeg = 0.0;
+    public static final double armDrivePosDeg = 45.0;
+    public static final double armAmpPosDeg = 90.0;
+    public static final double armTrapPosDeg = 75.0;
 
     public static final int ARM_SOLENOID_CHANNEL = 7;
 
@@ -146,15 +147,6 @@ public final class Constants {
 
     // public static final double ARM_FREE_SPEED = 5676.0 * VELOCITY_CONVERSION_FACTOR;
     // TODO: tune feedforward for coulsons
-
-    // public static final double ARM_DEFAULT_P = 0.79; // TODO: check these coefficients
-    // public static final double ARM_DEFAULT_I = 0.02; // TODO: check these coefficients
-    // public static final double ARM_DEFAULT_D = 0.0; // TODO: check these coefficients
-
-    // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/controllers/trapezoidal-profiles.html
-    // units for the max values should be radians and radians per second
-    public static final Constraints ARM_MOTION_CONSTRAINTS =
-        new Constraints(0.66, 0.66); // TODO: check these coefficients
   }
 
   public static final class OuttakeConstants {
