@@ -2,15 +2,16 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.commands.ArmPneumatics;
-import frc.robot.commands.ArmToPos;
+import frc.robot.Constants.ArmConstants;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.ClimbCommands;
 import frc.robot.commands.DriveCommands;
@@ -19,6 +20,9 @@ import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ResetFieldOrientation;
 import frc.robot.commands.VoltageCommandRamp;
+import frc.robot.commands.arm_commands.ArmExtend;
+import frc.robot.commands.arm_commands.ArmManuel;
+import frc.robot.commands.arm_commands.ArmRetract;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
@@ -193,28 +197,25 @@ public class RobotContainer {
                 () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getRightX() * Constants.DriveConstants.lowGearScaler));
-    driveController.rightTrigger(0.9).onTrue(new IntakeCommand(arm, intake));
+
+    driveController.rightTrigger(0.9).onTrue(new IntakeCommand(intake));
     driveController.leftBumper().whileTrue(new DriveToAmplifier(drive));
     // TOOD: add autoalign and nudge to swerve
 
-    operatorController.a().onTrue(new ArmToPos(arm, ArmToPos.ArmPos.intakePos));
-    operatorController.b().onTrue(new ArmToPos(arm, ArmToPos.ArmPos.drivePos));
-    operatorController.x().onTrue(new ArmToPos(arm, ArmToPos.ArmPos.trapPos));
-    operatorController.y().onTrue(new ArmToPos(arm, ArmToPos.ArmPos.ampPos));
-    operatorController.back().onTrue(new ArmPneumatics.ArmExtend(arm));
-    operatorController.start().onTrue(new ArmPneumatics.ArmRetract(arm));
-    operatorController
-        .povDown()
-        .onTrue(new ArmToPos(arm, Constants.ArmConstants.kManuelControlMax));
-    operatorController
-        .povUp()
-        .onTrue(
-            new ArmToPos(
-                arm, -Constants.ArmConstants.kManuelControlMax)); // TODO: tune these negatives
-    new ClimbCommands.LeftClimb(
-        arm, operatorController.getLeftY() * Constants.ClimbConstants.kMaxClimbSpeed);
-    new ClimbCommands.RightClimb(
-        arm, operatorController.getRightY() * Constants.ClimbConstants.kMaxClimbSpeed);
+    // Arm controls
+    arm.setDefaultCommand(
+        new ArmManuel(
+            arm,
+            () ->
+                MathUtil.applyDeadband(
+                    -operatorController.getRightY(), Constants.JOYSTICK_DEADBAND)));
+    operatorController.a().onTrue(arm.runGoToPosCommand(ArmConstants.armIntakePosDeg));
+    operatorController.b().onTrue(arm.runGoToPosCommand(ArmConstants.armDrivePosDeg));
+    operatorController.x().onTrue(arm.runGoToPosCommand(ArmConstants.armTrapPosDeg));
+    operatorController.y().onTrue(arm.runGoToPosCommand(ArmConstants.armAmpPosDeg));
+
+    operatorController.back().onTrue(new ArmExtend(arm));
+    operatorController.start().onTrue(new ArmRetract(arm));
   }
 
   /**
