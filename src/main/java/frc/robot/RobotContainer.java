@@ -159,7 +159,7 @@ public class RobotContainer {
                 () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getRightX() * Constants.DriveConstants.lowGearScaler));
 
-    driveController.rightTrigger(0.9).onTrue(new IntakeCommand(intake));
+    driveController.rightTrigger(0.9).whileTrue(intake.runEatCommand());
     driveController.leftBumper().whileTrue(new DriveToAmplifier(drive));
     // TOOD: add autoalign and nudge to swerve
 

@@ -31,19 +31,19 @@ public class Intake extends SubsystemBase {
 
   private IntakeMode mode = IntakeMode.kStopped;
 
-  // initialize tunable values
-  static {
-    eatVelocity.initDefault(0.0);
-    vomitVelocity.initDefault(0.0);
-    digestVelocity.initDefault(0.0);
-    kP.initDefault(IntakeConstants.kP);
-    kD.initDefault(IntakeConstants.kD);
-  }
-
   public Intake(IntakeIO io) {
     System.out.println("[Init] Creating Intake");
     this.io = io;
     io.setBrakeMode(false);
+
+    eatVelocity.initDefault(25);
+    vomitVelocity.initDefault(50);
+    digestVelocity.initDefault(100);
+    // kP.initDefault(IntakeConstants.kP);
+    kP.initDefault(0.5);
+    kD.initDefault(IntakeConstants.kD);
+    controller.setP(kP.get());
+    controller.setD(kD.get());
   }
 
   @Override
@@ -56,6 +56,7 @@ public class Intake extends SubsystemBase {
     if (kP.hasChanged(hashCode()) || kD.hasChanged(hashCode())) {
       controller.setP(kP.get());
       controller.setD(kD.get());
+      controller.reset();
     }
 
     // Reset when disabled
