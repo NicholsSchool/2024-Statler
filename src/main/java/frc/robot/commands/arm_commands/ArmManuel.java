@@ -22,11 +22,10 @@ public class ArmManuel extends Command {
   @Override
   public void execute() {
     arm.setManuel(manuelInput.getAsDouble());
-    arm.setTargetPosToCurrent();
   }
 
   @Override
   public void end(boolean interrupted) {
-    System.out.println("CANCELLED");
+    System.out.println("Manual Cancelled");
   }
 }

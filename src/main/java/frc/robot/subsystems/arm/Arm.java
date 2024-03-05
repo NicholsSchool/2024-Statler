@@ -3,23 +3,46 @@ package frc.robot.subsystems.arm;
 import static frc.robot.Constants.ArmConstants.*;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.util.LoggedTunableNumber;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Arm extends SubsystemBase {
   private ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
   private double manuelInput;
-  private double feedforward;
 
-  private TrapezoidProfile motorProfile = new TrapezoidProfile(ARM_MOTION_CONSTRAINTS);
-  private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
-  private TrapezoidProfile.State goal = new TrapezoidProfile.State();
-  private Timer timer;
+  private TrapezoidProfile.State initialState = new TrapezoidProfile.State();
+  private TrapezoidProfile.State goalState = new TrapezoidProfile.State();
   private ArmFeedforward ARM_FF = new ArmFeedforward(ARM_FF_KS, ARM_FF_KG, ARM_FF_KV, ARM_FF_KA);
+
+  private final ProfiledPIDController armPidController =
+      new ProfiledPIDController(
+          0.0, 0.0, 0.0, new TrapezoidProfile.Constraints(0.0, 0.0), Constants.loopPeriodSecs);
+
+  private Timer timerMoveToPose; // timer to check for timeout of move to position
+  private double voltageCommand = 0.0;
+
+  // tunable parameters
+  private static final LoggedTunableNumber positionToleranceDeg =
+      new LoggedTunableNumber("Arm/PositionToleranceDeg");
+  private static final LoggedTunableNumber armMaxVelocityRad =
+      new LoggedTunableNumber("Arm/MaxVelocityRad");
+  private static final LoggedTunableNumber armMaxAccelerationRad =
+      new LoggedTunableNumber("Arm/MaxAccelerationRad");
+  private static final LoggedTunableNumber armKp = new LoggedTunableNumber("Arm/Kp");
+  private static final LoggedTunableNumber armKd = new LoggedTunableNumber("Arm/Kd");
+  private static final LoggedTunableNumber moveToPosTimeoutSec =
+      new LoggedTunableNumber("Arm/TimeoutSec");
 
   private static enum ArmState {
     kManuel,
@@ -40,9 +63,22 @@ public class Arm extends SubsystemBase {
     armState = ArmState.kManuel;
     pistonState = PistonState.kRetracted;
 
-    timer = new Timer();
-    timer.start();
-    timer.reset();
+    timerMoveToPose = new Timer();
+    timerMoveToPose.start();
+    timerMoveToPose.reset();
+
+    positionToleranceDeg.initDefault(2.0);
+    armMaxVelocityRad.initDefault(0.66);
+    armMaxAccelerationRad.initDefault(0.66);
+    armKp.initDefault(3.0);
+    armKd.initDefault(1.0);
+    moveToPosTimeoutSec.initDefault(5.0);
+
+    armPidController.setP(armKp.get());
+    armPidController.setD(armKd.get());
+    armPidController.setConstraints(
+        new TrapezoidProfile.Constraints(armMaxVelocityRad.get(), armMaxAccelerationRad.get()));
+    armPidController.setTolerance(Units.degreesToRadians(positionToleranceDeg.get()));
   }
 
   @Override
@@ -50,25 +86,27 @@ public class Arm extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
 
+    updateTunables();
+
     // Reset when disabled
     if (DriverStation.isDisabled()) {
       // manuelInput = 0.0;
-      armState = ArmState.kManuel;
+      // armState = ArmState.kManuel;
     }
 
     switch (armState) {
       case kManuel:
-        double maxVelRadPerSecond = 0.5;
-        this.feedforward = ARM_FF.calculate(inputs.angleRads, maxVelRadPerSecond * manuelInput);
-        io.setVoltage(this.feedforward);
+        voltageCommand = ARM_FF.calculate(inputs.angleRads, armMaxVelocityRad.get() * manuelInput);
         break;
       case kGoToPos:
-        setpoint = motorProfile.calculate(timer.get(), setpoint, goal);
-
-        feedforward = ARM_FF.calculate(setpoint.position, setpoint.velocity);
-        io.setVoltage(this.feedforward);
+        voltageCommand =
+            armPidController.calculate(inputs.angleRads)
+                + ARM_FF.calculate(
+                    armPidController.getSetpoint().position,
+                    armPidController.getSetpoint().velocity);
         break;
     }
+    io.setVoltage(voltageCommand);
 
     switch (pistonState) {
       case kExtended:
@@ -81,30 +119,35 @@ public class Arm extends SubsystemBase {
   }
 
   public boolean hasReachedTarget() {
-    return motorProfile.isFinished(timer.get());
+    if (timerMoveToPose.get() > moveToPosTimeoutSec.get()) {
+      System.out.println("Arm Move To Pos Timeout!");
+      return true;
+    } else {
+      boolean reachedGoal = armPidController.atGoal();
+      if (reachedGoal) {
+        System.out.println("Arm Move To Pos Reached Goal!");
+      }
+      return reachedGoal;
+    }
   }
 
-  // called from run command
+  // called from run command on every cycle when manual is running.
   public void setManuel(double manuelInput) {
     armState = ArmState.kManuel;
     this.manuelInput = manuelInput;
   }
 
   // assumption is that this is called once to set the target position, not continuously.
-  public void setTargetPosToCurrent() {
-    timer.reset();
-    setpoint = new TrapezoidProfile.State(inputs.angleRads, inputs.velocityRadsPerSec);
-    this.goal = new TrapezoidProfile.State(inputs.angleRads, 0.0);
+  public void setTargetPos(double targetAngleDeg) {
+    System.out.println("Arm Go To Pos(deg): " + targetAngleDeg);
+    timerMoveToPose.reset();
+    initialState = new TrapezoidProfile.State(inputs.angleRads, inputs.velocityRadsPerSec);
+    goalState = new TrapezoidProfile.State(Units.degreesToRadians(targetAngleDeg), 0.0);
+    // set new goal of the pid controller.
+    armPidController.setGoal(Units.degreesToRadians(targetAngleDeg));
   }
 
-  // assumption is that this is called once to set the target position, not continuously.
-  public void setTargetPos(double targetPos) {
-    timer.reset();
-    setpoint = new TrapezoidProfile.State(inputs.angleRads, inputs.velocityRadsPerSec);
-    this.goal = new TrapezoidProfile.State(targetPos, 0.0);
-  }
-
-  // called from run command
+  // called from run command on every cycle while motion profile is running.
   public void setGoToPos() {
     armState = ArmState.kGoToPos;
   }
@@ -117,5 +160,55 @@ public class Arm extends SubsystemBase {
   // called from instant command
   public void setRetracted() {
     pistonState = PistonState.kRetracted;
+  }
+
+  private void updateTunables() {
+    // Update from tunable numbers
+    if (armMaxVelocityRad.hasChanged(hashCode())
+        || armMaxAccelerationRad.hasChanged(hashCode())
+        || positionToleranceDeg.hasChanged(hashCode())
+        || armKp.hasChanged(hashCode())
+        || armKd.hasChanged(hashCode())) {
+      armPidController.setP(armKp.get());
+      armPidController.setD(armKd.get());
+      armPidController.setConstraints(
+          new TrapezoidProfile.Constraints(armMaxVelocityRad.get(), armMaxAccelerationRad.get()));
+      armPidController.setTolerance(Units.degreesToRadians(positionToleranceDeg.get()));
+    }
+  }
+
+  // COMMANDS
+
+  // Create command that will move to target angle until motion completes.
+  public Command runGoToPosCommand(double targetAngleDeg) {
+    // run eat mode until a note is obtained
+    return new FunctionalCommand(
+        () -> this.setTargetPos(targetAngleDeg),
+        this::setGoToPos,
+        interrupted -> this.armState = ArmState.kManuel, // back to manual when done
+        this::hasReachedTarget,
+        this);
+  }
+
+  // THINGS TO LOG IN ADV SCOPE
+
+  @AutoLogOutput
+  public double getVoltageCommand() {
+    return voltageCommand;
+  }
+
+  @AutoLogOutput
+  public double[] getOutputCurrent() {
+    return inputs.currentAmps;
+  }
+
+  @AutoLogOutput
+  public double getGoalStateDeg() {
+    return Units.radiansToDegrees(goalState.position);
+  }
+
+  @AutoLogOutput
+  public ArmState getMode() {
+    return armState;
   }
 }
