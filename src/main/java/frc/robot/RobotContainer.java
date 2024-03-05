@@ -6,14 +6,12 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.commands.AutoCommands;
-import frc.robot.commands.ClimbCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToAmplifier;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -119,7 +117,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSim());
         vision =
             new AprilTagVision(
-                new AprilTagVisionReal("AprilTagCam", Constants.RobotConstants.cameraToRobot));
+                new AprilTagVisionReal("AprilTagCamera", Constants.RobotConstants.cameraToRobot));
 
         // vision =
         //     new AprilTagVision(
