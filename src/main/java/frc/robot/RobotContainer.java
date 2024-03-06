@@ -161,7 +161,7 @@ public class RobotContainer {
     //for testing purposes setting to 45 degrees
     driveController
         .a()
-        .onTrue(
+        .whileTrue(
             DriveCommands.joystickDriveWithAngle(
                 drive,
                 () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
