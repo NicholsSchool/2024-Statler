@@ -1,16 +1,28 @@
 package frc.robot.subsystems.intake;
 
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
+import java.util.Random;
 
 public class IntakeIOSim implements IntakeIO {
   private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 5, 0.004);
 
   private double appliedVolts = 0.0;
+  private LinearFilter velocityFilter;
+  private boolean isIntaking = false;
+  private double minVelocityRadPerSec = 10.0;
+  private Timer timer = new Timer();
+  private boolean hasNote = false;
+  Random rand = new Random();
 
   public IntakeIOSim() {
     System.out.println("[Init] Creating IntakeIOSim");
+    // Create filter of velocity to determine which direction motor is going.
+    // this is used to simulate a note retrieval
+    velocityFilter = LinearFilter.singlePoleIIR(0.1, Constants.loopPeriodSecs);
   }
 
   @Override
@@ -23,7 +35,34 @@ public class IntakeIOSim implements IntakeIO {
     inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = sim.getCurrentDrawAmps();
-    inputs.hasNote = false;
+    inputs.hasNote = hasNote;
+
+    simulateNote();
+  }
+
+  // simulate eating and vomiting a note
+  private void simulateNote() {
+    double filteredVelocity = velocityFilter.calculate(sim.getAngularVelocityRadPerSec());
+    if (Math.abs(filteredVelocity) > minVelocityRadPerSec) {
+      boolean intaking = isIntaking;
+      // assumes intaking is positive velocity)
+      intaking = (Math.signum(filteredVelocity) > 0);
+
+      // if changed then start timer for intaking/outtaking
+      if (isIntaking != intaking) {
+        isIntaking = intaking;
+        timer.reset();
+        timer.start();
+      }
+      // if intaking, then wait a few seconds to intake
+      if (isIntaking && (timer.get() > rand.nextInt(10))) {
+        hasNote = true;
+      }
+      // out outtaking, then wait 1 second to outtake
+      if (!isIntaking && (timer.get() > rand.nextInt(1))) {
+        hasNote = false;
+      }
+    }
   }
 
   @Override
