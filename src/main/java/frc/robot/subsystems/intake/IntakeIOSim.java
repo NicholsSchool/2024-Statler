@@ -20,7 +20,7 @@ public class IntakeIOSim implements IntakeIO {
     sim.setInputVoltage(appliedVolts);
     sim.update(Constants.loopPeriodSecs);
 
-    inputs.velocityRPMs = sim.getAngularVelocityRPM();
+    inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
     inputs.appliedVolts = appliedVolts;
     inputs.currentAmps = sim.getCurrentDrawAmps();
     inputs.hasNote = false;
@@ -29,7 +29,7 @@ public class IntakeIOSim implements IntakeIO {
   @Override
   public void setVoltage(double voltage) {
     appliedVolts = voltage;
-    sim.setInputVoltage(voltage);
+    sim.setInputVoltage(appliedVolts);
   }
 
   @Override

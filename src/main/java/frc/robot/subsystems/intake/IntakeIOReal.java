@@ -13,7 +13,7 @@ public class IntakeIOReal implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    inputs.velocityRPMs = 0.0;
+    inputs.velocityRadPerSec = 0.0;
     inputs.appliedVolts = 0.0;
     inputs.currentAmps = 0.0;
     inputs.hasNote = !breamBreak.get(); // TODO: might be opposite
