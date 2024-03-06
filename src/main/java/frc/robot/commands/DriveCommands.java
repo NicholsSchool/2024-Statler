@@ -161,7 +161,7 @@ public class DriveCommands {
           error = difference;
         }
     
-        return error / 180 * (Math.PI * kP);
+        return kP * Math.sin( 0.5 * Math.toRadians( error ) );
     
     }
 }
