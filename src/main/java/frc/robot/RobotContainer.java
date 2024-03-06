@@ -42,8 +42,8 @@ public class RobotContainer {
   private final PowerDistribution pdh;
 
   // Controller
-  private final CommandXboxController driveController = new CommandXboxController(0);
-  private final CommandXboxController operatorController = new CommandXboxController(1);
+  public static CommandXboxController driveController = new CommandXboxController(0);
+  public static CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -158,7 +158,16 @@ public class RobotContainer {
                 () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getRightX() * Constants.DriveConstants.lowGearScaler));
-
+    //for testing purposes setting to 45 degrees
+    driveController
+        .a()
+        .onTrue(
+            DriveCommands.joystickDriveWithAngle(
+                drive,
+                () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
+                () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
+                45.0,
+                () -> drive.getYaw()));
     driveController.rightTrigger(0.9).onTrue(new IntakeCommand(intake));
     driveController.leftBumper().whileTrue(new DriveToAmplifier(drive));
     // TOOD: add autoalign and nudge to swerve
