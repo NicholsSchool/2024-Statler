@@ -18,7 +18,4 @@ public interface IntakeIO {
 
   /** Enable or disable brake mode on the motors. */
   public void setBrakeMode(boolean brake);
-
-  /** Set the direction on the morors. */
-  public void setDirection(boolean forward);
 }
