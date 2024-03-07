@@ -56,8 +56,8 @@ public final class Constants {
     public static final int kIntakeCanId = 41;
     public static final int kOuttakeCanId = 42;
 
-    public static final int kArmLeaderCanId = 32;
-    public static final int kArmFollowerCanId = 31;
+    public static final int kArmLeaderCanId = 31;
+    public static final int kArmFollowerCanId = 32;
 
     public static final int kRearRightDrivingCanId = 28;
     public static final int kRearRightTurningCanId = 27;

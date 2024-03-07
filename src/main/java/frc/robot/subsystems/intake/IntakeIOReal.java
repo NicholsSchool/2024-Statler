@@ -20,6 +20,7 @@ public class IntakeIOReal implements IntakeIO {
     breamBreak = new DigitalInput(IntakeConstants.kBeamBreakChannel);
     motor = new CANSparkMax(CAN.kIntakeCanId, MotorType.kBrushless);
     motor.restoreFactoryDefaults();
+    motor.setInverted(true);
     encoder = motor.getAbsoluteEncoder(Type.kDutyCycle);
     motor.setIdleMode(IdleMode.kCoast);
     encoder.setPositionConversionFactor(2.0 * Math.PI);
