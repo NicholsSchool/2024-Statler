@@ -195,7 +195,7 @@ public class RobotContainer {
                 () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
                 () -> -90,
                 () -> drive.getYaw()));
-    
+
     driveController.rightTrigger(0.9).onTrue(new IntakeCommand(intake));
     driveController.leftBumper().whileTrue(new DriveToAmplifier(drive));
 
