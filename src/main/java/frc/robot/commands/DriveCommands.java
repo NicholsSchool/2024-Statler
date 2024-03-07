@@ -74,7 +74,7 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       //TODO change back to angle supplier 
-      Double desiredAngle,
+      DoubleSupplier desiredAngle,
       DoubleSupplier robotYawSupplier
     ) {
     return Commands.run(
@@ -95,7 +95,7 @@ public class DriveCommands {
               new Pose2d(new Translation2d(), linearDirection)
                   .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                   .getTranslation();
-            double angularRotation = angleToVelocity(desiredAngle, robotYawSupplier.getAsDouble());
+            double angularRotation = angleToVelocity(desiredAngle.getAsDouble(), robotYawSupplier.getAsDouble());
           // Convert to field relative speeds & send command
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -111,7 +111,7 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      //TODO change to pose supplier 
+      //TODO change to pose supplier?? 
       Pose2d facingPose,
       DoubleSupplier robotYawSupplier
     ) {
