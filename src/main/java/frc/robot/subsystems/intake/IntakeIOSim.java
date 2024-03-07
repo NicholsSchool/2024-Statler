@@ -15,6 +15,7 @@ public class IntakeIOSim implements IntakeIO {
   private boolean isIntaking = false;
   private double minVelocityRadPerSec = 10.0;
   private Timer timer = new Timer();
+  private boolean isTimerRunning = false;
   private boolean hasNote = false;
   Random rand = new Random();
 
@@ -44,23 +45,23 @@ public class IntakeIOSim implements IntakeIO {
   private void simulateNote() {
     double filteredVelocity = velocityFilter.calculate(sim.getAngularVelocityRadPerSec());
     if (Math.abs(filteredVelocity) > minVelocityRadPerSec) {
-      boolean intaking = isIntaking;
       // assumes intaking is positive velocity)
-      intaking = (Math.signum(filteredVelocity) > 0);
+      boolean intaking = (Math.signum(filteredVelocity) > 0);
 
       // if changed then start timer for intaking/outtaking
       if (isIntaking != intaking) {
         isIntaking = intaking;
-        timer.reset();
-        timer.start();
+        timer.restart();
+        isTimerRunning = true;
       }
-      // if intaking, then wait a few seconds to intake
-      if (isIntaking && (timer.get() > rand.nextInt(10))) {
-        hasNote = true;
-      }
-      // out outtaking, then wait 1 second to outtake
-      if (!isIntaking && (timer.get() > rand.nextInt(1))) {
-        hasNote = false;
+      // flip state after timeout time.
+      if (isTimerRunning) {
+        double timeoutSec = isIntaking ? 10 : 1; // up to 10 secs to intake, 1 sec to outtake
+        if (timer.hasElapsed(timeoutSec)) {
+          hasNote = !hasNote;
+          timer.stop();
+          isTimerRunning = false;
+        }
       }
     }
   }
