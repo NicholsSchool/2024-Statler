@@ -73,10 +73,9 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      //TODO change back to angle supplier 
+      // TODO change back to angle supplier
       DoubleSupplier desiredAngle,
-      DoubleSupplier robotYawSupplier
-    ) {
+      DoubleSupplier robotYawSupplier) {
     return Commands.run(
         () -> {
           // Apply deadband
@@ -95,7 +94,8 @@ public class DriveCommands {
               new Pose2d(new Translation2d(), linearDirection)
                   .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                   .getTranslation();
-            double angularRotation = angleToVelocity(desiredAngle.getAsDouble(), robotYawSupplier.getAsDouble());
+          double angularRotation =
+              angleToVelocity(desiredAngle.getAsDouble(), robotYawSupplier.getAsDouble());
           // Convert to field relative speeds & send command
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -111,10 +111,9 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      //TODO change to pose supplier?? 
+      // TODO change to pose supplier??
       Pose2d facingPose,
-      DoubleSupplier robotYawSupplier
-    ) {
+      DoubleSupplier robotYawSupplier) {
     return Commands.run(
         () -> {
           // Apply deadband
@@ -125,9 +124,11 @@ public class DriveCommands {
           Rotation2d linearDirection =
               new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
 
-          //get desired angle
+          // get desired angle
           Pose2d robotPose = drive.getPose();
-          double desiredAngle = Math.atan2(facingPose.getY() - robotPose.getY(), facingPose.getX() - robotPose.getX());
+          double desiredAngle =
+              Math.atan2(
+                  facingPose.getY() - robotPose.getY(), facingPose.getX() - robotPose.getX());
 
           // Square values
           linearMagnitude = linearMagnitude * linearMagnitude;
@@ -137,7 +138,7 @@ public class DriveCommands {
               new Pose2d(new Translation2d(), linearDirection)
                   .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                   .getTranslation();
-            double angularRotation = angleToVelocity(desiredAngle, robotYawSupplier.getAsDouble());
+          double angularRotation = angleToVelocity(desiredAngle, robotYawSupplier.getAsDouble());
           // Convert to field relative speeds & send command
           drive.runVelocity(
               ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -149,19 +150,18 @@ public class DriveCommands {
         drive);
   }
 
-    public static double angleToVelocity(double desiredAngle, double robotYaw){
-        double currentYaw = robotYaw;
-        double difference = desiredAngle - currentYaw;
-        double error = 0.0;
-        double kP = 0.63;
-    
-        if (Math.abs(difference) > 180) {
-          error = difference - (360 * (Math.abs(difference) / difference));
-        } else {
-          error = difference;
-        }
-    
-        return kP * Math.sin( 0.5 * Math.toRadians( error ) );
-    
+  public static double angleToVelocity(double desiredAngle, double robotYaw) {
+    double currentYaw = robotYaw;
+    double difference = desiredAngle - currentYaw;
+    double error = 0.0;
+    double kP = 0.63;
+
+    if (Math.abs(difference) > 180) {
+      error = difference - (360 * (Math.abs(difference) / difference));
+    } else {
+      error = difference;
     }
+
+    return kP * Math.sin(0.5 * Math.toRadians(error));
+  }
 }
