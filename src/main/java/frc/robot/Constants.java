@@ -14,7 +14,8 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
-import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -25,7 +26,7 @@ import edu.wpi.first.wpilibj.RobotBase;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  private static final RobotType robot = RobotType.ROBOT_REAL;
+  private static final RobotType robot = RobotType.ROBOT_FOOTBALL;
   public static final boolean tuningMode = false;
   public static final double loopPeriodSecs = 0.02;
   public static final double MeterPerInch = 0.0254;
@@ -34,21 +35,24 @@ public final class Constants {
   public static final double JOYSTICK_DEADBAND = 0.1;
 
   public static RobotType getRobot() {
-    if (RobotBase.isReal()) {
+    if( RobotBase.isReal() ) {
       return robot;
-    } else {
-      return RobotType.ROBOT_SIM;
-    }
+          } return RobotType.ROBOT_SIM;
   }
 
   public static enum RobotType {
     ROBOT_REAL, // a real robot
     ROBOT_REPLAY, // data file replay (could be on real bot or simulation)
-    ROBOT_SIM // simulation
+    ROBOT_SIM, // simulation
+    ROBOT_FOOTBALL // Football for simulatiung
   }
 
   // CAN IDs (Controller Area Network)
   public static final class CAN {
+
+    public static final int kIntakeCanId = 41;
+    public static final int kOuttakeCanId = 42;
+
     public static final int kArmLeaderCanId = 32;
     public static final int kArmFollowerCanId = 31;
 
@@ -66,6 +70,21 @@ public final class Constants {
 
   public static final class RobotConstants {
     public static final double robotSideLengthInches = 33.5;
+    public static final Transform3d cameraToRobot =
+        new Transform3d(
+            0,
+            1,
+            0,
+            new Rotation3d(
+                0, -Math.toRadians(30), Math.PI)); // TODO: find camera relative to robot 0,0
+  }
+
+  public static final class VisionConstants {
+    public static final String cameraName =
+        "AprilTagCamera"; //
+    public static final double xStdDevsScaler = 1.0;
+    public static final double yStdDevsScaler = 1.0;
+    public static final double angleStdDevsScaler = 0.0;
   }
 
   public static final class DriveConstants {
