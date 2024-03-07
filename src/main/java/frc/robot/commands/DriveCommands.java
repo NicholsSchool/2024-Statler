@@ -68,4 +68,100 @@ public class DriveCommands {
         },
         drive);
   }
+
+  public static Command joystickDriveWithAngle(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      // TODO change back to angle supplier
+      DoubleSupplier desiredAngle,
+      DoubleSupplier robotYawSupplier) {
+    return Commands.run(
+        () -> {
+          // Apply deadband
+          double linearMagnitude =
+              MathUtil.applyDeadband(
+                  Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()),
+                  Constants.JOYSTICK_DEADBAND);
+          Rotation2d linearDirection =
+              new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+
+          // Square values
+          linearMagnitude = linearMagnitude * linearMagnitude;
+
+          // Calcaulate new linear velocity
+          Translation2d linearVelocity =
+              new Pose2d(new Translation2d(), linearDirection)
+                  .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                  .getTranslation();
+          double angularRotation =
+              angleToVelocity(desiredAngle.getAsDouble(), robotYawSupplier.getAsDouble());
+          // Convert to field relative speeds & send command
+          drive.runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                  angularRotation,
+                  drive.getRotation()));
+        },
+        drive);
+  }
+
+  public static Command joystickDriveFacingPoint(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      // TODO change to pose supplier??
+      Pose2d facingPose,
+      DoubleSupplier robotYawSupplier) {
+    return Commands.run(
+        () -> {
+          // Apply deadband
+          double linearMagnitude =
+              MathUtil.applyDeadband(
+                  Math.hypot(xSupplier.getAsDouble(), ySupplier.getAsDouble()),
+                  Constants.JOYSTICK_DEADBAND);
+          Rotation2d linearDirection =
+              new Rotation2d(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+
+          // get desired angle
+          Pose2d robotPose = drive.getPose();
+          double desiredAngle =
+              Math.atan2(
+                  facingPose.getY() - robotPose.getY(), facingPose.getX() - robotPose.getX());
+
+          // Square values
+          linearMagnitude = linearMagnitude * linearMagnitude;
+
+          // Calcaulate new linear velocity
+          Translation2d linearVelocity =
+              new Pose2d(new Translation2d(), linearDirection)
+                  .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
+                  .getTranslation();
+          double angularRotation = angleToVelocity(desiredAngle, robotYawSupplier.getAsDouble());
+          // Convert to field relative speeds & send command
+          drive.runVelocity(
+              ChassisSpeeds.fromFieldRelativeSpeeds(
+                  linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                  linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                  angularRotation,
+                  drive.getRotation()));
+        },
+        drive);
+  }
+
+  public static double angleToVelocity(double desiredAngle, double robotYaw) {
+    double currentYaw = robotYaw;
+    double difference = desiredAngle - Math.toDegrees(currentYaw);
+    double error;
+    double kP = 25 * 0.63;
+
+    if (Math.abs(difference) > 180) {
+      error = difference - (360 * (Math.abs(difference) / difference));
+    } else {
+      error = difference;
+    }
+
+    return kP * Math.sin(0.5 * Math.toRadians(error));
+  }
 }

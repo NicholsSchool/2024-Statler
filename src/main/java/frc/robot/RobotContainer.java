@@ -15,6 +15,7 @@ import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToAmplifier;
 import frc.robot.commands.FeedForwardCharacterization;
+import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ResetFieldOrientation;
 import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.commands.arm_commands.ArmExtend;
@@ -57,8 +58,8 @@ public class RobotContainer {
   private final AprilTagVision vision;
 
   // Controller
-  private final CommandXboxController driveController = new CommandXboxController(0);
-  private final CommandXboxController operatorController = new CommandXboxController(1);
+  public static CommandXboxController driveController = new CommandXboxController(0);
+  public static CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -180,19 +181,58 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -driveController.getLeftY(),
-            () -> -driveController.getLeftX(),
-            () -> -driveController.getRightX()));
+            () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
+            () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
+            () -> -driveController.getRightX() * Constants.DriveConstants.lowGearScaler));
     driveController.back().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driveController.start().onTrue(new ResetFieldOrientation(drive));
     driveController
         .leftTrigger(0.9)
-        .onFalse(
+        .whileTrue(
             DriveCommands.joystickDrive(
+                drive,
+                () -> -driveController.getLeftY(),
+                () -> -driveController.getLeftX(),
+                () -> -driveController.getRightX()));
+    // for testing purposes setting to 45 degrees
+    driveController
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDriveWithAngle(
                 drive,
                 () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
-                () -> -driveController.getRightX() * Constants.DriveConstants.lowGearScaler));
+                () -> 180,
+                () -> drive.getYaw()));
+    driveController
+        .y()
+        .whileTrue(
+            DriveCommands.joystickDriveWithAngle(
+                drive,
+                () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
+                () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
+                () -> 0,
+                () -> drive.getYaw()));
+    driveController
+        .x()
+        .whileTrue(
+            DriveCommands.joystickDriveWithAngle(
+                drive,
+                () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
+                () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
+                () -> 90,
+                () -> drive.getYaw()));
+    driveController
+        .b()
+        .whileTrue(
+            DriveCommands.joystickDriveWithAngle(
+                drive,
+                () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
+                () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
+                () -> -90,
+                () -> drive.getYaw()));
+
+    driveController.rightTrigger(0.9).onTrue(new IntakeCommand(intake));
     driveController.leftBumper().whileTrue(new DriveToAmplifier(drive));
 
     // intake/outtake

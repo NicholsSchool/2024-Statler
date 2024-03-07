@@ -329,4 +329,8 @@ public class Drive extends SubsystemBase {
   public double getYawVelocity() {
     return gyroInputs.yawVelocityRadPerSec;
   }
+
+  public double getYaw() {
+    return pose.getRotation().getRadians();
+  }
 }
