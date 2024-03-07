@@ -5,7 +5,7 @@ import frc.robot.subsystems.intake.Intake;
 
 public class VomitCommand extends Command {
 
-    public VomitCommand( Intake intake ) {
-        intake.runVomitCommand();
-    }
+  public VomitCommand(Intake intake) {
+    intake.runVomitCommand();
+  }
 }

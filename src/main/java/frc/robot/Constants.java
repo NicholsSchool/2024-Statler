@@ -27,8 +27,9 @@ import edu.wpi.first.wpilibj.RobotBase;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  private static final RobotType robot = RobotType.ROBOT_FOOTBALL;
-  public static final boolean tuningMode = false;
+  private static final RobotType robot = RobotType.ROBOT_REAL;
+  public static final boolean tuningMode =
+      true; // true to place tunable numbers in dashboard for setting, false otherwise
   public static final double loopPeriodSecs = 0.02;
   public static final double MeterPerInch = 0.0254;
   public static final double KgPerLb = 0.453592;
@@ -129,7 +130,7 @@ public final class Constants {
     public static final int kBeamBreakChannel = 2;
     public static final double kVomitDelay = 0.5;
     public static final double kP = 6.0;
-    public static final double kD = 0.0;
+    public static final double kI = 0.0;
   }
 
   public static final class ArmConstants {
