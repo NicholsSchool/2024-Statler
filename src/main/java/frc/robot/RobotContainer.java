@@ -158,7 +158,7 @@ public class RobotContainer {
                 () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getRightX() * Constants.DriveConstants.lowGearScaler));
-    // for testing purposes setting to 45 degrees
+    //autoaligns to cardinal directions
     driveController
         .a()
         .whileTrue(
@@ -166,10 +166,39 @@ public class RobotContainer {
                 drive,
                 () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
-                () -> 45.0,
+                () -> 180,
                 () -> drive.getYaw()));
+    driveController
+        .y()
+        .whileTrue(
+            DriveCommands.joystickDriveWithAngle(
+                drive,
+                () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
+                () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
+                () -> 0,
+                () -> drive.getYaw()));
+    driveController
+        .x()
+        .whileTrue(
+            DriveCommands.joystickDriveWithAngle(
+                drive,
+                () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
+                () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
+                () -> 90,
+                () -> drive.getYaw()));
+    driveController
+        .b()
+        .whileTrue(
+            DriveCommands.joystickDriveWithAngle(
+                drive,
+                () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
+                () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
+                () -> -90,
+                () -> drive.getYaw()));
+    
     driveController.rightTrigger(0.9).onTrue(new IntakeCommand(intake));
     driveController.leftBumper().whileTrue(new DriveToAmplifier(drive));
+
     // TOOD: add autoalign and nudge to swerve
 
     // Arm controls
