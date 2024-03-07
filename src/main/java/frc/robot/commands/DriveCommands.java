@@ -152,7 +152,7 @@ public class DriveCommands {
 
   public static double angleToVelocity(double desiredAngle, double robotYaw) {
     double currentYaw = robotYaw;
-    double difference = desiredAngle - Math.toRadians(currentYaw);
+    double difference = desiredAngle - Math.toDegrees(currentYaw);
     double error;
     double kP = 0.63;
 
