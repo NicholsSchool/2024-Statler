@@ -35,7 +35,9 @@ public final class Constants {
   public static final double JOYSTICK_DEADBAND = 0.1;
 
   public static RobotType getRobot() {
-    return RobotType.ROBOT_FOOTBALL;
+    if( RobotBase.isReal() ) {
+      return robot;
+          } return RobotType.ROBOT_SIM;
   }
 
   public static enum RobotType {
