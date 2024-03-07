@@ -6,21 +6,40 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.*;
-import frc.robot.commands.*;
+import frc.robot.Constants.ArmConstants;
+import frc.robot.commands.AutoCommands;
+import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveToAmplifier;
+import frc.robot.commands.FeedForwardCharacterization;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.ResetFieldOrientation;
+import frc.robot.commands.VoltageCommandRamp;
+import frc.robot.commands.VomitCommand;
 import frc.robot.commands.arm_commands.ArmExtend;
 import frc.robot.commands.arm_commands.ArmManuel;
 import frc.robot.commands.arm_commands.ArmRetract;
-import frc.robot.subsystems.arm.*;
-import frc.robot.subsystems.drive.*;
-import frc.robot.subsystems.example_flywheel.*;
-import frc.robot.subsystems.intake.*;
+import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIOReal;
+import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIONAVX;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.example_flywheel.ExampleFlywheel;
+import frc.robot.subsystems.example_flywheel.ExampleFlywheelIO;
+import frc.robot.subsystems.example_flywheel.ExampleFlywheelIOSim;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIOReal;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.vision.AprilTagVision;
+import frc.robot.subsystems.vision.AprilTagVisionIO;
+import frc.robot.subsystems.vision.AprilTagVisionReal;
 import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -37,9 +56,7 @@ public class RobotContainer {
   private final Arm arm;
   private final Intake intake;
   private final ExampleFlywheel exampleFlywheel;
-
-  @SuppressWarnings("unused")
-  private final PowerDistribution pdh;
+  private final AprilTagVision vision;
 
   // Controller
   private final CommandXboxController driveController = new CommandXboxController(0);
@@ -67,9 +84,12 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(3));
         // We have no flywheel, so create a simulated just for example.
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
-        pdh = new PowerDistribution(Constants.CAN.kPowerDistributionHub, ModuleType.kRev);
         arm = new Arm(new ArmIOReal());
         intake = new Intake(new IntakeIOReal());
+        vision =
+            new AprilTagVision(
+                new AprilTagVisionReal(
+                    Constants.VisionConstants.cameraName, Constants.RobotConstants.cameraToRobot));
         break;
 
       case ROBOT_SIM:
@@ -82,12 +102,29 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
-        pdh = new PowerDistribution();
         arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
+        vision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
 
-      case ROBOT_REPLAY:
+      case ROBOT_FOOTBALL:
+        drive =
+            new Drive(
+                new GyroIO() {},
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim());
+        exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
+        arm = new Arm(new ArmIOSim());
+        intake = new Intake(new IntakeIOSim());
+        vision =
+            new AprilTagVision(
+                new AprilTagVisionReal(
+                    Constants.VisionConstants.cameraName, Constants.RobotConstants.cameraToRobot));
+        break;
+
+        //   case ROBOT_REPLAY:
       default:
         // Replayed robot, disable IO implementations since the replay
         // will supply the data.
@@ -99,9 +136,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIO() {});
-        pdh = new PowerDistribution();
-        arm = new Arm(new ArmIO() {}); // TODO: make interfaces
+        arm = new Arm(new ArmIOSim()); // TODO: make interfaces
         intake = new Intake(new IntakeIOSim());
+        vision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
     }
 
@@ -180,6 +217,8 @@ public class RobotContainer {
 
     operatorController.back().onTrue(new ArmExtend(arm));
     operatorController.start().onTrue(new ArmRetract(arm));
+
+    operatorController.povUp().onTrue(new VomitCommand(intake));
   }
 
   /**
