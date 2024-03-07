@@ -36,9 +36,10 @@ public final class Constants {
   public static final double JOYSTICK_DEADBAND = 0.1;
 
   public static RobotType getRobot() {
-    if( RobotBase.isReal() ) {
+    if (RobotBase.isReal()) {
       return robot;
-          } return RobotType.ROBOT_SIM;
+    }
+    return RobotType.ROBOT_SIM;
   }
 
   public static enum RobotType {
@@ -81,8 +82,7 @@ public final class Constants {
   }
 
   public static final class VisionConstants {
-    public static final String cameraName =
-        "AprilTagCamera"; //
+    public static final String cameraName = "AprilTagCamera"; //
     public static final double xStdDevsScaler = 1.0;
     public static final double yStdDevsScaler = 1.0;
     public static final double angleStdDevsScaler = 0.0;

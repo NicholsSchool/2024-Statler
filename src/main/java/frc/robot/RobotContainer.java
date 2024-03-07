@@ -18,6 +18,7 @@ import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ResetFieldOrientation;
 import frc.robot.commands.VoltageCommandRamp;
+import frc.robot.commands.VomitCommand;
 import frc.robot.commands.arm_commands.ArmExtend;
 import frc.robot.commands.arm_commands.ArmManuel;
 import frc.robot.commands.arm_commands.ArmRetract;
@@ -86,7 +87,9 @@ public class RobotContainer {
         arm = new Arm(new ArmIOReal());
         intake = new Intake(new IntakeIOReal());
         vision =
-            new AprilTagVision(new AprilTagVisionReal(Constants.VisionConstants.cameraName, Constants.RobotConstants.cameraToRobot));
+            new AprilTagVision(
+                new AprilTagVisionReal(
+                    Constants.VisionConstants.cameraName, Constants.RobotConstants.cameraToRobot));
         break;
 
       case ROBOT_SIM:
@@ -117,11 +120,8 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSim());
         vision =
             new AprilTagVision(
-                new AprilTagVisionReal(Constants.VisionConstants.cameraName, Constants.RobotConstants.cameraToRobot));
-
-        // vision =
-        //     new AprilTagVision(
-        //         new AprilTagVisionReal("AprilTagCam", Constants.RobotConstants.cameraToRobot));
+                new AprilTagVisionReal(
+                    Constants.VisionConstants.cameraName, Constants.RobotConstants.cameraToRobot));
         break;
 
         //   case ROBOT_REPLAY:
@@ -214,6 +214,8 @@ public class RobotContainer {
 
     operatorController.back().onTrue(new ArmExtend(arm));
     operatorController.start().onTrue(new ArmRetract(arm));
+
+    operatorController.povUp().onTrue(new VomitCommand(intake));
   }
 
   /**
