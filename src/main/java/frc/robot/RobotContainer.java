@@ -145,19 +145,19 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -driveController.getLeftY(),
-            () -> -driveController.getLeftX(),
-            () -> -driveController.getRightX()));
+            () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
+            () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
+            () -> -driveController.getRightX() * Constants.DriveConstants.lowGearScaler));
     driveController.back().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driveController.start().onTrue(new ResetFieldOrientation(drive));
     driveController
         .leftTrigger(0.9)
-        .onFalse(
+        .whileTrue(
             DriveCommands.joystickDrive(
                 drive,
-                () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
-                () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
-                () -> -driveController.getRightX() * Constants.DriveConstants.lowGearScaler));
+                () -> -driveController.getLeftY(),
+                () -> -driveController.getLeftX(),
+                () -> -driveController.getRightX()));
     // for testing purposes setting to 45 degrees
     driveController
         .a()
