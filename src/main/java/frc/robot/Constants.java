@@ -69,8 +69,6 @@ public final class Constants {
     public static final int kRearLeftTurningCanId = 21;
 
     public static final int kPowerDistributionHub = 50;
-
-    public static final int kIntakeCanId = 33; // TODO: What is this supposed to be?
   }
 
   public static final class RobotConstants {

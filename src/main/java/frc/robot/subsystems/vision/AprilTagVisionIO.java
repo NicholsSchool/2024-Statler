@@ -14,5 +14,6 @@ public interface AprilTagVisionIO {
     public int bestID = -1;
   }
 
-  public default void updateInputs(AprilTagVisionIOInputs inputs) {};
+  public default void updateInputs(AprilTagVisionIOInputs inputs) {}
+  ;
 }
