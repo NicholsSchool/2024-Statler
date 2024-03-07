@@ -86,7 +86,7 @@ public class RobotContainer {
         arm = new Arm(new ArmIOReal());
         intake = new Intake(new IntakeIOReal());
         vision =
-            new AprilTagVision(new AprilTagVisionReal("", Constants.RobotConstants.cameraToRobot));
+            new AprilTagVision(new AprilTagVisionReal(Constants.VisionConstants.cameraName, Constants.RobotConstants.cameraToRobot));
         break;
 
       case ROBOT_SIM:
@@ -117,7 +117,7 @@ public class RobotContainer {
         intake = new Intake(new IntakeIOSim());
         vision =
             new AprilTagVision(
-                new AprilTagVisionReal("AprilTagCamera", Constants.RobotConstants.cameraToRobot));
+                new AprilTagVisionReal(Constants.VisionConstants.cameraName, Constants.RobotConstants.cameraToRobot));
 
         // vision =
         //     new AprilTagVision(

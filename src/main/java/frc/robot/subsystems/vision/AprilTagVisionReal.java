@@ -22,11 +22,6 @@ public class AprilTagVisionReal extends PhotonVisionSubsystemBase implements Apr
     }
   }
 
-  @AutoLogOutput
-  public boolean hasTargets() {
-    return super.hasTargets();
-  }
-
   public void periodic() {
     super.periodic();
   }
@@ -34,18 +29,6 @@ public class AprilTagVisionReal extends PhotonVisionSubsystemBase implements Apr
   /** Please check hasTargets() before this is called. */
   public PhotonTrackedTarget getBestTarget() {
     return super.getBestTarget();
-  }
-
-  @AutoLogOutput
-  public Transform3d getBestPose() {
-    if (this.hasTargets()) return this.getBestTarget().getBestCameraToTarget();
-    return new Transform3d();
-  }
-
-  @AutoLogOutput
-  public int getID() {
-    if (this.hasTargets()) return this.getBestTarget().getFiducialId();
-    return -1;
   }
 
   @AutoLogOutput

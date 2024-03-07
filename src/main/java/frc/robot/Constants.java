@@ -47,6 +47,10 @@ public final class Constants {
 
   // CAN IDs (Controller Area Network)
   public static final class CAN {
+
+    public static final int kIntakeCanId = 41;
+    public static final int kOuttakeCanId = 42;
+
     public static final int kArmLeaderCanId = 32;
     public static final int kArmFollowerCanId = 31;
 
@@ -69,11 +73,13 @@ public final class Constants {
             0,
             1,
             0,
-            new Rotation3d(0, -Math.toRadians(30), 0)); // TODO: find camera relative to robot 0,0
+            new Rotation3d(
+                0, -Math.toRadians(30), Math.PI)); // TODO: find camera relative to robot 0,0
   }
 
   public static final class VisionConstants {
-    public static final String cameraName = ""; // TODO: add camera name for our camera via glass
+    public static final String cameraName =
+        "AprilTagCamera"; //
     public static final double xStdDevsScaler = 1.0;
     public static final double yStdDevsScaler = 1.0;
     public static final double angleStdDevsScaler = 0.0;
