@@ -17,7 +17,6 @@ import frc.robot.commands.DriveToAmplifier;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.ResetFieldOrientation;
 import frc.robot.commands.VoltageCommandRamp;
-import frc.robot.commands.VomitCommand;
 import frc.robot.commands.arm_commands.ArmExtend;
 import frc.robot.commands.arm_commands.ArmManuel;
 import frc.robot.commands.arm_commands.ArmRetract;
@@ -198,7 +197,7 @@ public class RobotContainer {
 
     // intake/outtake
     driveController.rightTrigger(0.9).whileTrue(intake.runEatCommand());
-    // driveController.a().whileTrue(intake.runVomitCommand()); TODO: add vomit command
+    operatorController.povUp().whileTrue(intake.runVomitCommand());
 
     // TOOD: add autoalign and nudge to swerve
 
@@ -216,8 +215,6 @@ public class RobotContainer {
 
     operatorController.back().onTrue(new ArmExtend(arm));
     operatorController.start().onTrue(new ArmRetract(arm));
-
-    operatorController.povUp().onTrue(new VomitCommand(intake));
   }
 
   /**
