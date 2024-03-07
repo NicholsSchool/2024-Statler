@@ -85,10 +85,7 @@ public class RobotContainer {
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
         arm = new Arm(new ArmIOReal());
         intake = new Intake(new IntakeIOReal());
-        vision =
-            new AprilTagVision(
-                new AprilTagVisionReal(
-                    Constants.VisionConstants.cameraName, Constants.RobotConstants.cameraToRobot));
+        vision = new AprilTagVision(new AprilTagVisionIO() {});
         break;
 
       case ROBOT_SIM:
@@ -194,7 +191,7 @@ public class RobotContainer {
                 () -> -driveController.getLeftY(),
                 () -> -driveController.getLeftX(),
                 () -> -driveController.getRightX()));
-    // for testing purposes setting to 45 degrees
+
     driveController
         .a()
         .whileTrue(
@@ -233,13 +230,10 @@ public class RobotContainer {
                 () -> drive.getYaw()));
 
     driveController.rightTrigger(0.9).onTrue(new IntakeCommand(intake));
-    driveController.leftBumper().whileTrue(new DriveToAmplifier(drive));
+    driveController.povDown().whileTrue(new DriveToAmplifier(drive));
 
     // intake/outtake
-    driveController.rightTrigger(0.9).whileTrue(intake.runEatCommand());
-    operatorController.povUp().whileTrue(intake.runVomitCommand());
-
-    // TOOD: add autoalign and nudge to swerve
+    operatorController.leftTrigger().whileTrue(intake.runVomitCommand());
 
     // Arm controls
     arm.setDefaultCommand(
