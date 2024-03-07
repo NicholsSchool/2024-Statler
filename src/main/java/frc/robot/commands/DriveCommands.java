@@ -152,8 +152,8 @@ public class DriveCommands {
 
   public static double angleToVelocity(double desiredAngle, double robotYaw) {
     double currentYaw = robotYaw;
-    double difference = desiredAngle - currentYaw;
-    double error = 0.0;
+    double difference = desiredAngle - Math.toRadians(currentYaw);
+    double error;
     double kP = 0.63;
 
     if (Math.abs(difference) > 180) {
