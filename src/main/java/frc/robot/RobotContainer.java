@@ -20,6 +20,7 @@ import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.commands.arm_commands.ArmExtend;
 import frc.robot.commands.arm_commands.ArmManuel;
 import frc.robot.commands.arm_commands.ArmRetract;
+import frc.robot.commands.climb_commands.ClimbManual;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.climb.Climb;
@@ -260,13 +261,11 @@ public class RobotContainer {
 
     // TEMPORARY!!! FOR TESTING. TODO: REMOVE THIS!!!
     climb.setDefaultCommand(
-        Commands.run(
-            () -> climb.setVoltage(1),
-            // MathUtil.applyDeadband(
-            //         // -operatorController.getLeftY()
-            //         2, Constants.JOYSTICK_DEADBAND)
-            //     * 0.5),
-            climb));
+        new ClimbManual(
+            climb,
+            () ->
+                MathUtil.applyDeadband(
+                    -operatorController.getLeftY() * 0.5, Constants.JOYSTICK_DEADBAND)));
   }
 
   /**
