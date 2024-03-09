@@ -240,7 +240,7 @@ public class RobotContainer {
             arm,
             () ->
                 MathUtil.applyDeadband(
-                    operatorController.getRightY(), Constants.JOYSTICK_DEADBAND)));
+                    -operatorController.getRightY(), Constants.JOYSTICK_DEADBAND)));
     operatorController.a().onTrue(arm.runGoToPosCommand(ArmConstants.armIntakePosDeg));
     operatorController.b().onTrue(arm.runGoToPosCommand(ArmConstants.armDrivePosDeg));
     operatorController.x().onTrue(arm.runGoToPosCommand(ArmConstants.armTrapPosDeg));

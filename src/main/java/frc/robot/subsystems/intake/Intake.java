@@ -17,11 +17,11 @@ public class Intake extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   private static final LoggedTunableNumber eatVelocityRPM =
-      new LoggedTunableNumber("Intake/EatVelocityRPMs", 1000.0);
+      new LoggedTunableNumber("Intake/EatVelocityRPMs", 600.0);
   private static final LoggedTunableNumber vomitVelocityRPM =
-      new LoggedTunableNumber("Intake/VomitVelocityRPMs", -1000.0);
+      new LoggedTunableNumber("Intake/VomitVelocityRPMs", 900.0); // TODO:negative
   private static final LoggedTunableNumber digestVelocityRPM =
-      new LoggedTunableNumber("Intake/DigestVelocityRPMs", 500.0);
+      new LoggedTunableNumber("Intake/DigestVelocityRPMs", 300.0); // TODO: fix
   private static final LoggedTunableNumber kP = new LoggedTunableNumber("Intake/kP", 0.1);
   private static final LoggedTunableNumber kI = new LoggedTunableNumber("Intake/kI", 0.5);
 
@@ -51,7 +51,7 @@ public class Intake extends SubsystemBase {
     // separate robot with different tuning)
     switch (Constants.getRobot()) {
       case ROBOT_REAL:
-        ffModel = new SimpleMotorFeedforward(0.1, 0.05);
+        ffModel = new SimpleMotorFeedforward(0.1, 0.12);
         break;
       case ROBOT_SIM:
       default:
@@ -93,8 +93,8 @@ public class Intake extends SubsystemBase {
 
       setpointRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(setpointRPMs);
       controller.setSetpoint(setpointRadPerSec);
-      double voltage =
-          ffModel.calculate(setpointRadPerSec) + controller.calculate(inputs.velocityRadPerSec);
+      double voltage = ffModel.calculate(setpointRadPerSec);
+      // + controller.calculate(inputs.velocityRadPerSec);
       io.setVoltage(MathUtil.clamp(voltage, -12.0, 12.0));
     }
   }
@@ -122,6 +122,21 @@ public class Intake extends SubsystemBase {
   public void stop() {
     System.out.println("Intake: Stopped");
     mode = IntakeMode.kStopped;
+  }
+
+  @AutoLogOutput
+  public double getSetpointRadians() {
+    return setpointRadPerSec;
+  }
+
+  @AutoLogOutput
+  public double getFF() {
+    return ffModel.calculate(setpointRadPerSec);
+  }
+
+  @AutoLogOutput
+  public double getPID() {
+    return controller.calculate(inputs.velocityRadPerSec);
   }
 
   @AutoLogOutput
