@@ -15,7 +15,6 @@ import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToAmplifier;
 import frc.robot.commands.FeedForwardCharacterization;
-import frc.robot.commands.IntakeCommand;
 import frc.robot.commands.ResetFieldOrientation;
 import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.commands.arm_commands.ArmExtend;
@@ -229,10 +228,10 @@ public class RobotContainer {
                 () -> -90,
                 () -> drive.getYaw()));
 
-    driveController.rightTrigger(0.9).onTrue(new IntakeCommand(intake));
     driveController.povDown().whileTrue(new DriveToAmplifier(drive));
 
     // intake/outtake
+    driveController.rightTrigger().whileTrue(intake.runEatCommand());
     operatorController.leftTrigger().whileTrue(intake.runVomitCommand());
 
     // Arm controls
@@ -241,7 +240,7 @@ public class RobotContainer {
             arm,
             () ->
                 MathUtil.applyDeadband(
-                    -operatorController.getRightY(), Constants.JOYSTICK_DEADBAND)));
+                    operatorController.getRightY(), Constants.JOYSTICK_DEADBAND)));
     operatorController.a().onTrue(arm.runGoToPosCommand(ArmConstants.armIntakePosDeg));
     operatorController.b().onTrue(arm.runGoToPosCommand(ArmConstants.armDrivePosDeg));
     operatorController.x().onTrue(arm.runGoToPosCommand(ArmConstants.armTrapPosDeg));

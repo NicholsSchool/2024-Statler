@@ -5,7 +5,6 @@ import static frc.robot.Constants.CAN.*;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
@@ -29,8 +28,6 @@ public class ArmIOReal implements ArmIO {
 
     leader.setInverted(false);
     leader.setSmartCurrentLimit(ARM_CURRENT_LIMIT);
-    leader.enableSoftLimit(SoftLimitDirection.kForward, true);
-    leader.setSoftLimit(SoftLimitDirection.kForward, (float) SOFT_LIMIT_FORWARD);
     leader.setIdleMode(IdleMode.kBrake);
     armEncoder.setPositionConversionFactor(2.0 * Math.PI);
     armEncoder.setVelocityConversionFactor(2.0 * Math.PI);
@@ -38,6 +35,7 @@ public class ArmIOReal implements ArmIO {
 
     follower = new CANSparkMax(kArmFollowerCanId, MotorType.kBrushless);
     follower.restoreFactoryDefaults();
+    follower.setIdleMode(IdleMode.kBrake);
     follower.follow(leader);
     follower.burnFlash();
 

@@ -34,6 +34,7 @@ public class IntakeIOReal implements IntakeIO {
     inputs.appliedVolts = motor.getAppliedOutput() * motor.getBusVoltage();
     inputs.currentAmps = motor.getOutputCurrent();
     inputs.hasNote = !breamBreak.get(); // TODO: might be opposite
+    System.out.println("beambreak:  " + breamBreak.get());
   }
 
   @Override

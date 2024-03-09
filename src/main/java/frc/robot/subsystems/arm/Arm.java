@@ -32,7 +32,14 @@ public class Arm extends SubsystemBase {
   private Timer timerMoveToPose; // timer to check for timeout of move to position
   private double voltageCommand = 0.0;
 
+  private double previousVelocity = 0.0;
+  double acclerationRad = 0.0;
+
   // tunable parameters
+  private static final LoggedTunableNumber armKg = new LoggedTunableNumber("Arm/kG");
+  private static final LoggedTunableNumber armKv = new LoggedTunableNumber("Arm/kV");
+  private static final LoggedTunableNumber armKa = new LoggedTunableNumber("Arm/kA");
+
   private static final LoggedTunableNumber positionToleranceDeg =
       new LoggedTunableNumber("Arm/PositionToleranceDeg");
   private static final LoggedTunableNumber armMaxVelocityRad =
@@ -67,9 +74,12 @@ public class Arm extends SubsystemBase {
     timerMoveToPose.start();
     timerMoveToPose.reset();
 
+    armKg.initDefault(ARM_FF_KG);
+    armKv.initDefault(ARM_FF_KV);
+    armKa.initDefault(ARM_FF_KA);
     positionToleranceDeg.initDefault(2.0);
-    armMaxVelocityRad.initDefault(0.66);
-    armMaxAccelerationRad.initDefault(0.66);
+    armMaxVelocityRad.initDefault(0.85167);
+    armMaxAccelerationRad.initDefault(0.2);
     armKp.initDefault(3.0);
     armKd.initDefault(1.0);
     moveToPosTimeoutSec.initDefault(5.0);
@@ -87,6 +97,9 @@ public class Arm extends SubsystemBase {
     Logger.processInputs("Arm", inputs);
 
     updateTunables();
+
+    acclerationRad = (inputs.velocityRadsPerSec - previousVelocity) / 0.02;
+    previousVelocity = inputs.velocityRadsPerSec;
 
     // Reset when disabled
     if (DriverStation.isDisabled()) {
@@ -164,6 +177,14 @@ public class Arm extends SubsystemBase {
 
   private void updateTunables() {
     // Update from tunable numbers
+    if (armKg.hasChanged(hashCode())
+        || armKv.hasChanged(hashCode())
+        || armKa.hasChanged(hashCode())) {
+
+      System.out.println("updated arm ff coeffs");
+      ARM_FF = new ArmFeedforward(0.0, armKg.get(), armKv.get(), armKa.get());
+    }
+
     if (armMaxVelocityRad.hasChanged(hashCode())
         || armMaxAccelerationRad.hasChanged(hashCode())
         || positionToleranceDeg.hasChanged(hashCode())
@@ -191,6 +212,11 @@ public class Arm extends SubsystemBase {
   }
 
   // THINGS TO LOG IN ADV SCOPE
+
+  @AutoLogOutput
+  public double getAcceleration() {
+    return acclerationRad;
+  }
 
   @AutoLogOutput
   public double getVoltageCommand() {

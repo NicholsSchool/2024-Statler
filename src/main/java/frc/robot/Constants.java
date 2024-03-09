@@ -47,7 +47,7 @@ public final class Constants {
     ROBOT_REAL, // a real robot
     ROBOT_REPLAY, // data file replay (could be on real bot or simulation)
     ROBOT_SIM, // simulation
-    ROBOT_FOOTBALL // Football for simulatiung
+    ROBOT_FOOTBALL // Football for simulating
   }
 
   // CAN IDs (Controller Area Network)
@@ -55,6 +55,9 @@ public final class Constants {
 
     public static final int kIntakeCanId = 41;
     public static final int kOuttakeCanId = 42;
+
+    public static final int kLeftClimberId = 34;
+    public static final int kRightClimberId = 33;
 
     public static final int kArmLeaderCanId = 31;
     public static final int kArmFollowerCanId = 32;
@@ -127,7 +130,7 @@ public final class Constants {
   }
 
   public static final class IntakeConstants {
-    public static final int kBeamBreakChannel = 2;
+    public static final int kBeamBreakChannel = 0;
     public static final double kVomitDelay = 0.5;
     public static final double kP = 6.0;
     public static final double kI = 0.0;
@@ -142,9 +145,6 @@ public final class Constants {
 
     public static final int ARM_SOLENOID_CHANNEL = 7;
 
-    public static final double SOFT_LIMIT_FORWARD = Math.PI;
-    // TODO: figure out the right angle/encoder position
-
     public static final int ARM_CURRENT_LIMIT = 35;
 
     public static final double MIN_ANGLE_RADS = 0.0;
@@ -158,7 +158,7 @@ public final class Constants {
         1.0 / ARM_GEAR_REDUCTION; // 1:98 planetary gear ratio
 
     public static final double ARM_FF_KS = 0.0;
-    public static final double ARM_FF_KG = 1.05;
+    public static final double ARM_FF_KG = 0.4;
     public static final double ARM_FF_KV = 1.91;
     public static final double ARM_FF_KA = 0.05;
 
@@ -178,8 +178,7 @@ public final class Constants {
   public static final class ClimbConstants {
     public static final double kMaxClimbSpeed = 0.0; // TODO: constants
 
-    public static final int LEFT_CLIMB_SOLENOID_CHANNEL = 6;
-    public static final int RIGHT_CLIMB_SOLENOID_CHANNEL = 7;
+    public static final int CLIMB_SOLENOID_CHANNEL = 6;
   }
 
   public static final class AutoConstants {
