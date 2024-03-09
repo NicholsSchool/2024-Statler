@@ -109,7 +109,8 @@ public class Arm extends SubsystemBase {
 
     switch (armState) {
       case kManuel:
-        voltageCommand = ARM_FF.calculate(inputs.angleRads, armMaxVelocityRad.get() * manuelInput);
+        voltageCommand =
+            ARM_FF.calculate(inputs.angleRads, armMaxVelocityRad.get() * softLimit(manuelInput));
         break;
       case kGoToPos:
         voltageCommand =
@@ -129,6 +130,15 @@ public class Arm extends SubsystemBase {
         io.retract();
         break;
     }
+  }
+
+  public double softLimit(double input) {
+    // weird ranges due to [0, 360] angle range of the arm angle input
+    if ((inputs.angleDegs >= 100.0 && inputs.angleDegs <= 200.0) && input > 0
+        || (inputs.angleDegs <= 2.0 || inputs.angleDegs >= 200.0) && input < 0) {
+      return 0.0;
+    }
+    return input;
   }
 
   public boolean hasReachedTarget() {

@@ -137,10 +137,10 @@ public final class Constants {
   }
 
   public static final class ArmConstants {
-    // TODO: make the correct constants for arm angles
-    public static final double armIntakePosDeg = 0.0;
+    // NO GO TO POSITION ANGLES SHOULD BE OVER 108 DEGREES
+    public static final double armIntakePosDeg = 2.0;
     public static final double armDrivePosDeg = 45.0;
-    public static final double armAmpPosDeg = 90.0;
+    public static final double armAmpPosDeg = 108.0;
     public static final double armTrapPosDeg = 75.0;
 
     public static final int ARM_SOLENOID_CHANNEL = 7;
