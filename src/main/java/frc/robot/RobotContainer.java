@@ -267,7 +267,7 @@ public class RobotContainer {
                 () ->
                     climb.setVoltage(
                         MathUtil.applyDeadband(
-                                operatorController.getLeftY(), Constants.JOYSTICK_DEADBAND)
+                                -operatorController.getLeftY(), Constants.JOYSTICK_DEADBAND)
                             * 0.5),
                 climb));
   }
