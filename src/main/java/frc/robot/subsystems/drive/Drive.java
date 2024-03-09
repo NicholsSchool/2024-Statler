@@ -176,12 +176,13 @@ public class Drive extends SubsystemBase {
       wheelAbsolutes[i] = modules[i].getPosition();
     }
 
+    //TODO: put pose estimator back into use
     // updating the pose estimator
-    pose = poseEstimator.update(lastGyroRotation, wheelAbsolutes);
+    // pose = poseEstimator.update(lastGyroRotation, wheelAbsolutes);
 
     // Previous method of updating pose:
     // Apply the twist (change since last loop cycle) to the current pose
-    // pose = pose.exp(twist);
+    pose = pose.exp(twist);
 
     // Update field velocity
     ChassisSpeeds chassisSpeeds = kinematics.toChassisSpeeds(measuredStates);
@@ -284,8 +285,7 @@ public class Drive extends SubsystemBase {
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
     // TODO: make it actually offset the angle
-    // poseEstimator.resetPosition(new Rotation2d(gyroInputs.yawPositionRad), positions,
-    // poseEstimator.getEstimatedPosition());
+    this.pose = pose;
   }
 
   /** Adds vision data to the pose esimation. */
