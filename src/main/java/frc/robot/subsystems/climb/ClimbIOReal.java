@@ -28,16 +28,17 @@ public class ClimbIOReal implements ClimbIO {
     rightClimbEncoder = rightClimb.getEncoder();
 
     leftClimb.setIdleMode(IdleMode.kBrake);
-    rightClimb.setIdleMode(IdleMode.kBrake);
     leftClimb.setInverted(false);
-    rightClimb.setInverted(false);
     leftClimb.setSmartCurrentLimit(10); // amps
-    rightClimb.setSmartCurrentLimit(10); // amps
-    leftClimbEncoder.setPositionConversionFactor(2 * Math.PI * 25.0);
-    leftClimbEncoder.setVelocityConversionFactor(2 * Math.PI * 25.0);
-    rightClimbEncoder.setPositionConversionFactor(2 * Math.PI * 25.0);
-    rightClimbEncoder.setVelocityConversionFactor(2 * Math.PI * 25.0);
+    leftClimbEncoder.setPositionConversionFactor(2 * Math.PI / 25.0);
+    leftClimbEncoder.setVelocityConversionFactor(2 * Math.PI / 25.0);
     leftClimb.burnFlash();
+
+    rightClimb.setIdleMode(IdleMode.kBrake);
+    rightClimb.setInverted(true);
+    rightClimb.setSmartCurrentLimit(10); // amps
+    rightClimbEncoder.setPositionConversionFactor(2 * Math.PI / 25.0);
+    rightClimbEncoder.setVelocityConversionFactor(2 * Math.PI / 25.0);
     rightClimb.burnFlash();
 
     climbLock =
@@ -52,7 +53,7 @@ public class ClimbIOReal implements ClimbIO {
     inputs.rightVelocityRadsPerSec = rightClimbEncoder.getVelocity();
     inputs.leftClimbCurrent = leftClimb.getOutputCurrent();
     inputs.rightClimbCurrent = rightClimb.getOutputCurrent();
-    inputs.isLocked = climbLock.get();
+    inputs.isLocked = isLocked();
   }
 
   public void setVoltageLeft(double voltage) {

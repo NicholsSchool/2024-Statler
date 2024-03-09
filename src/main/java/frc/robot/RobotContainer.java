@@ -21,7 +21,6 @@ import frc.robot.commands.arm_commands.ArmExtend;
 import frc.robot.commands.arm_commands.ArmManuel;
 import frc.robot.commands.arm_commands.ArmRetract;
 import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOReal;
@@ -86,7 +85,7 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(3));
         // We have no flywheel, so create a simulated just for example.
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
-        arm = new Arm(new ArmIOReal());
+        arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOReal());
         vision = new AprilTagVision(new AprilTagVisionIO() {});
         climb = new Climb(new ClimbIOReal());
@@ -260,16 +259,14 @@ public class RobotContainer {
     operatorController.start().onTrue(new ArmRetract(arm));
 
     // TEMPORARY!!! FOR TESTING. TODO: REMOVE THIS!!!
-    operatorController
-        .leftStick()
-        .whileTrue(
-            Commands.run(
-                () ->
-                    climb.setVoltage(
-                        MathUtil.applyDeadband(
-                                -operatorController.getLeftY(), Constants.JOYSTICK_DEADBAND)
-                            * 0.5),
-                climb));
+    climb.setDefaultCommand(
+        Commands.run(
+            () -> climb.setVoltage(1),
+            // MathUtil.applyDeadband(
+            //         // -operatorController.getLeftY()
+            //         2, Constants.JOYSTICK_DEADBAND)
+            //     * 0.5),
+            climb));
   }
 
   /**
