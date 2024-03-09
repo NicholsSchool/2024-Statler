@@ -180,8 +180,8 @@ public class RobotContainer {
             () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
             () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
             () -> -driveController.getRightX() * Constants.DriveConstants.lowGearScaler));
-    driveController.back().onTrue(Commands.runOnce(drive::stopWithX, drive));
-    driveController.start().onTrue(new ResetFieldOrientation(drive));
+    driveController.start().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    driveController.back().onTrue(new ResetFieldOrientation(drive));
     driveController
         .leftTrigger(0.9)
         .whileTrue(
@@ -246,8 +246,8 @@ public class RobotContainer {
     operatorController.x().onTrue(arm.runGoToPosCommand(ArmConstants.armTrapPosDeg));
     operatorController.y().onTrue(arm.runGoToPosCommand(ArmConstants.armAmpPosDeg));
 
-    operatorController.back().onTrue(new ArmExtend(arm));
-    operatorController.start().onTrue(new ArmRetract(arm));
+    operatorController.start().onTrue(new ArmExtend(arm));
+    operatorController.back().onTrue(new ArmRetract(arm));
   }
 
   /**
