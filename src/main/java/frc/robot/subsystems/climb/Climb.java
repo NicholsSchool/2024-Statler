@@ -3,6 +3,7 @@ package frc.robot.subsystems.climb;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class Climb extends SubsystemBase {
   private ClimbIO io;
@@ -26,6 +27,7 @@ public class Climb extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+    Logger.processInputs("Climb", inputs);
 
     // Reset when disabled
     if (DriverStation.isDisabled()) {
