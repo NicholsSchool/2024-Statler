@@ -23,6 +23,9 @@ import frc.robot.commands.arm_commands.ArmRetract;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbIOReal;
+import frc.robot.subsystems.climb.ClimbIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONAVX;
@@ -55,6 +58,7 @@ public class RobotContainer {
   private final Intake intake;
   private final ExampleFlywheel exampleFlywheel;
   private final AprilTagVision vision;
+  private final Climb climb;
 
   // Controller
   public static CommandXboxController driveController = new CommandXboxController(0);
@@ -85,6 +89,7 @@ public class RobotContainer {
         arm = new Arm(new ArmIOReal());
         intake = new Intake(new IntakeIOReal());
         vision = new AprilTagVision(new AprilTagVisionIO() {});
+        climb = new Climb(new ClimbIOReal());
         break;
 
       case ROBOT_SIM:
@@ -100,6 +105,7 @@ public class RobotContainer {
         arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
         vision = new AprilTagVision(new AprilTagVisionIO() {});
+        climb = new Climb(new ClimbIOSim());
         break;
 
       case ROBOT_FOOTBALL:
@@ -117,6 +123,8 @@ public class RobotContainer {
             new AprilTagVision(
                 new AprilTagVisionReal(
                     Constants.VisionConstants.cameraName, Constants.RobotConstants.cameraToRobot));
+        climb = new Climb(new ClimbIOSim());
+
         break;
 
         //   case ROBOT_REPLAY:
@@ -134,6 +142,8 @@ public class RobotContainer {
         arm = new Arm(new ArmIOSim()); // TODO: make interfaces
         intake = new Intake(new IntakeIOSim());
         vision = new AprilTagVision(new AprilTagVisionIO() {});
+        climb = new Climb(new ClimbIOSim());
+
         break;
     }
 
@@ -248,6 +258,18 @@ public class RobotContainer {
 
     operatorController.back().onTrue(new ArmExtend(arm));
     operatorController.start().onTrue(new ArmRetract(arm));
+
+    // TEMPORARY!!! FOR TESTING. TODO: REMOVE THIS!!!
+    operatorController
+        .leftStick()
+        .whileTrue(
+            Commands.run(
+                () ->
+                    climb.setVoltage(
+                        MathUtil.applyDeadband(
+                                operatorController.getLeftY(), Constants.JOYSTICK_DEADBAND)
+                            * 0.5),
+                climb));
   }
 
   /**
