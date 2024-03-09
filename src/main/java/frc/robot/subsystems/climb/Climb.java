@@ -77,4 +77,12 @@ public class Climb extends SubsystemBase {
   public void stop() {
     mode = ClimbMode.kStopped;
   }
+
+  public void lock() {
+    io.lock();
+  }
+
+  public void unlock() {
+    io.unlock();
+  }
 }

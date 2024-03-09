@@ -29,14 +29,14 @@ public class ClimbIOReal implements ClimbIO {
 
     leftClimb.setIdleMode(IdleMode.kBrake);
     leftClimb.setInverted(false);
-    leftClimb.setSmartCurrentLimit(10); // amps
+    leftClimb.setSmartCurrentLimit(35); // amps
     leftClimbEncoder.setPositionConversionFactor(2 * Math.PI / 25.0);
     leftClimbEncoder.setVelocityConversionFactor(2 * Math.PI / 25.0);
     leftClimb.burnFlash();
 
     rightClimb.setIdleMode(IdleMode.kBrake);
     rightClimb.setInverted(true);
-    rightClimb.setSmartCurrentLimit(10); // amps
+    rightClimb.setSmartCurrentLimit(35); // amps
     rightClimbEncoder.setPositionConversionFactor(2 * Math.PI / 25.0);
     rightClimbEncoder.setVelocityConversionFactor(2 * Math.PI / 25.0);
     rightClimb.burnFlash();
@@ -75,7 +75,7 @@ public class ClimbIOReal implements ClimbIO {
   }
 
   public boolean isLocked() {
-    return climbLock.get();
+    return !climbLock.get();
   }
 
   @Override

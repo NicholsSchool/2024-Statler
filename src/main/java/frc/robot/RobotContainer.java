@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.commands.AutoCommands;
@@ -265,7 +266,10 @@ public class RobotContainer {
             climb,
             () ->
                 MathUtil.applyDeadband(
-                    -operatorController.getLeftY() * 0.5, Constants.JOYSTICK_DEADBAND)));
+                    -operatorController.getLeftY() * 12.0 * 0.2, Constants.JOYSTICK_DEADBAND)));
+
+    operatorController.povUp().onTrue(new InstantCommand(() -> climb.unlock()));
+    operatorController.povDown().onTrue(new InstantCommand(() -> climb.lock()));
   }
 
   /**
