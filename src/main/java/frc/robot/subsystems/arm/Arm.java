@@ -35,6 +35,8 @@ public class Arm extends SubsystemBase {
   private double previousVelocity = 0.0;
   double acclerationRad = 0.0;
 
+  private double targetAngle = 0.0;
+
   // tunable parameters
   private static final LoggedTunableNumber armKg = new LoggedTunableNumber("Arm/kG");
   private static final LoggedTunableNumber armKv = new LoggedTunableNumber("Arm/kV");
@@ -80,15 +82,16 @@ public class Arm extends SubsystemBase {
     positionToleranceDeg.initDefault(1.0);
     armMaxVelocityRad.initDefault(0.85167);
     armMaxAccelerationRad.initDefault(0.2);
-    armKp.initDefault(5.0);
+    armKp.initDefault(3.0);
     armKd.initDefault(0.0);
     moveToPosTimeoutSec.initDefault(5.0);
 
-    armPidController.setP(armKp.get());
-    armPidController.setD(armKd.get());
-    armPidController.setConstraints(
-        new TrapezoidProfile.Constraints(armMaxVelocityRad.get(), armMaxAccelerationRad.get()));
-    armPidController.setTolerance(Units.degreesToRadians(positionToleranceDeg.get()));
+    armPidController.setP(3.0);
+    armPidController.setI(0.0);
+    armPidController.setD(0.0);
+    // armPidController.setConstraints(
+    //     new TrapezoidProfile.Constraints(armMaxVelocityRad.get(), armMaxAccelerationRad.get()));
+    // armPidController.setTolerance(Units.degreesToRadians(positionToleranceDeg.get()));
   }
 
   @Override
@@ -162,6 +165,8 @@ public class Arm extends SubsystemBase {
 
   // assumption is that this is called once to set the target position, not continuously.
   public void setTargetPos(double targetAngleDeg) {
+    targetAngle = targetAngleDeg;
+
     System.out.println("Arm Go To Pos(deg): " + targetAngleDeg);
     timerMoveToPose.reset();
     initialState = new TrapezoidProfile.State(inputs.angleRads, inputs.velocityRadsPerSec);
@@ -195,17 +200,18 @@ public class Arm extends SubsystemBase {
       ARM_FF = new ArmFeedforward(0.0, armKg.get(), armKv.get(), armKa.get());
     }
 
-    if (armMaxVelocityRad.hasChanged(hashCode())
-        || armMaxAccelerationRad.hasChanged(hashCode())
-        || positionToleranceDeg.hasChanged(hashCode())
-        || armKp.hasChanged(hashCode())
-        || armKd.hasChanged(hashCode())) {
-      armPidController.setP(armKp.get());
-      armPidController.setD(armKd.get());
-      armPidController.setConstraints(
-          new TrapezoidProfile.Constraints(armMaxVelocityRad.get(), armMaxAccelerationRad.get()));
-      armPidController.setTolerance(Units.degreesToRadians(positionToleranceDeg.get()));
-    }
+    // if (armMaxVelocityRad.hasChanged(hashCode())
+    //     || armMaxAccelerationRad.hasChanged(hashCode())
+    //     || positionToleranceDeg.hasChanged(hashCode())
+    //     || armKp.hasChanged(hashCode())
+    //     || armKd.hasChanged(hashCode())) {
+    //   armPidController.setP(armKp.get());
+    //   armPidController.setD(armKd.get());
+    //   armPidController.setConstraints(
+    //       new TrapezoidProfile.Constraints(armMaxVelocityRad.get(),
+    // armMaxAccelerationRad.get()));
+    //   armPidController.setTolerance(Units.degreesToRadians(positionToleranceDeg.get()));
+    // }
   }
 
   // COMMANDS
@@ -221,7 +227,16 @@ public class Arm extends SubsystemBase {
         this);
   }
 
+  public double getAngleDeg() {
+    return inputs.angleDegs;
+  }
+
   // THINGS TO LOG IN ADV SCOPE
+
+  @AutoLogOutput
+  public double getTargetAngle() {
+    return targetAngle;
+  }
 
   @AutoLogOutput
   public double getAcceleration() {
