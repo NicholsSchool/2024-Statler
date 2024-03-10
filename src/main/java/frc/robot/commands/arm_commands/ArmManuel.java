@@ -21,11 +21,15 @@ public class ArmManuel extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.setManuel(manuelInput.getAsDouble());
+    double currentInput = manuelInput.getAsDouble();
+    arm.setManuel(currentInput);
+    arm.setTargetPos(arm.getAngleDeg());
   }
 
   @Override
   public void end(boolean interrupted) {
     System.out.println("Manual Cancelled");
+
+    arm.setTargetPos(arm.getAngleDeg());
   }
 }
