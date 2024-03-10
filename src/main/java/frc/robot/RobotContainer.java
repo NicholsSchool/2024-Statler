@@ -25,6 +25,7 @@ import frc.robot.commands.arm_commands.ArmRetract;
 import frc.robot.commands.arm_commands.ArmSetTargetPos;
 import frc.robot.commands.climb_commands.ClimbManual;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOReal;
