@@ -123,7 +123,7 @@ public final class Constants {
     public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
     public static final int kDrivingMotorCurrentLimit = 24; // amps
-    public static final int kTurningMotorCurrentLimit = 12; // amps
+    public static final int kTurningMotorCurrentLimit = 24; // amps
 
     public static final double kDRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
     public static final double kTURN_GEAR_RATIO = 150.0 / 7.0;

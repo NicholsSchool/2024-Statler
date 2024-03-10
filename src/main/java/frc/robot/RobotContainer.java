@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
@@ -15,7 +16,6 @@ import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToAmplifier;
 import frc.robot.commands.FeedForwardCharacterization;
-import frc.robot.commands.ResetFieldOrientation;
 import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.commands.arm_commands.ArmExtend;
 import frc.robot.commands.arm_commands.ArmGoToPosTeleop;
@@ -181,9 +181,15 @@ public class RobotContainer {
             drive,
             () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
             () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
-            () -> -driveController.getRightX()));
-    driveController.start().onTrue(Commands.runOnce(drive::stopWithX, drive));
-    driveController.back().onTrue(new ResetFieldOrientation(drive));
+            () -> -driveController.getRightX() * 0.7));
+    driveController
+        .start()
+        .onTrue(
+            new InstantCommand(
+                () ->
+                    drive.setPose(
+                        new Pose2d(
+                            drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0.0)))));
     driveController
         .leftTrigger(0.9)
         .whileTrue(
