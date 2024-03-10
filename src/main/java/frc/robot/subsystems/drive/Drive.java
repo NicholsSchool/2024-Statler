@@ -280,6 +280,9 @@ public class Drive extends SubsystemBase {
   public void setPose(Pose2d pose) {
     // TODO: make it actually offset the angle
     this.pose = pose;
+  }
+
+  public void resetFieldHeading() {
     gyroIO.resetIMU();
   }
 

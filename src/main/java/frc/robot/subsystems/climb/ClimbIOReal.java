@@ -57,13 +57,11 @@ public class ClimbIOReal implements ClimbIO {
   }
 
   public void setVoltageLeft(double voltage) {
-    if (this.isLocked()) leftClimb.setVoltage(0.0);
-    else leftClimb.setVoltage(voltage);
+    leftClimb.setVoltage(voltage);
   }
 
   public void setVoltageRight(double voltage) {
-    if (this.isLocked()) rightClimb.setVoltage(0.0);
-    else rightClimb.setVoltage(voltage);
+    rightClimb.setVoltage(voltage);
   }
 
   public void lock() {

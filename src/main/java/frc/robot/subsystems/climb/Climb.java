@@ -74,6 +74,16 @@ public class Climb extends SubsystemBase {
     mode = ClimbMode.kSetPosition;
   }
 
+  @AutoLogOutput
+  public double getLeftEncoder() {
+    return inputs.leftPositionRads;
+  }
+
+  @AutoLogOutput
+  public double getRightEncoder() {
+    return inputs.rightPositionRads;
+  }
+
   public void stop() {
     mode = ClimbMode.kStopped;
   }

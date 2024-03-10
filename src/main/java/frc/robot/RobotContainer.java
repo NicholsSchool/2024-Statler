@@ -25,7 +25,6 @@ import frc.robot.commands.arm_commands.ArmRetract;
 import frc.robot.commands.arm_commands.ArmSetTargetPos;
 import frc.robot.commands.climb_commands.ClimbManual;
 import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOReal;
@@ -194,14 +193,7 @@ public class RobotContainer {
             () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
             () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
             () -> -driveController.getRightX() * 0.7));
-    driveController
-        .start()
-        .onTrue(
-            new InstantCommand(
-                () ->
-                    drive.setPose(
-                        new Pose2d(
-                            drive.getPose().getX(), drive.getPose().getY(), new Rotation2d(0.0)))));
+    driveController.start().onTrue(new InstantCommand(() -> drive.resetFieldHeading()));
     driveController
         .leftTrigger(0.9)
         .whileTrue(
@@ -273,7 +265,7 @@ public class RobotContainer {
             climb,
             () ->
                 MathUtil.applyDeadband(
-                    -operatorController.getLeftY() * 12.0 * 0.2, Constants.JOYSTICK_DEADBAND)));
+                    -operatorController.getLeftY() * 1, Constants.JOYSTICK_DEADBAND)));
 
     operatorController.povUp().onTrue(new InstantCommand(() -> climb.unlock()));
     operatorController.povDown().onTrue(new InstantCommand(() -> climb.lock()));
