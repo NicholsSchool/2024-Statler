@@ -22,7 +22,6 @@ public class ArmManuel extends Command {
   @Override
   public void execute() {
     double currentInput = manuelInput.getAsDouble();
-    System.out.println("MANUEL:  " + currentInput);
     arm.setManuel(currentInput);
     arm.setTargetPos(arm.getAngleDeg());
   }

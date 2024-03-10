@@ -27,7 +27,9 @@ import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIONAVX;
 import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.example_flywheel.ExampleFlywheel;
 import frc.robot.subsystems.example_flywheel.ExampleFlywheelIO;
@@ -75,17 +77,11 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         drive = // TODO: back to real after physical fix
             new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
-        // new Drive(
-        //     new GyroIONAVX(),
-        //     new ModuleIOMaxSwerve(0),
-        //     new ModuleIOMaxSwerve(1),
-        //     new ModuleIOMaxSwerve(2),
-        //     new ModuleIOMaxSwerve(3));
+                new GyroIONAVX(),
+                new ModuleIOMaxSwerve(0),
+                new ModuleIOMaxSwerve(1),
+                new ModuleIOMaxSwerve(2),
+                new ModuleIOMaxSwerve(3));
         // We have no flywheel, so create a simulated just for example.
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
         arm = new Arm(new ArmIOReal());

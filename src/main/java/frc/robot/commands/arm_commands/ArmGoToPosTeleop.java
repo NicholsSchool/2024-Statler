@@ -13,7 +13,6 @@ public class ArmGoToPosTeleop extends Command {
 
   @Override
   public void execute() {
-    System.out.println("executing go to pos");
     arm.setGoToPos();
   }
 }
