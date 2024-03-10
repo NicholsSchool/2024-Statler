@@ -106,7 +106,7 @@ public final class Constants {
     public static final double kWheelRadiusMeters = kWheelDiameterMeters / 2.0;
     public static final double kDrivingMotorFreeSpinRPM = 5676; // NEO 550s max RPM
 
-    public static final double kDrivingP = 0.04;
+    public static final double kDrivingP = 0.02;
     public static final double kDrivingI = 0.0;
     public static final double kDrivingD = 0.0;
     public static final double kDrivingFF = 0.0;
