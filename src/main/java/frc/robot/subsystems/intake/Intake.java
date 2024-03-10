@@ -16,12 +16,6 @@ public class Intake extends SubsystemBase {
   private IntakeIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
-  private static final LoggedTunableNumber eatVelocityRPM =
-      new LoggedTunableNumber("Intake/EatVelocityRPMs", 600.0);
-  private static final LoggedTunableNumber vomitVelocityRPM =
-      new LoggedTunableNumber("Intake/VomitVelocityRPMs", 900.0); // TODO:negative
-  private static final LoggedTunableNumber digestVelocityRPM =
-      new LoggedTunableNumber("Intake/DigestVelocityRPMs", 300.0); // TODO: fix
   private static final LoggedTunableNumber kP = new LoggedTunableNumber("Intake/kP", 0.1);
   private static final LoggedTunableNumber kI = new LoggedTunableNumber("Intake/kI", 0.5);
 
@@ -79,13 +73,13 @@ public class Intake extends SubsystemBase {
     } else {
       switch (mode) {
         case kEating:
-          setpointRPMs = eatVelocityRPM.get();
+          setpointRPMs = Constants.IntakeConstants.kEatRPM;
           break;
         case kVomiting:
-          setpointRPMs = vomitVelocityRPM.get();
+          setpointRPMs = Constants.IntakeConstants.kVomitRPM;
           break;
         case kDigesting:
-          setpointRPMs = digestVelocityRPM.get();
+          setpointRPMs = Constants.IntakeConstants.kDigestRPM;
           break;
         case kStopped:
           setpointRPMs = 0.0;

@@ -134,6 +134,9 @@ public final class Constants {
     public static final double kVomitDelay = 0.5;
     public static final double kP = 6.0;
     public static final double kI = 0.0;
+    public static final double kDigestRPM = 300.0;
+    public static final double kEatRPM = 800.0;
+    public static final double kVomitRPM = 1000.0;
   }
 
   public static final class ArmConstants {
@@ -162,6 +165,11 @@ public final class Constants {
     public static final double ARM_FF_KV = 1.91;
     public static final double ARM_FF_KA = 0.05;
 
+    public static final double ARM_P = 3.0;
+    public static final double ARM_I = 0.0;
+    public static final double ARM_D = 0.0;
+    public static final double ARM_ACCEL_LIMIT = 0.7;
+    public static final double ARM_VEL_LIMIT = 0.85167;
     // public static final double POSITION_CONVERSION_FACTOR = ARM_GEAR_RATIO * 2.0 * Math.PI;
     // // normalizing based on the theoretical max radians per second of the arm motor
     // public static final double VELOCITY_CONVERSION_FACTOR = POSITION_CONVERSION_FACTOR / 60.0;

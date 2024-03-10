@@ -280,7 +280,7 @@ public class Drive extends SubsystemBase {
   public void setPose(Pose2d pose) {
     // TODO: make it actually offset the angle
     this.pose = pose;
-    if (this.gyroIO instanceof GyroIONAVX navx) navx.resetIMU();
+    gyroIO.resetIMU();
   }
 
   /** Returns the maximum linear speed in meters per sec. */

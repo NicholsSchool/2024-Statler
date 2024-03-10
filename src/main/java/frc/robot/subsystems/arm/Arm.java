@@ -44,13 +44,13 @@ public class Arm extends SubsystemBase {
 
   private static final LoggedTunableNumber positionToleranceDeg =
       new LoggedTunableNumber("Arm/PositionToleranceDeg");
-  private static final LoggedTunableNumber armMaxVelocityRad =
-      new LoggedTunableNumber("Arm/MaxVelocityRad");
-  private static final LoggedTunableNumber armMaxAccelerationRad =
-      new LoggedTunableNumber("Arm/MaxAccelerationRad");
-  private static final LoggedTunableNumber armKp = new LoggedTunableNumber("Arm/Kp");
-  private static final LoggedTunableNumber armKi = new LoggedTunableNumber("Arm/Ki");
-  private static final LoggedTunableNumber armKd = new LoggedTunableNumber("Arm/Kd");
+  // private static final LoggedTunableNumber armMaxVelocityRad =
+  //     new LoggedTunableNumber("Arm/MaxVelocityRad");
+  // private static final LoggedTunableNumber armMaxAccelerationRad =
+  //     new LoggedTunableNumber("Arm/MaxAccelerationRad");
+  // private static final LoggedTunableNumber armKp = new LoggedTunableNumber("Arm/Kp");
+  // private static final LoggedTunableNumber armKi = new LoggedTunableNumber("Arm/Ki");
+  // private static final LoggedTunableNumber armKd = new LoggedTunableNumber("Arm/Kd");
   private static final LoggedTunableNumber moveToPosTimeoutSec =
       new LoggedTunableNumber("Arm/TimeoutSec");
 
@@ -81,18 +81,19 @@ public class Arm extends SubsystemBase {
     armKv.initDefault(ARM_FF_KV);
     armKa.initDefault(ARM_FF_KA);
     positionToleranceDeg.initDefault(1.0);
-    armMaxVelocityRad.initDefault(0.85167);
-    armMaxAccelerationRad.initDefault(0.2);
-    armKp.initDefault(3.0);
-    armKi.initDefault(0.0);
-    armKd.initDefault(0.0);
+    // armMaxVelocityRad.initDefault(0.85167);
+    // armMaxAccelerationRad.initDefault(0.2);
+    // armKp.initDefault(3.0);
+    // armKi.initDefault(0.0);
+    // armKd.initDefault(0.0);
     moveToPosTimeoutSec.initDefault(5.0);
 
-    armPidController.setP(armKp.get());
-    armPidController.setI(armKi.get());
-    armPidController.setD(armKd.get());
+    armPidController.setP(Constants.ArmConstants.ARM_P);
+    armPidController.setI(Constants.ArmConstants.ARM_I);
+    armPidController.setD(Constants.ArmConstants.ARM_D);
     armPidController.setConstraints(
-        new TrapezoidProfile.Constraints(armMaxVelocityRad.get(), armMaxAccelerationRad.get()));
+        new TrapezoidProfile.Constraints(
+            Constants.ArmConstants.ARM_VEL_LIMIT, Constants.ArmConstants.ARM_ACCEL_LIMIT));
     armPidController.setTolerance(Units.degreesToRadians(positionToleranceDeg.get()));
   }
 
@@ -115,7 +116,8 @@ public class Arm extends SubsystemBase {
     switch (armState) {
       case kManuel:
         voltageCommand =
-            ARM_FF.calculate(inputs.angleRads, armMaxVelocityRad.get() * softLimit(manuelInput));
+            ARM_FF.calculate(
+                inputs.angleRads, Constants.ArmConstants.ARM_VEL_LIMIT * softLimit(manuelInput));
         // update pid controller even though not using so that it is informed
         // of latest arm position.
         armPidController.calculate(inputs.angleRads);
@@ -207,19 +209,20 @@ public class Arm extends SubsystemBase {
       ARM_FF = new ArmFeedforward(0.0, armKg.get(), armKv.get(), armKa.get());
     }
 
-    if (armMaxVelocityRad.hasChanged(hashCode())
-        || armMaxAccelerationRad.hasChanged(hashCode())
-        || positionToleranceDeg.hasChanged(hashCode())
-        || armKp.hasChanged(hashCode())
-        || armKi.hasChanged(hashCode())
-        || armKd.hasChanged(hashCode())) {
-      armPidController.setP(armKp.get());
-      armPidController.setI(armKi.get());
-      armPidController.setD(armKd.get());
-      armPidController.setConstraints(
-          new TrapezoidProfile.Constraints(armMaxVelocityRad.get(), armMaxAccelerationRad.get()));
-      armPidController.setTolerance(Units.degreesToRadians(positionToleranceDeg.get()));
-    }
+    // if (armMaxVelocityRad.hasChanged(hashCode())
+    //     || armMaxAccelerationRad.hasChanged(hashCode())
+    //     || positionToleranceDeg.hasChanged(hashCode())
+    //     || armKp.hasChanged(hashCode())
+    //     || armKi.hasChanged(hashCode())
+    //     || armKd.hasChanged(hashCode())) {
+    //   armPidController.setP(armKp.get());
+    //   armPidController.setI(armKi.get());
+    //   armPidController.setD(armKd.get());
+    //   armPidController.setConstraints(
+    //       new TrapezoidProfile.Constraints(armMaxVelocityRad.get(),
+    // armMaxAccelerationRad.get()));
+    //   armPidController.setTolerance(Units.degreesToRadians(positionToleranceDeg.get()));
+    // }
   }
 
   // COMMANDS
