@@ -2,10 +2,13 @@ package frc.robot.subsystems.climb;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class Climb extends SubsystemBase {
   private ClimbIO io;
   private final ClimbIOInputsAutoLogged inputs = new ClimbIOInputsAutoLogged();
+  private double voltageCommand = 0.0;
 
   private static enum ClimbMode {
     kStopped,
@@ -24,6 +27,7 @@ public class Climb extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+    Logger.processInputs("Climb", inputs);
 
     // Reset when disabled
     if (DriverStation.isDisabled()) {
@@ -55,11 +59,30 @@ public class Climb extends SubsystemBase {
     mode = ClimbMode.kSetPosition;
   }
 
+  public void setVoltage(double voltage) {
+    voltageCommand = voltage;
+    io.setVoltageLeft(voltage);
+    io.setVoltageRight(voltage);
+  }
+
+  @AutoLogOutput
+  public double getVoltageCommand() {
+    return this.voltageCommand;
+  }
+
   public void setPower(double power) {
     mode = ClimbMode.kSetPosition;
   }
 
   public void stop() {
     mode = ClimbMode.kStopped;
+  }
+
+  public void lock() {
+    io.lock();
+  }
+
+  public void unlock() {
+    io.unlock();
   }
 }

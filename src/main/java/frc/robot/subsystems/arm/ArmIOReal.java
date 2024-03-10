@@ -38,6 +38,7 @@ public class ArmIOReal implements ArmIO {
     follower.setIdleMode(IdleMode.kBrake);
     follower.setSmartCurrentLimit(ARM_CURRENT_LIMIT);
     follower.follow(leader);
+    follower.setControlFramePeriodMs(50);
     follower.burnFlash();
 
     piston = new Solenoid(PneumaticsModuleType.CTREPCM, ARM_SOLENOID_CHANNEL);
