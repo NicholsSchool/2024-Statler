@@ -35,6 +35,8 @@ public class Arm extends SubsystemBase {
   private double previousVelocity = 0.0;
   double acclerationRad = 0.0;
 
+  private double targetAngle = 0.0;
+
   // tunable parameters
   private static final LoggedTunableNumber armKg = new LoggedTunableNumber("Arm/kG");
   private static final LoggedTunableNumber armKv = new LoggedTunableNumber("Arm/kV");
@@ -47,6 +49,7 @@ public class Arm extends SubsystemBase {
   private static final LoggedTunableNumber armMaxAccelerationRad =
       new LoggedTunableNumber("Arm/MaxAccelerationRad");
   private static final LoggedTunableNumber armKp = new LoggedTunableNumber("Arm/Kp");
+  private static final LoggedTunableNumber armKi = new LoggedTunableNumber("Arm/Ki");
   private static final LoggedTunableNumber armKd = new LoggedTunableNumber("Arm/Kd");
   private static final LoggedTunableNumber moveToPosTimeoutSec =
       new LoggedTunableNumber("Arm/TimeoutSec");
@@ -77,14 +80,16 @@ public class Arm extends SubsystemBase {
     armKg.initDefault(ARM_FF_KG);
     armKv.initDefault(ARM_FF_KV);
     armKa.initDefault(ARM_FF_KA);
-    positionToleranceDeg.initDefault(2.0);
+    positionToleranceDeg.initDefault(1.0);
     armMaxVelocityRad.initDefault(0.85167);
     armMaxAccelerationRad.initDefault(0.2);
     armKp.initDefault(3.0);
-    armKd.initDefault(1.0);
+    armKi.initDefault(0.0);
+    armKd.initDefault(0.0);
     moveToPosTimeoutSec.initDefault(5.0);
 
     armPidController.setP(armKp.get());
+    armPidController.setI(armKi.get());
     armPidController.setD(armKd.get());
     armPidController.setConstraints(
         new TrapezoidProfile.Constraints(armMaxVelocityRad.get(), armMaxAccelerationRad.get()));
@@ -111,6 +116,9 @@ public class Arm extends SubsystemBase {
       case kManuel:
         voltageCommand =
             ARM_FF.calculate(inputs.angleRads, armMaxVelocityRad.get() * softLimit(manuelInput));
+        // update pid controller even though not using so that it is informed
+        // of latest arm position.
+        armPidController.calculate(inputs.angleRads);
         break;
       case kGoToPos:
         voltageCommand =
@@ -132,13 +140,15 @@ public class Arm extends SubsystemBase {
     }
   }
 
-  public double softLimit(double input) {
+  // set soft limits on the input velocity of the arm to make
+  // sure arm does not extend passed danger position.
+  public double softLimit(double inputVel) {
     // weird ranges due to [0, 360] angle range of the arm angle input
-    if ((inputs.angleDegs >= 100.0 && inputs.angleDegs <= 200.0) && input > 0
-        || (inputs.angleDegs <= 2.0 || inputs.angleDegs >= 200.0) && input < 0) {
+    if ((inputs.angleDegs >= 100.0 && inputs.angleDegs <= 200.0) && inputVel > 0
+        || (inputs.angleDegs <= 2.0 || inputs.angleDegs >= 200.0) && inputVel < 0) {
       return 0.0;
     }
-    return input;
+    return inputVel;
   }
 
   public boolean hasReachedTarget() {
@@ -162,6 +172,8 @@ public class Arm extends SubsystemBase {
 
   // assumption is that this is called once to set the target position, not continuously.
   public void setTargetPos(double targetAngleDeg) {
+    targetAngle = targetAngleDeg;
+
     System.out.println("Arm Go To Pos(deg): " + targetAngleDeg);
     timerMoveToPose.reset();
     initialState = new TrapezoidProfile.State(inputs.angleRads, inputs.velocityRadsPerSec);
@@ -199,8 +211,10 @@ public class Arm extends SubsystemBase {
         || armMaxAccelerationRad.hasChanged(hashCode())
         || positionToleranceDeg.hasChanged(hashCode())
         || armKp.hasChanged(hashCode())
+        || armKi.hasChanged(hashCode())
         || armKd.hasChanged(hashCode())) {
       armPidController.setP(armKp.get());
+      armPidController.setI(armKi.get());
       armPidController.setD(armKd.get());
       armPidController.setConstraints(
           new TrapezoidProfile.Constraints(armMaxVelocityRad.get(), armMaxAccelerationRad.get()));
@@ -221,7 +235,16 @@ public class Arm extends SubsystemBase {
         this);
   }
 
+  public double getAngleDeg() {
+    return inputs.angleDegs;
+  }
+
   // THINGS TO LOG IN ADV SCOPE
+
+  @AutoLogOutput
+  public double getTargetAngle() {
+    return targetAngle;
+  }
 
   @AutoLogOutput
   public double getAcceleration() {
