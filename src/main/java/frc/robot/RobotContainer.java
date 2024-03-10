@@ -2,7 +2,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -10,6 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
@@ -18,16 +18,16 @@ import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.ResetFieldOrientation;
 import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.commands.arm_commands.ArmExtend;
+import frc.robot.commands.arm_commands.ArmGoToPosTeleop;
 import frc.robot.commands.arm_commands.ArmManuel;
 import frc.robot.commands.arm_commands.ArmRetract;
+import frc.robot.commands.arm_commands.ArmSetTargetPos;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIONAVX;
 import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.example_flywheel.ExampleFlywheel;
 import frc.robot.subsystems.example_flywheel.ExampleFlywheelIO;
@@ -73,13 +73,19 @@ public class RobotContainer {
     switch (Constants.getRobot()) {
       case ROBOT_REAL:
         // Real robot, instantiate hardware IO implementations
-        drive =
+        drive = // TODO: back to real after physical fix
             new Drive(
-                new GyroIONAVX(),
-                new ModuleIOMaxSwerve(0),
-                new ModuleIOMaxSwerve(1),
-                new ModuleIOMaxSwerve(2),
-                new ModuleIOMaxSwerve(3));
+                new GyroIO() {},
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim());
+        // new Drive(
+        //     new GyroIONAVX(),
+        //     new ModuleIOMaxSwerve(0),
+        //     new ModuleIOMaxSwerve(1),
+        //     new ModuleIOMaxSwerve(2),
+        //     new ModuleIOMaxSwerve(3));
         // We have no flywheel, so create a simulated just for example.
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
         arm = new Arm(new ArmIOReal());
@@ -234,17 +240,15 @@ public class RobotContainer {
     driveController.rightTrigger().whileTrue(intake.runEatCommand());
     operatorController.leftTrigger().whileTrue(intake.runVomitCommand());
 
-    // Arm controls
-    arm.setDefaultCommand(
-        new ArmManuel(
-            arm,
-            () ->
-                MathUtil.applyDeadband(
-                    -operatorController.getRightY(), Constants.JOYSTICK_DEADBAND)));
-    operatorController.a().onTrue(arm.runGoToPosCommand(ArmConstants.armIntakePosDeg));
-    operatorController.b().onTrue(arm.runGoToPosCommand(ArmConstants.armDrivePosDeg));
-    operatorController.x().onTrue(arm.runGoToPosCommand(ArmConstants.armTrapPosDeg));
-    operatorController.y().onTrue(arm.runGoToPosCommand(ArmConstants.armAmpPosDeg));
+    // Arm Controls
+    arm.setDefaultCommand(new ArmGoToPosTeleop(arm));
+    new Trigger(() -> Math.abs(operatorController.getRightY()) >= Constants.JOYSTICK_DEADBAND)
+        .whileTrue(new ArmManuel(arm, () -> -operatorController.getRightY()));
+
+    operatorController.a().onTrue(new ArmSetTargetPos(arm, ArmConstants.armIntakePosDeg));
+    operatorController.b().onTrue(new ArmSetTargetPos(arm, ArmConstants.armDrivePosDeg));
+    operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armTrapPosDeg));
+    operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armAmpPosDeg));
 
     operatorController.start().onTrue(new ArmExtend(arm));
     operatorController.back().onTrue(new ArmRetract(arm));
