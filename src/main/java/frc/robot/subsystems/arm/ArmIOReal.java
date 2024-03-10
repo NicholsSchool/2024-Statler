@@ -36,6 +36,7 @@ public class ArmIOReal implements ArmIO {
     follower = new CANSparkMax(kArmFollowerCanId, MotorType.kBrushless);
     follower.restoreFactoryDefaults();
     follower.setIdleMode(IdleMode.kBrake);
+    follower.setSmartCurrentLimit(ARM_CURRENT_LIMIT);
     follower.follow(leader);
     follower.burnFlash();
 
@@ -50,7 +51,7 @@ public class ArmIOReal implements ArmIO {
     inputs.velocityRadsPerSec = armEncoder.getVelocity();
     inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
     inputs.currentAmps = new double[] {leader.getOutputCurrent(), follower.getOutputCurrent()};
-    inputs.isExtended = piston.get(); // TODO: check that default is what we think
+    inputs.isExtended = piston.get();
   }
 
   @Override

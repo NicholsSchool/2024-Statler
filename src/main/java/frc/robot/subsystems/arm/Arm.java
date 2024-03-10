@@ -77,11 +77,11 @@ public class Arm extends SubsystemBase {
     armKg.initDefault(ARM_FF_KG);
     armKv.initDefault(ARM_FF_KV);
     armKa.initDefault(ARM_FF_KA);
-    positionToleranceDeg.initDefault(2.0);
+    positionToleranceDeg.initDefault(1.0);
     armMaxVelocityRad.initDefault(0.85167);
     armMaxAccelerationRad.initDefault(0.2);
-    armKp.initDefault(3.0);
-    armKd.initDefault(1.0);
+    armKp.initDefault(5.0);
+    armKd.initDefault(0.0);
     moveToPosTimeoutSec.initDefault(5.0);
 
     armPidController.setP(armKp.get());
