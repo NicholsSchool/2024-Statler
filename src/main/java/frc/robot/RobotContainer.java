@@ -24,6 +24,7 @@ import frc.robot.commands.arm_commands.ArmRetract;
 import frc.robot.commands.climb_commands.ClimbManual;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.climb.ClimbIOReal;
 import frc.robot.subsystems.climb.ClimbIOSim;
@@ -87,7 +88,7 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(3));
         // We have no flywheel, so create a simulated just for example.
         exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
-        arm = new Arm(new ArmIOSim());
+        arm = new Arm(new ArmIOReal());
         intake = new Intake(new IntakeIOReal());
         vision = new AprilTagVision(new AprilTagVisionIO() {});
         climb = new Climb(new ClimbIOReal());
