@@ -176,7 +176,7 @@ public class Drive extends SubsystemBase {
       wheelAbsolutes[i] = modules[i].getPosition();
     }
 
-    //TODO: put pose estimator back into use
+    // TODO: put pose estimator back into use
     // updating the pose estimator
     // pose = poseEstimator.update(lastGyroRotation, wheelAbsolutes);
 

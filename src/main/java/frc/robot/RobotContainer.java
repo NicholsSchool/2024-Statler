@@ -179,7 +179,7 @@ public class RobotContainer {
             drive,
             () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
             () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
-            () -> -driveController.getRightX() * Constants.DriveConstants.lowGearScaler));
+            () -> -driveController.getRightX()));
     driveController.start().onTrue(Commands.runOnce(drive::stopWithX, drive));
     driveController.back().onTrue(new ResetFieldOrientation(drive));
     driveController
