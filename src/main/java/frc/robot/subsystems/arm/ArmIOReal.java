@@ -38,7 +38,7 @@ public class ArmIOReal implements ArmIO {
     follower.setIdleMode(IdleMode.kBrake);
     follower.setSmartCurrentLimit(ARM_CURRENT_LIMIT);
     follower.follow(leader);
-    follower.setControlFramePeriodMs(50);
+    follower.setControlFramePeriodMs(20);
     follower.burnFlash();
 
     piston = new Solenoid(PneumaticsModuleType.CTREPCM, ARM_SOLENOID_CHANNEL);
@@ -48,11 +48,17 @@ public class ArmIOReal implements ArmIO {
   @Override
   public void updateInputs(ArmIOInputs inputs) {
     inputs.angleRads = armEncoder.getPosition();
-    inputs.angleDegs = Units.radiansToDegrees(inputs.angleRads);
+    inputs.angleDegs = checkRange(Units.radiansToDegrees(inputs.angleRads));
     inputs.velocityRadsPerSec = armEncoder.getVelocity();
     inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
+    inputs.appliedOutput = leader.getAppliedOutput();
+    inputs.busVoltage = leader.getBusVoltage();
     inputs.currentAmps = new double[] {leader.getOutputCurrent(), follower.getOutputCurrent()};
     inputs.isExtended = piston.get();
+  }
+
+  private double checkRange(double angle) {
+    return angle >= 340.0 ? 0.0 : angle;
   }
 
   @Override

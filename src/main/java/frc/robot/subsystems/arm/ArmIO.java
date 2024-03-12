@@ -10,6 +10,8 @@ public interface ArmIO {
     public double velocityRadsPerSec = 0.0;
     public boolean isExtended = false;
     public double appliedVolts = 0.0;
+    public double appliedOutput = 0.0;
+    public double busVoltage = 0.0;
     public double[] currentAmps = new double[] {};
   }
 
