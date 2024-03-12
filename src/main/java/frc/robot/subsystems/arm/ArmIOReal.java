@@ -34,11 +34,12 @@ public class ArmIOReal implements ArmIO {
     leader.burnFlash();
 
     follower = new CANSparkMax(kArmFollowerCanId, MotorType.kBrushless);
+    follower.setInverted(false);
     follower.restoreFactoryDefaults();
     follower.setIdleMode(IdleMode.kBrake);
     follower.setSmartCurrentLimit(ARM_CURRENT_LIMIT);
-    follower.follow(leader);
-    follower.setControlFramePeriodMs(20);
+    // follower.follow(leader);
+    // follower.setControlFramePeriodMs(20);
     follower.burnFlash();
 
     piston = new Solenoid(PneumaticsModuleType.CTREPCM, ARM_SOLENOID_CHANNEL);
@@ -50,9 +51,13 @@ public class ArmIOReal implements ArmIO {
     inputs.angleRads = armEncoder.getPosition();
     inputs.angleDegs = checkRange(Units.radiansToDegrees(inputs.angleRads));
     inputs.velocityRadsPerSec = armEncoder.getVelocity();
-    inputs.appliedVolts = leader.getAppliedOutput() * leader.getBusVoltage();
-    inputs.appliedOutput = leader.getAppliedOutput();
-    inputs.busVoltage = leader.getBusVoltage();
+    inputs.appliedOutput = new double[] {leader.getAppliedOutput(), follower.getAppliedOutput()};
+    inputs.busVoltage = new double[] {leader.getBusVoltage(), follower.getBusVoltage()};
+    inputs.appliedVolts =
+        new double[] {
+          inputs.busVoltage[0] * inputs.appliedOutput[0],
+          inputs.busVoltage[1] * inputs.appliedOutput[1]
+        };
     inputs.currentAmps = new double[] {leader.getOutputCurrent(), follower.getOutputCurrent()};
     inputs.isExtended = piston.get();
   }
@@ -64,6 +69,7 @@ public class ArmIOReal implements ArmIO {
   @Override
   public void setVoltage(double voltage) {
     leader.setVoltage(voltage);
+    follower.setVoltage(voltage);
   }
 
   /** Retracts Pistons */
