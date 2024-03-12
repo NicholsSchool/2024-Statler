@@ -3,8 +3,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,7 +43,6 @@ import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.subsystems.vision.AprilTagVisionIO;
 import frc.robot.subsystems.vision.AprilTagVisionReal;
-import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -168,11 +165,7 @@ public class RobotContainer {
     autoChooser.addOption("auto field test", autoCommands.autoTest());
     autoChooser.addOption("Drive to note", autoCommands.driveToNote());
     autoChooser.addOption("drivenote pickup", autoCommands.driveNotePickup());
-    autoChooser.addOption(
-        "Drive To Amplifier",
-        autoCommands.driveToPose(
-            AllianceFlipUtil.apply(
-                (new Pose2d(FieldConstants.amplifierTranslation, Rotation2d.fromDegrees(-90.0))))));
+    autoChooser.addOption("Drive To Amplifier", new DriveToAmplifier(drive));
 
     // add testing auto functions
     addTestingAutos();
