@@ -3,8 +3,11 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -60,6 +63,12 @@ public class RobotContainer {
   private final ExampleFlywheel exampleFlywheel;
   private final AprilTagVision vision;
   private final Climb climb;
+
+  // shuffleboard
+  ShuffleboardTab lewZealandTab;
+  public static GenericEntry hasNote;
+  public static GenericEntry leftClimbHeight;
+  public static GenericEntry rightClimbHeight;
 
   // Controller
   public static CommandXboxController driveController = new CommandXboxController(0);
@@ -172,6 +181,22 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+
+    initShuffleboard();
+  }
+
+  private void initShuffleboard() {
+    // Configure the Shuffleboard
+    lewZealandTab = Shuffleboard.getTab("Lew Zealand");
+    hasNote = lewZealandTab.add("Has Note", false).getEntry();
+    leftClimbHeight = lewZealandTab.add("Left Climb", 0.0).getEntry();
+    rightClimbHeight = lewZealandTab.add("Right Climb", 0.0).getEntry();
+  }
+
+  public void updateShuffleboard() {
+    hasNote.setBoolean(intake.hasNote());
+    leftClimbHeight.setDouble(climb.getLeftEncoder());
+    rightClimbHeight.setDouble(climb.getRightEncoder());
   }
 
   /**
