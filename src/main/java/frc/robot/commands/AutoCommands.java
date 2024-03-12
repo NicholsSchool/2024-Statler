@@ -5,7 +5,6 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.StagingLocations;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AllianceFlipUtil;
@@ -47,26 +46,18 @@ public class AutoCommands {
 
     return sequence(
         // reset(startingPose),
-        driveToPose(
-            AllianceFlipUtil.apply(
-                new Pose2d(FieldConstants.ampCenter, Rotation2d.fromDegrees(-90.0)))),
+        new DriveToAmplifier(drive),
         driveToPose(
             AllianceFlipUtil.apply(
                 new Pose2d(StagingLocations.spikeTranslations[0], Rotation2d.fromDegrees(0.0)))),
-        driveToPose(
-            AllianceFlipUtil.apply(
-                new Pose2d(FieldConstants.ampCenter, Rotation2d.fromDegrees(-90.0)))),
+        new DriveToAmplifier(drive),
         driveToPose(
             AllianceFlipUtil.apply(
                 new Pose2d(StagingLocations.spikeTranslations[1], Rotation2d.fromDegrees(0.0)))),
-        driveToPose(
-            AllianceFlipUtil.apply(
-                new Pose2d(FieldConstants.ampCenter, Rotation2d.fromDegrees(-90.0)))),
+        new DriveToAmplifier(drive),
         driveToPose(
             AllianceFlipUtil.apply(
                 new Pose2d(StagingLocations.spikeTranslations[2], Rotation2d.fromDegrees(0.0)))),
-        driveToPose(
-            AllianceFlipUtil.apply(
-                new Pose2d(FieldConstants.ampCenter, Rotation2d.fromDegrees(-90.0)))));
+        new DriveToAmplifier(drive));
   }
 }
