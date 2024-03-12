@@ -23,13 +23,12 @@ public class ArmManuel extends Command {
   public void execute() {
     double currentInput = manuelInput.getAsDouble();
     arm.setManuel(currentInput);
-    arm.setTargetPos(arm.getAngleDeg());
   }
 
   @Override
   public void end(boolean interrupted) {
     System.out.println("Manual Cancelled");
-
+    arm.setManuel(0);
     arm.setTargetPos(arm.getAngleDeg());
   }
 }
