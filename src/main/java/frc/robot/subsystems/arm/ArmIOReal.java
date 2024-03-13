@@ -48,8 +48,8 @@ public class ArmIOReal implements ArmIO {
   /** Updates the set of loggable inputs. */
   @Override
   public void updateInputs(ArmIOInputs inputs) {
-    inputs.angleRads = armEncoder.getPosition();
-    inputs.angleDegs = checkRange(Units.radiansToDegrees(inputs.angleRads));
+    inputs.angleRads = checkRangeRadians(armEncoder.getPosition());
+    inputs.angleDegs = checkRangeDegrees(Units.radiansToDegrees(inputs.angleRads));
     inputs.velocityRadsPerSec = armEncoder.getVelocity();
     inputs.appliedOutput = new double[] {leader.getAppliedOutput(), follower.getAppliedOutput()};
     inputs.busVoltage = new double[] {leader.getBusVoltage(), follower.getBusVoltage()};
@@ -62,8 +62,12 @@ public class ArmIOReal implements ArmIO {
     inputs.isExtended = piston.get();
   }
 
-  private double checkRange(double angle) {
-    return angle >= 340.0 ? 0.0 : angle;
+  private double checkRangeRadians(double angle) {
+    return angle >= Math.toRadians(200.0) ? angle - 2.0 * Math.PI : angle;
+  }
+
+  private double checkRangeDegrees(double angle) {
+    return angle >= 200.0 ? angle - 360.0 : angle;
   }
 
   @Override
