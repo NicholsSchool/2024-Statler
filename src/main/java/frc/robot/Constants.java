@@ -165,8 +165,8 @@ public final class Constants {
     public static final double ARM_FF_KV = 1.91;
     public static final double ARM_FF_KA = 0.05;
 
-    public static final double ARM_P = 7.0;
-    public static final double ARM_I = 7.0;
+    public static final double ARM_P = 3.0;
+    public static final double ARM_I = 0.0;
     public static final double ARM_D = 0.0;
     public static final double ARM_ACCEL_LIMIT = 0.7;
     public static final double ARM_VEL_LIMIT = 0.85167;
