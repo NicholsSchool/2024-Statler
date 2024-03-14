@@ -114,7 +114,7 @@ public class Arm extends SubsystemBase {
     // is to have arm hold its starting position on enable.
     if (!targetPosSet) {
       targetPosSet = true;
-      setTargetPos(inputs.angleDegs);
+      setTargetPos(90.0);
     }
 
     // Reset when disabled

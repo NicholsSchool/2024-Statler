@@ -11,7 +11,6 @@ public interface ClimbIO {
     public double rightVelocityRadsPerSec = 0.0;
     public double leftClimbCurrent = 0.0;
     public double rightClimbCurrent = 0.0;
-    public boolean isLocked = false;
   }
   /** Updates the set of loggable inputs. */
   public default void updateInputs(ClimbIOInputs inputs) {}

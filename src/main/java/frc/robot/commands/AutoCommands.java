@@ -33,6 +33,16 @@ public class AutoCommands {
     return drvToPose.until(drvToPose::atGoal);
   }
 
+  public Command driveToPoseRelative(Pose2d pose) {
+    var drvToPose =
+        new DriveToPose(
+            this.drive,
+            () -> {
+              return pose;
+            });
+    return drvToPose.until(drvToPose::atGoal);
+  }
+
   public Command autoTest() {
     return new AutoFieldTest(drive);
   }
