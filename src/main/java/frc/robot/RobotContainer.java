@@ -5,6 +5,8 @@ import static frc.robot.Constants.ArmConstants.ARM_LOCK_SOLENOID_CHANNEL;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -68,7 +70,7 @@ public class RobotContainer {
   private final Climb climb;
 
   public final Solenoid armLock;
-  
+
   // shuffleboard
   ShuffleboardTab lewZealandTab;
   public static GenericEntry hasNote;
