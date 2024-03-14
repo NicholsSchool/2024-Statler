@@ -5,12 +5,13 @@ import static frc.robot.Constants.ArmConstants.ARM_LOCK_SOLENOID_CHANNEL;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -48,7 +49,6 @@ import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.vision.AprilTagVision;
 import frc.robot.subsystems.vision.AprilTagVisionIO;
 import frc.robot.subsystems.vision.AprilTagVisionReal;
-import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -68,6 +68,12 @@ public class RobotContainer {
   private final Climb climb;
 
   public final Solenoid armLock;
+  
+  // shuffleboard
+  ShuffleboardTab lewZealandTab;
+  public static GenericEntry hasNote;
+  public static GenericEntry leftClimbHeight;
+  public static GenericEntry rightClimbHeight;
 
   // Controller
   public static CommandXboxController driveController = new CommandXboxController(0);
@@ -181,17 +187,29 @@ public class RobotContainer {
     autoChooser.addOption("auto field test", autoCommands.autoTest());
     autoChooser.addOption("Drive to note", autoCommands.driveToNote());
     autoChooser.addOption("drivenote pickup", autoCommands.driveNotePickup());
-    autoChooser.addOption(
-        "Drive To Amplifier",
-        autoCommands.driveToPose(
-            AllianceFlipUtil.apply(
-                (new Pose2d(FieldConstants.amplifierTranslation, Rotation2d.fromDegrees(-90.0))))));
+    autoChooser.addOption("Drive To Amplifier", new DriveToAmplifier(drive));
 
     // add testing auto functions
     addTestingAutos();
 
     // Configure the button bindings
     configureButtonBindings();
+
+    initShuffleboard();
+  }
+
+  private void initShuffleboard() {
+    // Configure the Shuffleboard
+    lewZealandTab = Shuffleboard.getTab("Lew Zealand");
+    hasNote = lewZealandTab.add("Has Note", false).getEntry();
+    leftClimbHeight = lewZealandTab.add("Left Climb", 0.0).getEntry();
+    rightClimbHeight = lewZealandTab.add("Right Climb", 0.0).getEntry();
+  }
+
+  public void updateShuffleboard() {
+    hasNote.setBoolean(intake.hasNote());
+    leftClimbHeight.setDouble(climb.getLeftEncoder());
+    rightClimbHeight.setDouble(climb.getRightEncoder());
   }
 
   /**
