@@ -14,7 +14,6 @@ public class ClimbIOSim implements ClimbIO {
     inputs.rightVelocityRadsPerSec = 0.0;
     inputs.leftClimbCurrent = 0.0;
     inputs.rightClimbCurrent = 0.0;
-    inputs.isLocked = false;
   }
 
   @Override

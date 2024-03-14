@@ -1,10 +1,14 @@
 package frc.robot;
 
+import static frc.robot.Constants.ArmConstants.ARM_LOCK_SOLENOID_CHANNEL;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -29,7 +33,6 @@ import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.climb.Climb;
-import frc.robot.subsystems.climb.ClimbIOReal;
 import frc.robot.subsystems.climb.ClimbIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -64,6 +67,8 @@ public class RobotContainer {
   private final AprilTagVision vision;
   private final Climb climb;
 
+  public final Solenoid armLock;
+  
   // shuffleboard
   ShuffleboardTab lewZealandTab;
   public static GenericEntry hasNote;
@@ -86,8 +91,10 @@ public class RobotContainer {
   public RobotContainer() {
     switch (Constants.getRobot()) {
       case ROBOT_REAL:
+        armLock = new Solenoid(PneumaticsModuleType.CTREPCM, ARM_LOCK_SOLENOID_CHANNEL);
+        armLock.set(false);
         // Real robot, instantiate hardware IO implementations
-        drive = // TODO: back to real after physical fix
+        drive =
             new Drive(
                 new GyroIONAVX(),
                 new ModuleIOMaxSwerve(0),
@@ -99,10 +106,11 @@ public class RobotContainer {
         arm = new Arm(new ArmIOReal());
         intake = new Intake(new IntakeIOReal());
         vision = new AprilTagVision(new AprilTagVisionIO() {});
-        climb = new Climb(new ClimbIOReal());
+        climb = new Climb(new ClimbIOSim());
         break;
 
       case ROBOT_SIM:
+        armLock = null;
         // Sim robot, instantiate physics sim IO implementations
         drive =
             new Drive(
@@ -119,6 +127,7 @@ public class RobotContainer {
         break;
 
       case ROBOT_FOOTBALL:
+        armLock = null;
         drive =
             new Drive(
                 new GyroIO() {},
@@ -139,6 +148,7 @@ public class RobotContainer {
 
         //   case ROBOT_REPLAY:
       default:
+        armLock = null;
         // Replayed robot, disable IO implementations since the replay
         // will supply the data.
         drive =
@@ -170,6 +180,9 @@ public class RobotContainer {
     // Create auto commands
     autoCommands = new AutoCommands(drive);
 
+    autoChooser.addOption(
+        "Drive forward 2.5 m",
+        autoCommands.driveToPoseRelative(new Pose2d(2.5, 0, new Rotation2d())));
     autoChooser.addOption("Score Four", autoCommands.amplifierScoreFour());
     autoChooser.addOption("auto field test", autoCommands.autoTest());
     autoChooser.addOption("Drive to note", autoCommands.driveToNote());
@@ -286,8 +299,6 @@ public class RobotContainer {
                 MathUtil.applyDeadband(
                     -operatorController.getLeftY() * 1, Constants.JOYSTICK_DEADBAND)));
 
-    operatorController.povUp().onTrue(new InstantCommand(() -> climb.unlock()));
-    operatorController.povDown().onTrue(new InstantCommand(() -> climb.lock()));
     operatorController.start().onTrue(new ArmExtend(arm));
     operatorController.back().onTrue(new ArmRetract(arm));
   }
