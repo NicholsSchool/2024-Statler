@@ -134,9 +134,9 @@ public final class Constants {
     public static final double kVomitDelay = 0.5;
     public static final double kP = 6.0;
     public static final double kI = 0.0;
-    public static final double kDigestRPM = 300.0;
     public static final double kEatRPM = 800.0;
-    public static final double kVomitRPM = 1000.0;
+    public static final double kVomitRPM = -1000.0;
+    public static final double kPoopRPM = 1000.0;
   }
 
   public static final class ArmConstants {

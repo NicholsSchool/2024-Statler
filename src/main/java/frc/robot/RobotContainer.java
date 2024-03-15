@@ -280,6 +280,7 @@ public class RobotContainer {
     // intake/outtake
     driveController.rightTrigger().whileTrue(intake.runEatCommand());
     operatorController.leftTrigger().whileTrue(intake.runVomitCommand());
+    operatorController.rightTrigger().whileTrue(intake.runPoopCommand());
 
     // Arm Controls
     arm.setDefaultCommand(new ArmGoToPosTeleop(arm));
@@ -300,7 +301,9 @@ public class RobotContainer {
             climb,
             () ->
                 MathUtil.applyDeadband(
-                    -operatorController.getLeftY() * 1, Constants.JOYSTICK_DEADBAND)));
+                    -operatorController.getLeftY() * 1.0 // input is voltage so 12 is maximum power
+                    ,
+                    Constants.JOYSTICK_DEADBAND)));
 
     operatorController.start().onTrue(new ArmExtend(arm));
     operatorController.back().onTrue(new ArmRetract(arm));
