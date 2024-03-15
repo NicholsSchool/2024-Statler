@@ -192,6 +192,9 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive forward 2.5 m",
         autoCommands.driveToPoseRelative(new Pose2d(2.5, 0, new Rotation2d())));
+    autoChooser.addOption(
+        "Forward 2.5 m, left 1 m",
+        autoCommands.driveToPoseRelative(new Pose2d(2.5, 1.0, new Rotation2d())));
     autoChooser.addOption("Score Four", autoCommands.amplifierScoreFour());
     autoChooser.addOption("auto field test", autoCommands.autoTest());
     autoChooser.addOption("Drive to note", autoCommands.driveToNote());
