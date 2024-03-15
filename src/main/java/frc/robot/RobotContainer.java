@@ -27,10 +27,8 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToAmplifier;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.VoltageCommandRamp;
-import frc.robot.commands.arm_commands.ArmExtend;
 import frc.robot.commands.arm_commands.ArmGoToPosTeleop;
 import frc.robot.commands.arm_commands.ArmManuel;
-import frc.robot.commands.arm_commands.ArmRetract;
 import frc.robot.commands.arm_commands.ArmSetTargetPos;
 import frc.robot.commands.climb_commands.ClimbManual;
 import frc.robot.subsystems.arm.Arm;
@@ -187,8 +185,11 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Create auto commands
-    autoCommands = new AutoCommands(drive);
+    autoCommands = new AutoCommands(drive, arm, intake);
 
+    autoChooser.addOption("Amp Blue", autoCommands.scoreAmpRelativeBlue());
+    autoChooser.addOption("Amp Red", autoCommands.scoreAmpRelativeRed());
+    autoChooser.addDefaultOption("RED AMP THEN STOP", autoCommands.scoreAmpRelativeRedThenStop());
     autoChooser.addOption(
         "Drive forward 2.5 m",
         autoCommands.driveToPoseRelative(new Pose2d(2.5, 0, new Rotation2d())));
@@ -303,9 +304,6 @@ public class RobotContainer {
     operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armTrapPosDeg));
     operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armAmpPosDeg));
 
-    operatorController.back().onTrue(new ArmExtend(arm));
-    operatorController.start().onTrue(new ArmRetract(arm));
-
     // TEMPORARY!!! FOR TESTING. TODO: REMOVE THIS!!!
     climb.setDefaultCommand(
         new ClimbManual(
@@ -315,8 +313,9 @@ public class RobotContainer {
                     -operatorController.getLeftY() * climbMaxV.get(),
                     Constants.JOYSTICK_DEADBAND)));
 
-    operatorController.start().onTrue(new ArmExtend(arm));
-    operatorController.back().onTrue(new ArmRetract(arm));
+    // no extension for flr bc mechanical issues
+    // operatorController.start().onTrue(new ArmExtend(arm));
+    // operatorController.back().onTrue(new ArmRetract(arm));
   }
 
   /**

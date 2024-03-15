@@ -141,7 +141,7 @@ public final class Constants {
 
   public static final class ArmConstants {
     // NO GO TO POSITION ANGLES SHOULD BE OVER 108 DEGREES
-    public static final double armIntakePosDeg = 2.0;
+    public static final double armIntakePosDeg = 0.0;
     public static final double armDrivePosDeg = 45.0;
     public static final double armAmpPosDeg = 108.0;
     public static final double armTrapPosDeg = 75.0;
