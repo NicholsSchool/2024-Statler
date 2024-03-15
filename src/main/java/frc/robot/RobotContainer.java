@@ -69,7 +69,10 @@ public class RobotContainer {
   private final Arm arm;
   private final Intake intake;
   private final ExampleFlywheel exampleFlywheel;
+
+  @SuppressWarnings("unused")
   private final AprilTagVision vision;
+
   private final Climb climb;
 
   public final Solenoid armLock;
@@ -88,7 +91,7 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber climbMaxV =
-      new LoggedDashboardNumber("Climb max voltage", 1.0);
+      new LoggedDashboardNumber("Climb max voltage", 3.0);
   private final LoggedDashboardNumber autoDelaySeconds =
       new LoggedDashboardNumber("Autonomous Time Delay", 0.0);
 
