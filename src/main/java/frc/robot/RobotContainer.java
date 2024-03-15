@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
@@ -77,6 +79,7 @@ public class RobotContainer {
   public static GenericEntry hasNote;
   public static GenericEntry leftClimbHeight;
   public static GenericEntry rightClimbHeight;
+  public static GenericEntry armAngleDegrees;
 
   // Controller
   public static CommandXboxController driveController = new CommandXboxController(0);
@@ -84,8 +87,10 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardNumber flywheelSpeedInput =
-      new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+  private final LoggedDashboardNumber climbMaxV =
+      new LoggedDashboardNumber("Climb max voltage", 1.0);
+  private final LoggedDashboardNumber autoDelaySeconds =
+      new LoggedDashboardNumber("Autonomous Time Delay", 0.0);
 
   // Auto Commands
   private final AutoCommands autoCommands;
@@ -174,9 +179,7 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Run Flywheel",
         Commands.startEnd(
-                () -> exampleFlywheel.runVelocity(flywheelSpeedInput.get()),
-                exampleFlywheel::stop,
-                exampleFlywheel)
+                () -> exampleFlywheel.runVelocity(0.0), exampleFlywheel::stop, exampleFlywheel)
             .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -207,12 +210,14 @@ public class RobotContainer {
     hasNote = lewZealandTab.add("Has Note", false).getEntry();
     leftClimbHeight = lewZealandTab.add("Left Climb", 0.0).getEntry();
     rightClimbHeight = lewZealandTab.add("Right Climb", 0.0).getEntry();
+    armAngleDegrees = lewZealandTab.add("Arm angle", 0.0).getEntry();
   }
 
   public void updateShuffleboard() {
     hasNote.setBoolean(intake.hasNote());
     leftClimbHeight.setDouble(climb.getLeftEncoder());
     rightClimbHeight.setDouble(climb.getRightEncoder());
+    armAngleDegrees.setDouble(arm.getAngleDeg());
   }
 
   /**
@@ -279,7 +284,7 @@ public class RobotContainer {
 
     // intake/outtake
     driveController.rightTrigger().whileTrue(intake.runEatCommand());
-    operatorController.leftTrigger().whileTrue(intake.runVomitCommand());
+    operatorController.povUp().whileTrue(intake.runVomitCommand());
     operatorController.rightTrigger().whileTrue(intake.runPoopCommand());
 
     // Arm Controls
@@ -301,8 +306,7 @@ public class RobotContainer {
             climb,
             () ->
                 MathUtil.applyDeadband(
-                    -operatorController.getLeftY() * 1.0 // input is voltage so 12 is maximum power
-                    ,
+                    -operatorController.getLeftY() * climbMaxV.get(),
                     Constants.JOYSTICK_DEADBAND)));
 
     operatorController.start().onTrue(new ArmExtend(arm));
@@ -315,7 +319,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return new SequentialCommandGroup(new WaitCommand(autoDelaySeconds.get()), autoChooser.get());
   }
 
   private void addTestingAutos() {
