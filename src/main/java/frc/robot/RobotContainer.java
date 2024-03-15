@@ -10,10 +10,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -75,6 +78,8 @@ public class RobotContainer {
 
   public final Solenoid armLock;
 
+  private PowerDistribution pdh = null;
+
   // shuffleboard
   ShuffleboardTab lewZealandTab;
   public static GenericEntry hasNote;
@@ -100,6 +105,8 @@ public class RobotContainer {
   public RobotContainer() {
     switch (Constants.getRobot()) {
       case ROBOT_REAL:
+        pdh = new PowerDistribution(Constants.CAN.kPowerDistributionHub, ModuleType.kRev);
+
         armLock = new Solenoid(PneumaticsModuleType.CTREPCM, ARM_LOCK_SOLENOID_CHANNEL);
         armLock.set(false);
         // Real robot, instantiate hardware IO implementations
@@ -225,6 +232,15 @@ public class RobotContainer {
     leftClimbHeight.setDouble(climb.getLeftEncoder());
     rightClimbHeight.setDouble(climb.getRightEncoder());
     armAngleDegrees.setDouble(arm.getAngleDeg());
+    SmartDashboard.putNumber("PDH/Voltage", pdh.getVoltage());
+    SmartDashboard.putNumber("PDH/Current", pdh.getTotalCurrent());
+    SmartDashboard.putNumber("PDH/Power", pdh.getTotalPower());
+    SmartDashboard.putNumber("PDH/Energy", pdh.getTotalEnergy());
+
+    int numChannels = pdh.getNumChannels();
+    for (int i = 0; i < numChannels; i++) {
+      SmartDashboard.putNumber("PDH/Channel " + i, pdh.getCurrent(i));
+    }
   }
 
   /**
