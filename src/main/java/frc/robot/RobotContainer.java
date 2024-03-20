@@ -10,13 +10,18 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
@@ -25,10 +30,8 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToAmplifier;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.VoltageCommandRamp;
-import frc.robot.commands.arm_commands.ArmExtend;
 import frc.robot.commands.arm_commands.ArmGoToPosTeleop;
 import frc.robot.commands.arm_commands.ArmManuel;
-import frc.robot.commands.arm_commands.ArmRetract;
 import frc.robot.commands.arm_commands.ArmSetTargetPos;
 import frc.robot.commands.climb_commands.ClimbManual;
 import frc.robot.subsystems.arm.Arm;
@@ -67,16 +70,22 @@ public class RobotContainer {
   private final Arm arm;
   private final Intake intake;
   private final ExampleFlywheel exampleFlywheel;
+
+  @SuppressWarnings("unused")
   private final AprilTagVision vision;
+
   private final Climb climb;
 
   public final Solenoid armLock;
+
+  private PowerDistribution pdh = null;
 
   // shuffleboard
   ShuffleboardTab lewZealandTab;
   public static GenericEntry hasNote;
   public static GenericEntry leftClimbHeight;
   public static GenericEntry rightClimbHeight;
+  public static GenericEntry armAngleDegrees;
 
   // Controller
   public static CommandXboxController driveController = new CommandXboxController(0);
@@ -84,8 +93,10 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardNumber flywheelSpeedInput =
-      new LoggedDashboardNumber("Flywheel Speed", 1500.0);
+  private final LoggedDashboardNumber climbMaxV =
+      new LoggedDashboardNumber("Climb max voltage", 3.0);
+  private final LoggedDashboardNumber autoDelaySeconds =
+      new LoggedDashboardNumber("Autonomous Time Delay", 0.0);
 
   // Auto Commands
   private final AutoCommands autoCommands;
@@ -94,6 +105,8 @@ public class RobotContainer {
   public RobotContainer() {
     switch (Constants.getRobot()) {
       case ROBOT_REAL:
+        pdh = new PowerDistribution(Constants.CAN.kPowerDistributionHub, ModuleType.kRev);
+
         armLock = new Solenoid(PneumaticsModuleType.CTREPCM, ARM_LOCK_SOLENOID_CHANNEL);
         armLock.set(false);
         // Real robot, instantiate hardware IO implementations
@@ -174,18 +187,22 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "Run Flywheel",
         Commands.startEnd(
-                () -> exampleFlywheel.runVelocity(flywheelSpeedInput.get()),
-                exampleFlywheel::stop,
-                exampleFlywheel)
+                () -> exampleFlywheel.runVelocity(0.0), exampleFlywheel::stop, exampleFlywheel)
             .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Create auto commands
-    autoCommands = new AutoCommands(drive);
+    autoCommands = new AutoCommands(drive, arm, intake);
 
+    autoChooser.addOption("Amp Blue", autoCommands.scoreAmpRelativeBlue());
+    autoChooser.addOption("Amp Red", autoCommands.scoreAmpRelativeRed());
+    autoChooser.addDefaultOption("RED AMP THEN STOP", autoCommands.scoreAmpRelativeRedThenStop());
     autoChooser.addOption(
         "Drive forward 2.5 m",
         autoCommands.driveToPoseRelative(new Pose2d(2.5, 0, new Rotation2d())));
+    autoChooser.addOption(
+        "Forward 2.5 m, left 1 m",
+        autoCommands.driveToPoseRelative(new Pose2d(2.5, 1.0, new Rotation2d())));
     autoChooser.addOption("Score Four", autoCommands.amplifierScoreFour());
     autoChooser.addOption("auto field test", autoCommands.autoTest());
     autoChooser.addOption("Drive to note", autoCommands.driveToNote());
@@ -207,12 +224,23 @@ public class RobotContainer {
     hasNote = lewZealandTab.add("Has Note", false).getEntry();
     leftClimbHeight = lewZealandTab.add("Left Climb", 0.0).getEntry();
     rightClimbHeight = lewZealandTab.add("Right Climb", 0.0).getEntry();
+    armAngleDegrees = lewZealandTab.add("Arm angle", 0.0).getEntry();
   }
 
   public void updateShuffleboard() {
     hasNote.setBoolean(intake.hasNote());
     leftClimbHeight.setDouble(climb.getLeftEncoder());
     rightClimbHeight.setDouble(climb.getRightEncoder());
+    armAngleDegrees.setDouble(arm.getAngleDeg());
+    SmartDashboard.putNumber("PDH/Voltage", pdh.getVoltage());
+    SmartDashboard.putNumber("PDH/Current", pdh.getTotalCurrent());
+    SmartDashboard.putNumber("PDH/Power", pdh.getTotalPower());
+    SmartDashboard.putNumber("PDH/Energy", pdh.getTotalEnergy());
+
+    int numChannels = pdh.getNumChannels();
+    for (int i = 0; i < numChannels; i++) {
+      SmartDashboard.putNumber("PDH/Channel " + i, pdh.getCurrent(i));
+    }
   }
 
   /**
@@ -279,7 +307,7 @@ public class RobotContainer {
 
     // intake/outtake
     driveController.rightTrigger().whileTrue(intake.runEatCommand());
-    operatorController.leftTrigger().whileTrue(intake.runVomitCommand());
+    operatorController.povUp().whileTrue(intake.runVomitCommand());
     operatorController.rightTrigger().whileTrue(intake.runPoopCommand());
 
     // Arm Controls
@@ -292,21 +320,18 @@ public class RobotContainer {
     operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armTrapPosDeg));
     operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armAmpPosDeg));
 
-    operatorController.back().onTrue(new ArmExtend(arm));
-    operatorController.start().onTrue(new ArmRetract(arm));
-
     // TEMPORARY!!! FOR TESTING. TODO: REMOVE THIS!!!
     climb.setDefaultCommand(
         new ClimbManual(
             climb,
             () ->
                 MathUtil.applyDeadband(
-                    -operatorController.getLeftY() * 1.0 // input is voltage so 12 is maximum power
-                    ,
+                    -operatorController.getLeftY() * climbMaxV.get(),
                     Constants.JOYSTICK_DEADBAND)));
 
-    operatorController.start().onTrue(new ArmExtend(arm));
-    operatorController.back().onTrue(new ArmRetract(arm));
+    // no extension for flr bc mechanical issues
+    // operatorController.start().onTrue(new ArmExtend(arm));
+    // operatorController.back().onTrue(new ArmRetract(arm));
   }
 
   /**
@@ -315,7 +340,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return new SequentialCommandGroup(new WaitCommand(autoDelaySeconds.get()), autoChooser.get());
   }
 
   private void addTestingAutos() {
