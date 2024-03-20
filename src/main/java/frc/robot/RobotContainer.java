@@ -69,7 +69,12 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber autoDelaySeconds =
       new LoggedDashboardNumber("Autonomous Time Delay", 0.0);
-
+  private final LoggedDashboardNumber startingX = 
+      new LoggedDashboardNumber("starting x", 0.0);
+  private final LoggedDashboardNumber startingY = 
+      new LoggedDashboardNumber("starting Y", 0.0);
+  private final LoggedDashboardNumber startingTheta = 
+      new LoggedDashboardNumber("starting theta", 0.0);
   // Auto Commands
   private final AutoCommands autoCommands;
 
