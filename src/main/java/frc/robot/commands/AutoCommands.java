@@ -15,6 +15,8 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.util.AllianceFlipUtil;
 
+// TODO: rework autos, hopefully remove the relative ones
+
 public class AutoCommands {
   // Subsystems
   private final Drive drive;

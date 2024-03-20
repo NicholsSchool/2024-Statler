@@ -61,19 +61,12 @@ public class Arm extends SubsystemBase {
     kGoToPos,
   };
 
-  private static enum PistonState {
-    kExtended,
-    kRetracted
-  };
-
   private ArmState armState;
-  private PistonState pistonState;
 
   public Arm(ArmIO io) {
     System.out.println("[Init] Creating Arm");
     this.io = io;
     armState = ArmState.kGoToPos;
-    pistonState = PistonState.kRetracted;
 
     reachedTargetPos = false;
     timerMoveToPose = new Timer();
@@ -110,18 +103,15 @@ public class Arm extends SubsystemBase {
     previousVelocity = inputs.velocityRadsPerSec;
 
     // if no target pose has been set yet,
-    // then set as current position. This
-    // is to have arm hold its starting position on enable.
+    // then set to vertical (90 degrees)
+    // so the arm raises on enable
     if (!targetPosSet) {
       targetPosSet = true;
       setTargetPos(90.0);
     }
 
     // Reset when disabled
-    if (DriverStation.isDisabled()) {
-      // manuelInput = 0.0;
-      // armState = ArmState.kManuel;
-    }
+    if (DriverStation.isDisabled()) {}
 
     switch (armState) {
       case kManuel:
@@ -145,15 +135,6 @@ public class Arm extends SubsystemBase {
     }
     voltageCommand = voltageCmdPid + voltageCmdFF;
     io.setVoltage(voltageCommand);
-
-    switch (pistonState) {
-      case kExtended:
-        io.extend();
-        break;
-      case kRetracted:
-        io.retract();
-        break;
-    }
   }
 
   // set soft limits on the input velocity of the arm to make
@@ -206,16 +187,6 @@ public class Arm extends SubsystemBase {
     armState = ArmState.kGoToPos;
   }
 
-  // called from instant command
-  public void setExtended() {
-    pistonState = PistonState.kExtended;
-  }
-
-  // called from instant command
-  public void setRetracted() {
-    pistonState = PistonState.kRetracted;
-  }
-
   private void updateTunables() {
     // Update from tunable numbers
     if (armKg.hasChanged(hashCode())
@@ -243,7 +214,6 @@ public class Arm extends SubsystemBase {
 
   // Create command that will move to target angle until motion completes.
   public Command runGoToPosCommand(double targetAngleDeg) {
-    // run eat mode until a note is obtained
     return new FunctionalCommand(
         () -> this.setTargetPos(targetAngleDeg),
         this::setGoToPos,
@@ -252,11 +222,12 @@ public class Arm extends SubsystemBase {
         this);
   }
 
+  // THINGS TO LOG IN ADV SCOPE
+
+  @AutoLogOutput
   public double getAngleDeg() {
     return inputs.angleDegs;
   }
-
-  // THINGS TO LOG IN ADV SCOPE
 
   @AutoLogOutput
   public double getTargetAngleDeg() {

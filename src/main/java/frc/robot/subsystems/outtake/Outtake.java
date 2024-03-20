@@ -7,6 +7,8 @@ import frc.robot.Constants.OuttakeConstants;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
+// TODO: rework intake and outtake for the coulson wheels
+
 public class Outtake extends SubsystemBase {
   private OuttakeIO io;
   private final OuttakeIOInputsAutoLogged inputs = new OuttakeIOInputsAutoLogged();

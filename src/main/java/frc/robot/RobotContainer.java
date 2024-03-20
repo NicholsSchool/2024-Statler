@@ -1,12 +1,6 @@
 package frc.robot;
 
-import static frc.robot.Constants.ArmConstants.ARM_LOCK_SOLENOID_CHANNEL;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -18,13 +12,13 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.RobotType;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToAmplifier;
@@ -33,28 +27,18 @@ import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.commands.arm_commands.ArmGoToPosTeleop;
 import frc.robot.commands.arm_commands.ArmManuel;
 import frc.robot.commands.arm_commands.ArmSetTargetPos;
-import frc.robot.commands.climb_commands.ClimbManual;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
-import frc.robot.subsystems.climb.Climb;
-import frc.robot.subsystems.climb.ClimbIOReal;
-import frc.robot.subsystems.climb.ClimbIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONAVX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.example_flywheel.ExampleFlywheel;
-import frc.robot.subsystems.example_flywheel.ExampleFlywheelIO;
-import frc.robot.subsystems.example_flywheel.ExampleFlywheelIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.vision.AprilTagVision;
-import frc.robot.subsystems.vision.AprilTagVisionIO;
-import frc.robot.subsystems.vision.AprilTagVisionReal;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -69,23 +53,13 @@ public class RobotContainer {
   private final Drive drive;
   private final Arm arm;
   private final Intake intake;
-  private final ExampleFlywheel exampleFlywheel;
-
-  @SuppressWarnings("unused")
-  private final AprilTagVision vision;
-
-  private final Climb climb;
 
   public final Solenoid armLock;
-
-  private PowerDistribution pdh = null;
+  private PowerDistribution pdh;
 
   // shuffleboard
   ShuffleboardTab lewZealandTab;
   public static GenericEntry hasNote;
-  public static GenericEntry leftClimbHeight;
-  public static GenericEntry rightClimbHeight;
-  public static GenericEntry armAngleDegrees;
 
   // Controller
   public static CommandXboxController driveController = new CommandXboxController(0);
@@ -93,8 +67,6 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardNumber climbMaxV =
-      new LoggedDashboardNumber("Climb max voltage", 3.0);
   private final LoggedDashboardNumber autoDelaySeconds =
       new LoggedDashboardNumber("Autonomous Time Delay", 0.0);
 
@@ -105,11 +77,13 @@ public class RobotContainer {
   public RobotContainer() {
     switch (Constants.getRobot()) {
       case ROBOT_REAL:
+        // Real robot, instantiate hardware IO implementations
         pdh = new PowerDistribution(Constants.CAN.kPowerDistributionHub, ModuleType.kRev);
 
-        armLock = new Solenoid(PneumaticsModuleType.CTREPCM, ARM_LOCK_SOLENOID_CHANNEL);
+        armLock =
+            new Solenoid(PneumaticsModuleType.CTREPCM, ArmConstants.ARM_LOCK_SOLENOID_CHANNEL);
         armLock.set(false);
-        // Real robot, instantiate hardware IO implementations
+
         drive =
             new Drive(
                 new GyroIONAVX(),
@@ -118,16 +92,14 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(2),
                 new ModuleIOMaxSwerve(3));
         // We have no flywheel, so create a simulated just for example.
-        exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
         arm = new Arm(new ArmIOReal());
         intake = new Intake(new IntakeIOReal());
-        vision = new AprilTagVision(new AprilTagVisionIO() {});
-        climb = new Climb(new ClimbIOReal());
+        // TODO: add outtake subsystem to RobotContainer
         break;
 
       case ROBOT_SIM:
-        armLock = null;
         // Sim robot, instantiate physics sim IO implementations
+        armLock = null;
         drive =
             new Drive(
                 new GyroIO() {},
@@ -135,11 +107,8 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
-        exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
         arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
-        vision = new AprilTagVision(new AprilTagVisionIO() {});
-        climb = new Climb(new ClimbIOSim());
         break;
 
       case ROBOT_FOOTBALL:
@@ -151,22 +120,16 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim(),
                 new ModuleIOSim());
-        exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIOSim());
         arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
-        vision =
-            new AprilTagVision(
-                new AprilTagVisionReal(
-                    Constants.VisionConstants.cameraName, Constants.RobotConstants.cameraToRobot));
-        climb = new Climb(new ClimbIOSim());
-
         break;
 
-        //   case ROBOT_REPLAY:
       default:
-        armLock = null;
+        // case ROBOT_REPLAY:
         // Replayed robot, disable IO implementations since the replay
         // will supply the data.
+        armLock = null;
+
         drive =
             new Drive(
                 new GyroIO() {},
@@ -174,72 +137,49 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        exampleFlywheel = new ExampleFlywheel(new ExampleFlywheelIO() {});
         arm = new Arm(new ArmIOSim()); // TODO: make interfaces
         intake = new Intake(new IntakeIOSim());
-        vision = new AprilTagVision(new AprilTagVisionIO() {});
-        climb = new Climb(new ClimbIOSim());
-
         break;
     }
 
     // Set up auto routines
-    NamedCommands.registerCommand(
-        "Run Flywheel",
-        Commands.startEnd(
-                () -> exampleFlywheel.runVelocity(0.0), exampleFlywheel::stop, exampleFlywheel)
-            .withTimeout(5.0));
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Create auto commands
     autoCommands = new AutoCommands(drive, arm, intake);
 
-    autoChooser.addOption("Amp Blue", autoCommands.scoreAmpRelativeBlue());
-    autoChooser.addOption("Amp Red", autoCommands.scoreAmpRelativeRed());
-    autoChooser.addDefaultOption("RED AMP THEN STOP", autoCommands.scoreAmpRelativeRedThenStop());
-    autoChooser.addOption(
-        "Drive forward 2.5 m",
-        autoCommands.driveToPoseRelative(new Pose2d(2.5, 0, new Rotation2d())));
-    autoChooser.addOption(
-        "Forward 2.5 m, left 1 m",
-        autoCommands.driveToPoseRelative(new Pose2d(2.5, 1.0, new Rotation2d())));
-    autoChooser.addOption("Score Four", autoCommands.amplifierScoreFour());
-    autoChooser.addOption("auto field test", autoCommands.autoTest());
-    autoChooser.addOption("Drive to note", autoCommands.driveToNote());
-    autoChooser.addOption("drivenote pickup", autoCommands.driveNotePickup());
-    autoChooser.addOption("Drive To Amplifier", new DriveToAmplifier(drive));
+    // TODO: add auto routines. Example on the next line
+    autoChooser.addOption("Wait 5 seconds", new WaitCommand(5.0));
 
     // add testing auto functions
     addTestingAutos();
 
+    // initialize the shuffleboard outputs
+    initShuffleboard();
+
     // Configure the button bindings
     configureButtonBindings();
-
-    initShuffleboard();
   }
 
   private void initShuffleboard() {
     // Configure the Shuffleboard
     lewZealandTab = Shuffleboard.getTab("Lew Zealand");
     hasNote = lewZealandTab.add("Has Note", false).getEntry();
-    leftClimbHeight = lewZealandTab.add("Left Climb", 0.0).getEntry();
-    rightClimbHeight = lewZealandTab.add("Right Climb", 0.0).getEntry();
-    armAngleDegrees = lewZealandTab.add("Arm angle", 0.0).getEntry();
   }
 
   public void updateShuffleboard() {
     hasNote.setBoolean(intake.hasNote());
-    leftClimbHeight.setDouble(climb.getLeftEncoder());
-    rightClimbHeight.setDouble(climb.getRightEncoder());
-    armAngleDegrees.setDouble(arm.getAngleDeg());
-    SmartDashboard.putNumber("PDH/Voltage", pdh.getVoltage());
-    SmartDashboard.putNumber("PDH/Current", pdh.getTotalCurrent());
-    SmartDashboard.putNumber("PDH/Power", pdh.getTotalPower());
-    SmartDashboard.putNumber("PDH/Energy", pdh.getTotalEnergy());
 
-    int numChannels = pdh.getNumChannels();
-    for (int i = 0; i < numChannels; i++) {
-      SmartDashboard.putNumber("PDH/Channel " + i, pdh.getCurrent(i));
+    if (Constants.getRobot() == RobotType.ROBOT_REAL) {
+      SmartDashboard.putNumber("PDH/Voltage", pdh.getVoltage());
+      SmartDashboard.putNumber("PDH/Current", pdh.getTotalCurrent());
+      SmartDashboard.putNumber("PDH/Power", pdh.getTotalPower());
+      SmartDashboard.putNumber("PDH/Energy", pdh.getTotalEnergy());
+
+      int numChannels = pdh.getNumChannels();
+      for (int i = 0; i < numChannels; i++) {
+        SmartDashboard.putNumber("PDH/Channel " + i, pdh.getCurrent(i));
+      }
     }
   }
 
@@ -319,19 +259,6 @@ public class RobotContainer {
     operatorController.b().onTrue(new ArmSetTargetPos(arm, ArmConstants.armDrivePosDeg));
     operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armTrapPosDeg));
     operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armAmpPosDeg));
-
-    // TEMPORARY!!! FOR TESTING. TODO: REMOVE THIS!!!
-    climb.setDefaultCommand(
-        new ClimbManual(
-            climb,
-            () ->
-                MathUtil.applyDeadband(
-                    -operatorController.getLeftY() * climbMaxV.get(),
-                    Constants.JOYSTICK_DEADBAND)));
-
-    // no extension for flr bc mechanical issues
-    // operatorController.start().onTrue(new ArmExtend(arm));
-    // operatorController.back().onTrue(new ArmRetract(arm));
   }
 
   /**
@@ -349,16 +276,11 @@ public class RobotContainer {
         "Drive FF Characterization",
         new FeedForwardCharacterization(
             drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-    autoChooser.addOption(
-        "Flywheel FF Characterization",
-        new FeedForwardCharacterization(
-            exampleFlywheel,
-            exampleFlywheel::runVolts,
-            exampleFlywheel::getCharacterizationVelocity));
 
     autoChooser.addOption(
         "Module Drive Ramp Test",
         new VoltageCommandRamp(drive, drive::runDriveCommandRampVolts, 0.5, 5.0));
+
     autoChooser.addOption(
         "Module Turn Ramp Test",
         new VoltageCommandRamp(drive, drive::runTurnCommandRampVolts, 0.5, 5.0));
