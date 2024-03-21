@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.CurrentDrawDesparity;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -38,6 +39,11 @@ public class Arm extends SubsystemBase {
   private double voltageCmdFF = 0.0;
   private boolean reachedTargetPos = false;
   private boolean targetPosSet = false;
+
+  // tunable booleans
+
+  private static final LoggedTunableNumber currentThreshold =
+      new LoggedTunableNumber("Arm/DesparityThreshold");
 
   // tunable parameters
   private static final LoggedTunableNumber armKg = new LoggedTunableNumber("Arm/kG");
@@ -83,6 +89,7 @@ public class Arm extends SubsystemBase {
     armKi.initDefault(Constants.ArmConstants.ARM_I);
     armKd.initDefault(Constants.ArmConstants.ARM_D);
     moveToPosTimeoutSec.initDefault(5.0);
+    currentThreshold.initDefault(0.25);
 
     armPidController.setP(armKp.get());
     armPidController.setI(armKi.get());
@@ -272,5 +279,11 @@ public class Arm extends SubsystemBase {
   @AutoLogOutput
   public double moveDurationTimeSeconds() {
     return timerMoveToPose.get();
+  }
+
+  @AutoLogOutput
+  public boolean isCurrnetProblem() {
+    return CurrentDrawDesparity.isDesparity(
+        inputs.currentAmps[0], inputs.currentAmps[1], currentThreshold.get());
   }
 }

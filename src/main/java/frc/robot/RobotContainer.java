@@ -60,6 +60,7 @@ public class RobotContainer {
   // shuffleboard
   ShuffleboardTab lewZealandTab;
   public static GenericEntry hasNote;
+  public static GenericEntry isCurrnetProblem;
 
   // Controller
   public static CommandXboxController driveController = new CommandXboxController(0);
@@ -165,10 +166,12 @@ public class RobotContainer {
     // Configure the Shuffleboard
     lewZealandTab = Shuffleboard.getTab("Lew Zealand");
     hasNote = lewZealandTab.add("Has Note", false).getEntry();
+    isCurrnetProblem = lewZealandTab.add("Current Problem", false).getEntry();
   }
 
   public void updateShuffleboard() {
     hasNote.setBoolean(intake.hasNote());
+    isCurrnetProblem.setBoolean(!arm.isCurrnetProblem());
 
     if (Constants.getRobot() == RobotType.ROBOT_REAL) {
       SmartDashboard.putNumber("PDH/Voltage", pdh.getVoltage());
