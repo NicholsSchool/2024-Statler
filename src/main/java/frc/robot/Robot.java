@@ -106,6 +106,8 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    robotContainer.setStartingPose();
+
     if (Constants.getRobot() == RobotType.ROBOT_REAL) {
       robotContainer.armLock.set(true);
     }

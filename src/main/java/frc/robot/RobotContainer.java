@@ -1,6 +1,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -39,6 +41,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -69,7 +72,10 @@ public class RobotContainer {
   private final LoggedDashboardChooser<Command> autoChooser;
   private final LoggedDashboardNumber autoDelaySeconds =
       new LoggedDashboardNumber("Autonomous Time Delay", 0.0);
-
+  private final LoggedDashboardNumber startingX = new LoggedDashboardNumber("starting x", 0.0);
+  private final LoggedDashboardNumber startingY = new LoggedDashboardNumber("starting Y", 0.0);
+  private final LoggedDashboardNumber startingTheta =
+      new LoggedDashboardNumber("starting theta (degrees)", 0.0);
   // Auto Commands
   private final AutoCommands autoCommands;
 
@@ -181,6 +187,15 @@ public class RobotContainer {
         SmartDashboard.putNumber("PDH/Channel " + i, pdh.getCurrent(i));
       }
     }
+  }
+
+  public void setStartingPose() {
+    drive.setPose(
+        AllianceFlipUtil.apply(
+            new Pose2d(
+                startingX.get(),
+                startingY.get(),
+                new Rotation2d(Math.toRadians(startingTheta.get())))));
   }
 
   /**
