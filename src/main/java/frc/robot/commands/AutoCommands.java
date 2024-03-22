@@ -49,6 +49,16 @@ public class AutoCommands {
     return drvToPose.until(drvToPose::atGoal);
   }
 
+  public Command splineToPose(Pose2d pose) {
+    var splToPose =
+        new SplineToPose(
+            this.drive,
+            () -> {
+              return AllianceFlipUtil.apply(pose);
+            });
+    return splToPose.until(splToPose::atGoal);
+  }
+
   public Command scoreAmpRelativeBlue() {
     var relativeDriveCommand =
         driveToPoseRelative(
