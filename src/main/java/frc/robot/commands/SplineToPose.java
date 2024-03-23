@@ -42,34 +42,38 @@ public class SplineToPose extends Command {
   private double thetaErrorAbs;
   private Translation2d lastSetpointTranslation;
 
-  private static final LoggedTunableNumber driveKp = new LoggedTunableNumber("DriveToPose/DriveKp");
-  private static final LoggedTunableNumber driveKd = new LoggedTunableNumber("DriveToPose/DriveKd");
-  private static final LoggedTunableNumber thetaKp = new LoggedTunableNumber("DriveToPose/ThetaKp");
-  private static final LoggedTunableNumber thetaKd = new LoggedTunableNumber("DriveToPose/ThetaKd");
-  private static final LoggedTunableNumber driveMaxVelocity =
-      new LoggedTunableNumber("DriveToPose/DriveMaxVelocity");
-  private static final LoggedTunableNumber driveMaxVelocitySlow =
-      new LoggedTunableNumber("DriveToPose/DriveMaxVelocitySlow");
-  private static final LoggedTunableNumber driveMaxAcceleration =
-      new LoggedTunableNumber("DriveToPose/DriveMaxAcceleration");
+  private static final LoggedTunableNumber splineKp =
+      new LoggedTunableNumber("DriveToPose/DriveKp");
+  private static final LoggedTunableNumber splineKd =
+      new LoggedTunableNumber("DriveToPose/DriveKd");
+  private static final LoggedTunableNumber splineThetaKp =
+      new LoggedTunableNumber("DriveToPose/ThetaKp");
+  private static final LoggedTunableNumber splineThetaKd =
+      new LoggedTunableNumber("DriveToPose/ThetaKd");
+  private static final LoggedTunableNumber splineMaxVelocity =
+      new LoggedTunableNumber("splineToPose/DriveMaxVelocity");
+  private static final LoggedTunableNumber splineMaxVelocitySlow =
+      new LoggedTunableNumber("splineToPose/DriveMaxVelocitySlow");
+  private static final LoggedTunableNumber splineMaxAcceleration =
+      new LoggedTunableNumber("splineToPose/DriveMaxAcceleration");
   private static final LoggedTunableNumber thetaMaxVelocity =
-      new LoggedTunableNumber("DriveToPose/ThetaMaxVelocity");
+      new LoggedTunableNumber("splineToPose/ThetaMaxVelocity");
   private static final LoggedTunableNumber thetaMaxVelocitySlow =
-      new LoggedTunableNumber("DriveToPose/ThetaMaxVelocitySlow");
+      new LoggedTunableNumber("splineToPose/ThetaMaxVelocitySlow");
   private static final LoggedTunableNumber thetaMaxAcceleration =
-      new LoggedTunableNumber("DriveToPose/ThetaMaxAcceleration");
-  private static final LoggedTunableNumber driveTolerance =
-      new LoggedTunableNumber("DriveToPose/DriveTolerance");
-  private static final LoggedTunableNumber driveToleranceSlow =
-      new LoggedTunableNumber("DriveToPose/DriveToleranceSlow");
-  private static final LoggedTunableNumber thetaTolerance =
-      new LoggedTunableNumber("DriveToPose/ThetaTolerance");
-  private static final LoggedTunableNumber thetaToleranceSlow =
-      new LoggedTunableNumber("DriveToPose/ThetaToleranceSlow");
+      new LoggedTunableNumber("splineToPose/ThetaMaxAcceleration");
+  private static final LoggedTunableNumber splineTolerance =
+      new LoggedTunableNumber("splineToPose/DriveTolerance");
+  private static final LoggedTunableNumber splineToleranceSlow =
+      new LoggedTunableNumber("splineThetaToPose/DriveToleranceSlow");
+  private static final LoggedTunableNumber splineThetaTolerance =
+      new LoggedTunableNumber("splineToPose/ThetaTolerance");
+  private static final LoggedTunableNumber splineThetaToleranceSlow =
+      new LoggedTunableNumber("splineToPose/ThetaToleranceSlow");
   private static final LoggedTunableNumber ffMinRadius =
-      new LoggedTunableNumber("DriveToPose/FFMinRadius");
+      new LoggedTunableNumber("splineToPose/FFMinRadius");
   private static final LoggedTunableNumber ffMaxRadius =
-      new LoggedTunableNumber("DriveToPose/FFMinRadius");
+      new LoggedTunableNumber("splineToPose/FFMinRadius");
 
   static {
     switch (Constants.getRobot()) {
@@ -77,20 +81,20 @@ public class SplineToPose extends Command {
       case ROBOT_REAL:
       case ROBOT_REPLAY:
       case ROBOT_SIM:
-        driveKp.initDefault(2.0);
-        driveKd.initDefault(0.0);
-        thetaKp.initDefault(5.0);
-        thetaKd.initDefault(0.0);
-        driveMaxVelocity.initDefault(Units.inchesToMeters(150.0));
-        driveMaxVelocitySlow.initDefault(Units.inchesToMeters(50.0));
-        driveMaxAcceleration.initDefault(Units.inchesToMeters(95.0));
+        splineKp.initDefault(2.0);
+        splineKd.initDefault(0.0);
+        splineThetaKp.initDefault(5.0);
+        splineThetaKd.initDefault(0.0);
+        splineMaxVelocity.initDefault(Units.inchesToMeters(150.0));
+        splineMaxVelocitySlow.initDefault(Units.inchesToMeters(50.0));
+        splineMaxAcceleration.initDefault(Units.inchesToMeters(95.0));
         thetaMaxVelocity.initDefault(Units.degreesToRadians(360.0));
         thetaMaxVelocitySlow.initDefault(Units.degreesToRadians(90.0));
         thetaMaxAcceleration.initDefault(Units.degreesToRadians(720.0));
-        driveTolerance.initDefault(0.01);
-        driveToleranceSlow.initDefault(0.06);
-        thetaTolerance.initDefault(Units.degreesToRadians(1.0));
-        thetaToleranceSlow.initDefault(Units.degreesToRadians(3.0));
+        splineTolerance.initDefault(0.01);
+        splineToleranceSlow.initDefault(0.06);
+        splineThetaTolerance.initDefault(Units.degreesToRadians(1.0));
+        splineThetaToleranceSlow.initDefault(Units.degreesToRadians(3.0));
         ffMinRadius.initDefault(0.2);
         ffMaxRadius.initDefault(0.8);
       default:
@@ -154,34 +158,35 @@ public class SplineToPose extends Command {
     running = true;
 
     // Update from tunable numbers
-    if (driveMaxVelocity.hasChanged(hashCode())
-        || driveMaxVelocitySlow.hasChanged(hashCode())
-        || driveMaxAcceleration.hasChanged(hashCode())
-        || driveTolerance.hasChanged(hashCode())
-        || driveToleranceSlow.hasChanged(hashCode())
+    if (splineMaxVelocity.hasChanged(hashCode())
+        || splineMaxVelocitySlow.hasChanged(hashCode())
+        || splineMaxAcceleration.hasChanged(hashCode())
+        || splineTolerance.hasChanged(hashCode())
+        || splineToleranceSlow.hasChanged(hashCode())
         || thetaMaxVelocity.hasChanged(hashCode())
         || thetaMaxVelocitySlow.hasChanged(hashCode())
         || thetaMaxAcceleration.hasChanged(hashCode())
-        || thetaTolerance.hasChanged(hashCode())
-        || thetaToleranceSlow.hasChanged(hashCode())
-        || driveKp.hasChanged(hashCode())
-        || driveKd.hasChanged(hashCode())
-        || thetaKp.hasChanged(hashCode())
-        || thetaKd.hasChanged(hashCode())) {
-      driveController.setP(driveKp.get());
-      driveController.setD(driveKd.get());
+        || splineThetaTolerance.hasChanged(hashCode())
+        || splineThetaToleranceSlow.hasChanged(hashCode())
+        || splineKp.hasChanged(hashCode())
+        || splineKd.hasChanged(hashCode())
+        || splineThetaKp.hasChanged(hashCode())
+        || splineThetaKd.hasChanged(hashCode())) {
+      driveController.setP(splineKp.get());
+      driveController.setD(splineKd.get());
       driveController.setConstraints(
           new TrapezoidProfile.Constraints(
-              slowMode ? driveMaxVelocitySlow.get() : driveMaxVelocity.get(),
-              driveMaxAcceleration.get()));
-      driveController.setTolerance(slowMode ? driveToleranceSlow.get() : driveTolerance.get());
-      thetaController.setP(thetaKp.get());
-      thetaController.setD(thetaKd.get());
+              slowMode ? splineMaxVelocitySlow.get() : splineMaxVelocity.get(),
+              splineMaxAcceleration.get()));
+      driveController.setTolerance(slowMode ? splineToleranceSlow.get() : splineTolerance.get());
+      thetaController.setP(splineThetaKp.get());
+      thetaController.setD(splineThetaKd.get());
       thetaController.setConstraints(
           new TrapezoidProfile.Constraints(
               slowMode ? thetaMaxVelocitySlow.get() : thetaMaxVelocity.get(),
               thetaMaxAcceleration.get()));
-      thetaController.setTolerance(slowMode ? thetaToleranceSlow.get() : thetaTolerance.get());
+      thetaController.setTolerance(
+          slowMode ? splineThetaToleranceSlow.get() : splineThetaTolerance.get());
     }
 
     // Get current and target pose
