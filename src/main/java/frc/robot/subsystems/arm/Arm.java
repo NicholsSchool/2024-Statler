@@ -201,7 +201,6 @@ public class Arm extends SubsystemBase {
         || armKa.hasChanged(hashCode())) {
       ARM_FF = new ArmFeedforward(0.0, armKg.get(), armKv.get(), armKa.get());
     }
-
     if (armMaxVelocityRad.hasChanged(hashCode())
         || armMaxAccelerationRad.hasChanged(hashCode())
         || positionToleranceDeg.hasChanged(hashCode())

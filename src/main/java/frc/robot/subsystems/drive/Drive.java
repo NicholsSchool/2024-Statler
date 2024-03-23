@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants; // TJG
+import frc.robot.RobotContainer;
 import frc.robot.util.LocalADStarAK;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -102,11 +103,11 @@ public class Drive extends SubsystemBase {
 
   public void periodic() {
     gyroIO.updateInputs(gyroInputs);
+    resetPosWithDashboard();
     Logger.processInputs("Drive/Gyro", gyroInputs);
     for (var module : modules) {
       module.periodic();
     }
-
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
       for (var module : modules) {
@@ -246,6 +247,18 @@ public class Drive extends SubsystemBase {
       driveVelocityAverage += module.getCharacterizationVelocity();
     }
     return driveVelocityAverage / 4.0;
+  }
+
+  // changes robot pose with dashboard tunables
+  private void resetPosWithDashboard() {
+    if (RobotContainer.startingX.hasChanged(hashCode())
+        || RobotContainer.startingY.hasChanged(hashCode())
+        || RobotContainer.startingTheta.hasChanged(hashCode())) {
+      setPose(
+          new Pose2d(
+              new Translation2d(RobotContainer.startingX.get(), RobotContainer.startingY.get()),
+              new Rotation2d(RobotContainer.startingTheta.get())));
+    }
   }
 
   /** Returns the module states (turn angles and drive velocities) for all of the modules. */
