@@ -258,6 +258,11 @@ public class Drive extends SubsystemBase {
           new Pose2d(
               new Translation2d(RobotContainer.startingX.get(), RobotContainer.startingY.get()),
               new Rotation2d(RobotContainer.startingTheta.get())));
+    } else if (RobotContainer.autoOptions.hasChanged(hashCode())) {
+      setPose(
+          RobotContainer.autoOptions.get() == 0
+              ? Constants.AutoConstants.startingZero
+              : Constants.AutoConstants.startingOne);
     }
   }
 
