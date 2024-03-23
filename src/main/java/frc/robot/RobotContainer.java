@@ -137,7 +137,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        arm = new Arm(new ArmIOSim()); // TODO: make interfaces
+        arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
         break;
     }
@@ -148,8 +148,9 @@ public class RobotContainer {
     // Create auto commands
     autoCommands = new AutoCommands(drive, arm, intake);
 
-    // TODO: add auto routines. Example on the next line
     autoChooser.addOption("Wait 5 seconds", new WaitCommand(5.0));
+    autoChooser.addOption("relative blue amp", autoCommands.scoreAmpRelativeBlue());
+    autoChooser.addOption("relative red amp", autoCommands.scoreAmpRelativeRed());
 
     // add testing auto functions
     addTestingAutos();
