@@ -21,4 +21,7 @@ public class OuttakeIOSim implements OuttakeIO {
 
   @Override
   public void setDirection(boolean forward) {}
+
+  @Override
+  public void stop() {}
 }

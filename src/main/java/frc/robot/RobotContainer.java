@@ -31,7 +31,6 @@ import frc.robot.commands.arm_commands.ArmGoToPosTeleop;
 import frc.robot.commands.arm_commands.ArmManuel;
 import frc.robot.commands.arm_commands.ArmSetTargetPos;
 import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -40,8 +39,10 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.outtake.Outtake;
+import frc.robot.subsystems.outtake.OuttakeIOReal;
+import frc.robot.subsystems.outtake.OuttakeIOSim;
 import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
@@ -57,6 +58,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Arm arm;
   private final Intake intake;
+  private final Outtake outtake;
 
   public final Solenoid armLock;
   private PowerDistribution pdh;
@@ -100,9 +102,9 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(2),
                 new ModuleIOMaxSwerve(3));
         // We have no flywheel, so create a simulated just for example.
-        arm = new Arm(new ArmIOReal());
-        intake = new Intake(new IntakeIOReal());
-        // TODO: add outtake subsystem to RobotContainer
+        arm = new Arm(new ArmIOSim());
+        intake = new Intake(new IntakeIOSim());
+        outtake = new Outtake(new OuttakeIOReal());
         break;
 
       case ROBOT_SIM:
@@ -117,6 +119,7 @@ public class RobotContainer {
                 new ModuleIOSim());
         arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
+        outtake = new Outtake(new OuttakeIOSim());
         break;
 
       case ROBOT_FOOTBALL:
@@ -130,6 +133,7 @@ public class RobotContainer {
                 new ModuleIOSim());
         arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
+        outtake = new Outtake(new OuttakeIOSim());
         break;
 
       default:
@@ -147,6 +151,7 @@ public class RobotContainer {
                 new ModuleIO() {});
         arm = new Arm(new ArmIOSim()); // TODO: make interfaces
         intake = new Intake(new IntakeIOSim());
+        outtake = new Outtake(new OuttakeIOSim());
         break;
     }
 
@@ -274,15 +279,19 @@ public class RobotContainer {
     new Trigger(() -> Math.abs(operatorController.getRightY()) >= Constants.JOYSTICK_DEADBAND)
         .whileTrue(new ArmManuel(arm, () -> -operatorController.getRightY()));
 
-    operatorController.a().onTrue(new ArmSetTargetPos(arm, ArmConstants.armIntakePosDeg));
     operatorController.b().onTrue(new ArmSetTargetPos(arm, ArmConstants.armDrivePosDeg));
     operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armTrapPosDeg));
     operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armAmpPosDeg));
+
+    // testing, TODO get rid of these
+    operatorController.povUp().onTrue(new InstantCommand(() -> outtake.setSpeaker()));
+    operatorController.povUp().onFalse(new InstantCommand(() -> outtake.stop()));
+
+    operatorController.povDown().onTrue(new InstantCommand(() -> outtake.setAmp()));
+    operatorController.povDown().onFalse(new InstantCommand(() -> outtake.stop()));
   }
 
   /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
@@ -303,10 +312,13 @@ public class RobotContainer {
     autoChooser.addOption(
         "Module Turn Ramp Test",
         new VoltageCommandRamp(drive, drive::runTurnCommandRampVolts, 0.5, 5.0));
+
+    autoChooser.addOption(
+        "Outtake Ramp Test", new VoltageCommandRamp(outtake, outtake::setVoltage, 0.5, 5.0));
+
     autoChooser.addOption(
         "Spline Test",
         autoCommands.splineToPose(
             new Pose2d(new Translation2d(7.5, 3.5), new Rotation2d(Math.PI / 2))));
-    autoChooser.addOption("amp blue", autoCommands.scoreAmpRelativeBlue());
   }
 }
