@@ -1,7 +1,6 @@
 package frc.robot.subsystems.outtake;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import frc.robot.Constants;
@@ -24,8 +23,7 @@ public class OuttakeIOReal implements OuttakeIO {
   @Override
   public void updateInputs(OuttakeIOInputs inputs) {
     inputs.velocityRPMs =
-        motor.getVelocity().getValueAsDouble()
-            / Constants.OuttakeConstants.GEAR_RATIO_REDUCTION
+        (motor.getVelocity().getValueAsDouble() / Constants.OuttakeConstants.GEAR_RATIO_REDUCTION)
             * 60.0;
     inputs.appliedVolts = motor.getMotorVoltage().getValueAsDouble();
     inputs.currentAmps = motor.getTorqueCurrent().getValueAsDouble();
@@ -33,7 +31,7 @@ public class OuttakeIOReal implements OuttakeIO {
 
   @Override
   public void setVoltage(double voltage) {
-    motor.setControl(new VoltageOut(voltage));
+    motor.setVoltage(voltage);
   }
 
   @Override

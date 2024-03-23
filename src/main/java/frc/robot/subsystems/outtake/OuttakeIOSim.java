@@ -1,6 +1,12 @@
 package frc.robot.subsystems.outtake;
 
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import frc.robot.Constants;
+
 public class OuttakeIOSim implements OuttakeIO {
+  private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 3, 0.004);
+  private double appliedVolts = 0.0;
 
   public OuttakeIOSim() {
     System.out.println("[Init] Creating OuttakeIOSim");
@@ -8,13 +14,20 @@ public class OuttakeIOSim implements OuttakeIO {
 
   @Override
   public void updateInputs(OuttakeIOInputs inputs) {
-    inputs.velocityRPMs = 0.0;
-    inputs.appliedVolts = 0.0;
-    inputs.currentAmps = 0.0;
+
+    sim.setInputVoltage(appliedVolts);
+    sim.update(Constants.loopPeriodSecs);
+
+    inputs.velocityRPMs = sim.getAngularVelocityRPM();
+    inputs.appliedVolts = appliedVolts;
+    inputs.currentAmps = sim.getCurrentDrawAmps();
   }
 
   @Override
-  public void setVoltage(double voltage) {}
+  public void setVoltage(double voltage) {
+    appliedVolts = voltage;
+    sim.setInputVoltage(appliedVolts);
+  }
 
   @Override
   public void setBrakeMode(boolean brake) {}
@@ -23,5 +36,8 @@ public class OuttakeIOSim implements OuttakeIO {
   public void setDirection(boolean forward) {}
 
   @Override
-  public void stop() {}
+  public void stop() {
+    appliedVolts = 0;
+    sim.setInputVoltage(appliedVolts);
+  }
 }
