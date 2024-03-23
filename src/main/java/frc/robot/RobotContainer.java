@@ -303,6 +303,7 @@ public class RobotContainer {
     autoChooser.addOption(
         "Spline Test",
         autoCommands.splineToPose(
-            new Pose2d(new Translation2d(7.5, 3.5), new Rotation2d(-Math.PI / 4))));
+            new Pose2d(new Translation2d(7.5, 3.5), new Rotation2d(Math.PI / 2))));
+    autoChooser.addOption("amp blue", autoCommands.scoreAmpRelativeBlue());
   }
 }
