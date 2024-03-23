@@ -14,12 +14,16 @@ import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.util.AllianceFlipUtil;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class AutoCommands {
   // Subsystems
   private final Drive drive;
   private final Arm arm;
   private final Intake intake;
+
+  private final LoggedDashboardNumber autoDelaySeconds =
+      new LoggedDashboardNumber("Autonomous Time Delay", 0.0);
 
   public AutoCommands(Drive drive, Arm arm, Intake intake) {
     this.drive = drive;
@@ -90,11 +94,13 @@ public class AutoCommands {
   }
 
   public Command scoreAmpRelativeBlue() {
-    return scoreAmpRelative(true);
+    return new SequentialCommandGroup(
+        new WaitCommandTunable(() -> autoDelaySeconds.get()), scoreAmpRelative(true));
   }
 
   public Command scoreAmpRelativeRed() {
-    return scoreAmpRelative(false);
+    return new SequentialCommandGroup(
+        new WaitCommandTunable(() -> autoDelaySeconds.get()), scoreAmpRelative(false));
   }
 
   public Command autoTest() {
