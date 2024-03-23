@@ -32,35 +32,35 @@ public class SplineToPose extends Command {
   private SplineMath spline;
 
   private boolean running = false;
-  private final ProfiledPIDController driveController =
+  private final ProfiledPIDController splineController =
       new ProfiledPIDController(
           0.0, 0.0, 0.0, new TrapezoidProfile.Constraints(0.0, 0.0), Constants.loopPeriodSecs);
-  private final ProfiledPIDController thetaController =
+  private final ProfiledPIDController splineThetaController =
       new ProfiledPIDController(
           0.0, 0.0, 0.0, new TrapezoidProfile.Constraints(0.0, 0.0), Constants.loopPeriodSecs);
-  private double driveErrorAbs;
-  private double thetaErrorAbs;
+  private double splineErrorAbs;
+  private double splineThetaErrorAbs;
   private Translation2d lastSetpointTranslation;
 
   private static final LoggedTunableNumber splineKp =
-      new LoggedTunableNumber("DriveToPose/DriveKp");
+      new LoggedTunableNumber("splineToPose/DriveKp");
   private static final LoggedTunableNumber splineKd =
-      new LoggedTunableNumber("DriveToPose/DriveKd");
+      new LoggedTunableNumber("splineToPose/DriveKd");
   private static final LoggedTunableNumber splineThetaKp =
-      new LoggedTunableNumber("DriveToPose/ThetaKp");
+      new LoggedTunableNumber("splineToPose/ThetaKp");
   private static final LoggedTunableNumber splineThetaKd =
-      new LoggedTunableNumber("DriveToPose/ThetaKd");
+      new LoggedTunableNumber("splineToPose/ThetaKd");
   private static final LoggedTunableNumber splineMaxVelocity =
       new LoggedTunableNumber("splineToPose/DriveMaxVelocity");
   private static final LoggedTunableNumber splineMaxVelocitySlow =
       new LoggedTunableNumber("splineToPose/DriveMaxVelocitySlow");
   private static final LoggedTunableNumber splineMaxAcceleration =
       new LoggedTunableNumber("splineToPose/DriveMaxAcceleration");
-  private static final LoggedTunableNumber thetaMaxVelocity =
+  private static final LoggedTunableNumber splineThetaMaxVelocity =
       new LoggedTunableNumber("splineToPose/ThetaMaxVelocity");
-  private static final LoggedTunableNumber thetaMaxVelocitySlow =
+  private static final LoggedTunableNumber splineThetaMaxVelocitySlow =
       new LoggedTunableNumber("splineToPose/ThetaMaxVelocitySlow");
-  private static final LoggedTunableNumber thetaMaxAcceleration =
+  private static final LoggedTunableNumber splineThetaMaxAcceleration =
       new LoggedTunableNumber("splineToPose/ThetaMaxAcceleration");
   private static final LoggedTunableNumber splineTolerance =
       new LoggedTunableNumber("splineToPose/DriveTolerance");
@@ -88,9 +88,9 @@ public class SplineToPose extends Command {
         splineMaxVelocity.initDefault(Units.inchesToMeters(150.0));
         splineMaxVelocitySlow.initDefault(Units.inchesToMeters(50.0));
         splineMaxAcceleration.initDefault(Units.inchesToMeters(95.0));
-        thetaMaxVelocity.initDefault(Units.degreesToRadians(360.0));
-        thetaMaxVelocitySlow.initDefault(Units.degreesToRadians(90.0));
-        thetaMaxAcceleration.initDefault(Units.degreesToRadians(720.0));
+        splineThetaMaxVelocity.initDefault(Units.degreesToRadians(360.0));
+        splineThetaMaxVelocitySlow.initDefault(Units.degreesToRadians(90.0));
+        splineThetaMaxAcceleration.initDefault(Units.degreesToRadians(720.0));
         splineTolerance.initDefault(0.01);
         splineToleranceSlow.initDefault(0.06);
         splineThetaTolerance.initDefault(Units.degreesToRadians(1.0));
@@ -123,7 +123,7 @@ public class SplineToPose extends Command {
     this.slowMode = slowMode;
     this.poseSupplier = poseSupplier;
     addRequirements(drive);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+    splineThetaController.enableContinuousInput(-Math.PI, Math.PI);
     // spline :)
     spline =
         new SplineMath(
@@ -136,7 +136,7 @@ public class SplineToPose extends Command {
   public void initialize() {
     // Reset all controllers
     var currentPose = drive.getPose();
-    driveController.reset(
+    splineController.reset(
         currentPose.getTranslation().getDistance(poseSupplier.get().getTranslation()),
         Math.min(
             0.0,
@@ -149,7 +149,7 @@ public class SplineToPose extends Command {
                         .getAngle()
                         .unaryMinus())
                 .getX()));
-    thetaController.reset(currentPose.getRotation().getRadians(), drive.getYawVelocity());
+    splineThetaController.reset(currentPose.getRotation().getRadians(), drive.getYawVelocity());
     lastSetpointTranslation = drive.getPose().getTranslation();
   }
 
@@ -163,29 +163,29 @@ public class SplineToPose extends Command {
         || splineMaxAcceleration.hasChanged(hashCode())
         || splineTolerance.hasChanged(hashCode())
         || splineToleranceSlow.hasChanged(hashCode())
-        || thetaMaxVelocity.hasChanged(hashCode())
-        || thetaMaxVelocitySlow.hasChanged(hashCode())
-        || thetaMaxAcceleration.hasChanged(hashCode())
+        || splineThetaMaxVelocity.hasChanged(hashCode())
+        || splineThetaMaxVelocitySlow.hasChanged(hashCode())
+        || splineThetaMaxAcceleration.hasChanged(hashCode())
         || splineThetaTolerance.hasChanged(hashCode())
         || splineThetaToleranceSlow.hasChanged(hashCode())
         || splineKp.hasChanged(hashCode())
         || splineKd.hasChanged(hashCode())
         || splineThetaKp.hasChanged(hashCode())
         || splineThetaKd.hasChanged(hashCode())) {
-      driveController.setP(splineKp.get());
-      driveController.setD(splineKd.get());
-      driveController.setConstraints(
+      splineController.setP(splineKp.get());
+      splineController.setD(splineKd.get());
+      splineController.setConstraints(
           new TrapezoidProfile.Constraints(
               slowMode ? splineMaxVelocitySlow.get() : splineMaxVelocity.get(),
               splineMaxAcceleration.get()));
-      driveController.setTolerance(slowMode ? splineToleranceSlow.get() : splineTolerance.get());
-      thetaController.setP(splineThetaKp.get());
-      thetaController.setD(splineThetaKd.get());
-      thetaController.setConstraints(
+      splineController.setTolerance(slowMode ? splineToleranceSlow.get() : splineTolerance.get());
+      splineThetaController.setP(splineThetaKp.get());
+      splineThetaController.setD(splineThetaKd.get());
+      splineThetaController.setConstraints(
           new TrapezoidProfile.Constraints(
-              slowMode ? thetaMaxVelocitySlow.get() : thetaMaxVelocity.get(),
-              thetaMaxAcceleration.get()));
-      thetaController.setTolerance(
+              slowMode ? splineThetaMaxVelocitySlow.get() : splineThetaMaxVelocity.get(),
+              splineThetaMaxAcceleration.get()));
+      splineThetaController.setTolerance(
           slowMode ? splineThetaToleranceSlow.get() : splineThetaTolerance.get());
     }
 
@@ -202,30 +202,30 @@ public class SplineToPose extends Command {
             (currentDistance - ffMinRadius.get()) / (ffMaxRadius.get() - ffMinRadius.get()),
             0.0,
             1.0);
-    driveErrorAbs = currentDistance;
-    driveController.reset(
+    splineErrorAbs = currentDistance;
+    splineController.reset(
         lastSetpointTranslation.getDistance(targetPose.getTranslation()),
-        driveController.getSetpoint().velocity);
-    double driveVelocityScalar =
-        driveController.getSetpoint().velocity * ffScaler
-            + driveController.calculate(driveErrorAbs, 0.0);
-    if (currentDistance < driveController.getPositionTolerance()) driveVelocityScalar = 0.0;
+        splineController.getSetpoint().velocity);
+    double splineVelocityScalar =
+        splineController.getSetpoint().velocity * ffScaler
+            + splineController.calculate(splineErrorAbs, 0.0);
+    if (currentDistance < splineController.getPositionTolerance()) splineVelocityScalar = 0.0;
     lastSetpointTranslation =
         new Pose2d(
                 targetPose.getTranslation(),
                 currentPose.getTranslation().minus(targetPose.getTranslation()).getAngle())
             .transformBy(
-                GeomUtil.translationToTransform(driveController.getSetpoint().position, 0.0))
+                GeomUtil.translationToTransform(splineController.getSetpoint().position, 0.0))
             .getTranslation();
 
     // Calculate theta speed
     double thetaVelocity =
-        thetaController.getSetpoint().velocity * ffScaler
-            + thetaController.calculate(
+        splineThetaController.getSetpoint().velocity * ffScaler
+            + splineThetaController.calculate(
                 currentPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
-    thetaErrorAbs =
+    splineThetaErrorAbs =
         Math.abs(currentPose.getRotation().minus(targetPose.getRotation()).getRadians());
-    if (thetaErrorAbs < thetaController.getPositionTolerance()) thetaVelocity = 0.0;
+    if (splineThetaErrorAbs < splineThetaController.getPositionTolerance()) thetaVelocity = 0.0;
 
     // // Command speeds
     // var driveVelocity =
@@ -243,13 +243,13 @@ public class SplineToPose extends Command {
 
     // Log data
     Logger.recordOutput("DriveToPose/DistanceMeasured", currentDistance);
-    Logger.recordOutput("DriveToPose/DistanceSetpoint", driveController.getSetpoint().position);
+    Logger.recordOutput("DriveToPose/DistanceSetpoint", splineController.getSetpoint().position);
     Logger.recordOutput("DriveToPose/ThetaMeasured", currentPose.getRotation().getRadians());
-    Logger.recordOutput("DriveToPose/ThetaSetpoint", thetaController.getSetpoint().position);
+    Logger.recordOutput("DriveToPose/ThetaSetpoint", splineThetaController.getSetpoint().position);
     Logger.recordOutput(
         "Odometry/DriveToPoseSetpoint",
         new Pose2d(
-            lastSetpointTranslation, new Rotation2d(thetaController.getSetpoint().position)));
+            lastSetpointTranslation, new Rotation2d(splineThetaController.getSetpoint().position)));
     Logger.recordOutput("Odometry/DriveToPoseGoal", targetPose);
   }
 
@@ -263,7 +263,7 @@ public class SplineToPose extends Command {
 
   /** Checks if the robot is stopped at the final pose. */
   public boolean atGoal() {
-    return running && driveController.atGoal() && thetaController.atGoal();
+    return running && splineController.atGoal() && splineThetaController.atGoal();
   }
 
   /**
@@ -276,8 +276,8 @@ public class SplineToPose extends Command {
    */
   public boolean withinTolerance(double driveTolerance, Rotation2d thetaTolerance) {
     return running
-        && Math.abs(driveErrorAbs) < driveTolerance
-        && Math.abs(thetaErrorAbs) < thetaTolerance.getRadians();
+        && Math.abs(splineErrorAbs) < driveTolerance
+        && Math.abs(splineErrorAbs) < thetaTolerance.getRadians();
   }
 
   /** Returns whether the command is actively running. */
