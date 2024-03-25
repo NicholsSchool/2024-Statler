@@ -1,9 +1,6 @@
 package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -154,10 +151,6 @@ public final class Constants {
   public static final class AutoConstants {
     public static final double driveFinishThreshold = 0.075; // TODO: tune these
     public static final double angleFinishThreshold = Math.PI / 12.0;
-    public static final Pose2d startingZero =
-        new Pose2d(new Translation2d(5, 5), new Rotation2d(0));
-    public static final Pose2d startingOne =
-        new Pose2d(new Translation2d(1, 1), new Rotation2d(90));
   }
 
   public static final class FiddleSongs {
