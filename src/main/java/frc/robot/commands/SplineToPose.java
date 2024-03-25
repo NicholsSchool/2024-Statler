@@ -43,37 +43,37 @@ public class SplineToPose extends Command {
   private Translation2d lastSetpointTranslation;
 
   private static final LoggedTunableNumber splineKp =
-      new LoggedTunableNumber("splineToPose/DriveKp");
+      new LoggedTunableNumber("SplineToPose/DriveKp");
   private static final LoggedTunableNumber splineKd =
-      new LoggedTunableNumber("splineToPose/DriveKd");
+      new LoggedTunableNumber("SplineToPose/DriveKd");
   private static final LoggedTunableNumber splineThetaKp =
-      new LoggedTunableNumber("splineToPose/ThetaKp");
+      new LoggedTunableNumber("SplineToPose/ThetaKp");
   private static final LoggedTunableNumber splineThetaKd =
-      new LoggedTunableNumber("splineToPose/ThetaKd");
+      new LoggedTunableNumber("SplineToPose/ThetaKd");
   private static final LoggedTunableNumber splineMaxVelocity =
-      new LoggedTunableNumber("splineToPose/DriveMaxVelocity");
+      new LoggedTunableNumber("SplineToPose/DriveMaxVelocity");
   private static final LoggedTunableNumber splineMaxVelocitySlow =
-      new LoggedTunableNumber("splineToPose/DriveMaxVelocitySlow");
+      new LoggedTunableNumber("SplineToPose/DriveMaxVelocitySlow");
   private static final LoggedTunableNumber splineMaxAcceleration =
-      new LoggedTunableNumber("splineToPose/DriveMaxAcceleration");
+      new LoggedTunableNumber("SplineToPose/DriveMaxAcceleration");
   private static final LoggedTunableNumber splineThetaMaxVelocity =
-      new LoggedTunableNumber("splineToPose/ThetaMaxVelocity");
+      new LoggedTunableNumber("SplineToPose/ThetaMaxVelocity");
   private static final LoggedTunableNumber splineThetaMaxVelocitySlow =
-      new LoggedTunableNumber("splineToPose/ThetaMaxVelocitySlow");
+      new LoggedTunableNumber("SplineToPose/ThetaMaxVelocitySlow");
   private static final LoggedTunableNumber splineThetaMaxAcceleration =
-      new LoggedTunableNumber("splineToPose/ThetaMaxAcceleration");
+      new LoggedTunableNumber("SplineToPose/ThetaMaxAcceleration");
   private static final LoggedTunableNumber splineTolerance =
-      new LoggedTunableNumber("splineToPose/DriveTolerance");
+      new LoggedTunableNumber("SplineToPose/DriveTolerance");
   private static final LoggedTunableNumber splineToleranceSlow =
       new LoggedTunableNumber("splineThetaToPose/DriveToleranceSlow");
   private static final LoggedTunableNumber splineThetaTolerance =
-      new LoggedTunableNumber("splineToPose/ThetaTolerance");
+      new LoggedTunableNumber("SplineToPose/ThetaTolerance");
   private static final LoggedTunableNumber splineThetaToleranceSlow =
-      new LoggedTunableNumber("splineToPose/ThetaToleranceSlow");
+      new LoggedTunableNumber("SplineToPose/ThetaToleranceSlow");
   private static final LoggedTunableNumber ffMinRadius =
-      new LoggedTunableNumber("splineToPose/FFMinRadius");
+      new LoggedTunableNumber("SplineToPose/FFMinRadius");
   private static final LoggedTunableNumber ffMaxRadius =
-      new LoggedTunableNumber("splineToPose/FFMinRadius");
+      new LoggedTunableNumber("SplineToPose/FFMinRadius");
 
   static {
     switch (Constants.getRobot()) {
@@ -242,23 +242,23 @@ public class SplineToPose extends Command {
             currentPose.getRotation()));
 
     // Log data
-    Logger.recordOutput("DriveToPose/DistanceMeasured", currentDistance);
-    Logger.recordOutput("DriveToPose/DistanceSetpoint", splineController.getSetpoint().position);
-    Logger.recordOutput("DriveToPose/ThetaMeasured", currentPose.getRotation().getRadians());
-    Logger.recordOutput("DriveToPose/ThetaSetpoint", splineThetaController.getSetpoint().position);
+    Logger.recordOutput("SplineToPose/DistanceMeasured", currentDistance);
+    Logger.recordOutput("SplineToPose/DistanceSetpoint", splineController.getSetpoint().position);
+    Logger.recordOutput("SplineToPose/ThetaMeasured", currentPose.getRotation().getRadians());
+    Logger.recordOutput("SplineToPose/ThetaSetpoint", splineThetaController.getSetpoint().position);
     Logger.recordOutput(
-        "Odometry/DriveToPoseSetpoint",
+        "Odometry/SplineToPoseSetpoint",
         new Pose2d(
             lastSetpointTranslation, new Rotation2d(splineThetaController.getSetpoint().position)));
-    Logger.recordOutput("Odometry/DriveToPoseGoal", targetPose);
+    Logger.recordOutput("Odometry/SplineToPoseGoal", targetPose);
   }
 
   @Override
   public void end(boolean interrupted) {
     running = false;
     drive.stop();
-    Logger.recordOutput("Odometry/DriveToPoseSetpoint", new Pose2d());
-    Logger.recordOutput("Odometry/DriveToPoseGoal", new Pose2d());
+    Logger.recordOutput("Odometry/SplineToPoseSetpoint", new Pose2d());
+    Logger.recordOutput("Odometry/SplineToPoseGoal", new Pose2d());
   }
 
   /** Checks if the robot is stopped at the final pose. */
