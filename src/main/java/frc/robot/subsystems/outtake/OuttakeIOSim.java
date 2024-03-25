@@ -5,7 +5,9 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
 
 public class OuttakeIOSim implements OuttakeIO {
-  private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 3, 0.004);
+  private FlywheelSim sim =
+      new FlywheelSim(
+          DCMotor.getFalcon500(1), Constants.OuttakeConstants.GEAR_RATIO_REDUCTION, 0.004);
   private double appliedVolts = 0.0;
 
   public OuttakeIOSim() {
