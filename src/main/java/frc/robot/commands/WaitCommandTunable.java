@@ -7,9 +7,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.DoubleSupplier;
 
 /**
- * A command that does nothing but takes a specified amount of time to finish.
- * Uses a double supplier so that the delay time can be variable.
- *
+ * A command that does nothing but takes a specified amount of time to finish. Uses a double
+ * supplier so that the delay time can be variable.
  */
 public class WaitCommandTunable extends Command {
   /** The timer used for waiting. */
