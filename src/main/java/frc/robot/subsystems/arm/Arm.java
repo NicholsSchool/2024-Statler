@@ -82,7 +82,7 @@ public class Arm extends SubsystemBase {
     armKg.initDefault(ARM_FF_KG);
     armKv.initDefault(ARM_FF_KV);
     armKa.initDefault(ARM_FF_KA);
-    positionToleranceDeg.initDefault(1.0);
+    positionToleranceDeg.initDefault(2.0);
     armMaxVelocityRad.initDefault(Constants.ArmConstants.ARM_VEL_LIMIT);
     armMaxAccelerationRad.initDefault(Constants.ArmConstants.ARM_ACCEL_LIMIT);
     armKp.initDefault(Constants.ArmConstants.ARM_P);

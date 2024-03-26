@@ -56,7 +56,7 @@ public class IntakeIOSim implements IntakeIO {
       }
       // flip state after timeout time.
       if (isTimerRunning) {
-        double timeoutSec = isIntaking ? 10 : 1; // up to 10 secs to intake, 1 sec to outtake
+        double timeoutSec = isIntaking ? 2 : 0.25; // up to 2 secs to intake, 0.25 sec to outtake
         if (timer.hasElapsed(timeoutSec)) {
           hasNote = !hasNote;
           timer.stop();

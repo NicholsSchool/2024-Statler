@@ -21,6 +21,15 @@ public class Intake extends SubsystemBase {
   private static final LoggedTunableNumber kP = new LoggedTunableNumber("Intake/kP", 0.1);
   private static final LoggedTunableNumber kI = new LoggedTunableNumber("Intake/kI", 0.5);
 
+  private static final LoggedTunableNumber eatVelocity =
+      new LoggedTunableNumber("Intake/EatVelocityRPMs");
+  private static final LoggedTunableNumber vomitVelocity =
+      new LoggedTunableNumber("Intake/VomitVelocityRPMs");
+  private static final LoggedTunableNumber poopVelocity =
+      new LoggedTunableNumber("Intake/PoopVelocityRPMs");
+  private static final LoggedTunableNumber digestVelocity =
+      new LoggedTunableNumber("Intake/DigestVelocityRPMs");
+
   private PIDController controller = new PIDController(0.0, 0.0, 0.0);
   private final SimpleMotorFeedforward ffModel;
 
@@ -30,6 +39,7 @@ public class Intake extends SubsystemBase {
   private static enum IntakeMode {
     kStopped,
     kEating,
+    kDigesting,
     kVomiting,
     kPooping
   };
@@ -42,6 +52,11 @@ public class Intake extends SubsystemBase {
     io.setBrakeMode(false);
 
     controller.setPID(kP.get(), kI.get(), 0.0);
+
+    eatVelocity.initDefault(Constants.IntakeConstants.kEatRPM);
+    vomitVelocity.initDefault(Constants.IntakeConstants.kVomitRPM);
+    poopVelocity.initDefault(Constants.IntakeConstants.kPoopRPM);
+    digestVelocity.initDefault(Constants.IntakeConstants.kDigestRPM);
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
@@ -75,13 +90,16 @@ public class Intake extends SubsystemBase {
     } else {
       switch (mode) {
         case kEating:
-          setpointRPMs = Constants.IntakeConstants.kEatRPM;
+          setpointRPMs = eatVelocity.get();
+          break;
+        case kDigesting:
+          setpointRPMs = digestVelocity.get();
           break;
         case kVomiting:
-          setpointRPMs = Constants.IntakeConstants.kVomitRPM;
+          setpointRPMs = vomitVelocity.get();
           break;
         case kPooping:
-          setpointRPMs = Constants.IntakeConstants.kPoopRPM;
+          setpointRPMs = poopVelocity.get();
           break;
         case kStopped:
           setpointRPMs = 0.0;
@@ -107,6 +125,10 @@ public class Intake extends SubsystemBase {
     mode = IntakeMode.kEating;
   }
 
+  public void digest() {
+    mode = IntakeMode.kDigesting;
+  }
+
   public void vomit() {
     mode = IntakeMode.kVomiting;
   }
@@ -116,7 +138,6 @@ public class Intake extends SubsystemBase {
   }
 
   public void stop() {
-    System.out.println("Intake: Stopped");
     mode = IntakeMode.kStopped;
   }
 
@@ -175,7 +196,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Command runPoopCommand() {
-    // Run eat until a note is expelled.
+    // Run poop until a note is expelled.
 
     // run a sequence that runs poop mode until note is moved off sensor,
     // then keep running motors for a second to keep advancing,
@@ -185,6 +206,15 @@ public class Intake extends SubsystemBase {
             new RunCommand(() -> this.poop(), this).unless(this::hasNoNote).until(this::hasNoNote),
             new WaitCommand(IntakeConstants.kVomitDelay) // run a bit more to advance the note
             )
+        .finallyDo(() -> this.stop());
+  }
+
+  public Command runDigestCommand() {
+    // Run digest for set number of seconds
+    return new SequentialCommandGroup(
+            new InstantCommand(() -> System.out.println("Intake: Digest"), this),
+            new RunCommand(() -> this.digest(), this).withTimeout(IntakeConstants.kVomitDelay),
+            new InstantCommand(() -> System.out.println("Intake: Digest Done"), this))
         .finallyDo(() -> this.stop());
   }
 }

@@ -108,6 +108,7 @@ public final class Constants {
     public static final double kEatRPM = 800.0;
     public static final double kVomitRPM = -1000.0;
     public static final double kPoopRPM = 1000.0;
+    public static final double kDigestRPM = 600.0;
   }
 
   public static final class ArmConstants {
@@ -138,8 +139,8 @@ public final class Constants {
     public static final double ARM_FF_KV = 1.91;
     public static final double ARM_FF_KA = 0.05;
 
-    public static final double ARM_P = 3.0; // TODO: tune these
-    public static final double ARM_I = 0.0;
+    public static final double ARM_P = 5.0; // TODO: tune these
+    public static final double ARM_I = 3.0;
     public static final double ARM_D = 0.0;
     public static final double ARM_ACCEL_LIMIT = 0.7;
     public static final double ARM_VEL_LIMIT = 0.85167;

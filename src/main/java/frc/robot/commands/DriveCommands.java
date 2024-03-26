@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class DriveCommands {
@@ -37,7 +38,7 @@ public class DriveCommands {
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
       DoubleSupplier omegaSupplier,
-      boolean robotRelative) {
+      BooleanSupplier robotRelative) {
     return Commands.run(
         () -> {
           // Apply deadband
@@ -64,7 +65,7 @@ public class DriveCommands {
           // convert to robot speeds.
           // Otherwise, use robot speeds directly.
           ChassisSpeeds chassisSpeeds;
-          if (robotRelative) {
+          if (robotRelative.getAsBoolean()) {
             chassisSpeeds =
                 new ChassisSpeeds(
                     linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
@@ -93,7 +94,8 @@ public class DriveCommands {
       DoubleSupplier ySupplier,
       // TODO change back to angle supplier
       DoubleSupplier desiredAngle,
-      DoubleSupplier robotYawSupplier) {
+      DoubleSupplier robotYawSupplier,
+      BooleanSupplier robotRelative) {
     return Commands.run(
         () -> {
           // Apply deadband
@@ -112,6 +114,15 @@ public class DriveCommands {
               new Pose2d(new Translation2d(), linearDirection)
                   .transformBy(new Transform2d(linearMagnitude, 0.0, new Rotation2d()))
                   .getTranslation();
+
+          // if driving field-relative, then check which alliance to swap
+          // linear direction.
+          if (!robotRelative.getAsBoolean()) {
+            if (DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+              linearVelocity = linearVelocity.rotateBy(Rotation2d.fromRadians(Math.PI));
+            }
+          }
           double angularRotation =
               angleToVelocity(desiredAngle.getAsDouble(), robotYawSupplier.getAsDouble());
           // Convert to field relative speeds & send command

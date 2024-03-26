@@ -8,10 +8,10 @@ public interface ArmIO {
     public double angleRads = 0.0;
     public double angleDegs = 0.0;
     public double velocityRadsPerSec = 0.0;
-    public double[] appliedVolts = new double[] {};
-    public double[] appliedOutput = new double[] {};
-    public double[] busVoltage = new double[] {};
-    public double[] currentAmps = new double[] {};
+    public double[] appliedVolts = new double[] {0, 0};
+    public double[] appliedOutput = new double[] {0, 0};
+    public double[] busVoltage = new double[] {0, 0};
+    public double[] currentAmps = new double[] {0, 0};
   }
 
   /** Updates the set of loggable inputs. */
