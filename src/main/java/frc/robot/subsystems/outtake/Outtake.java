@@ -63,7 +63,7 @@ public class Outtake extends SubsystemBase {
     // separate robot with different tuning)
     switch (Constants.getRobot()) {
       case ROBOT_REAL:
-        ffModel = new SimpleMotorFeedforward(0.001, 0.0055);
+        ffModel = new SimpleMotorFeedforward(0.001, 0.0060);
         break;
       case ROBOT_SIM:
       default:

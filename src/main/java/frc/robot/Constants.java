@@ -139,10 +139,10 @@ public final class Constants {
     public static final double ARM_FF_KV = 1.91;
     public static final double ARM_FF_KA = 0.05;
 
-    public static final double ARM_P = 5.0; // TODO: tune these
+    public static final double ARM_P = 4.0;
     public static final double ARM_I = 3.0;
     public static final double ARM_D = 0.0;
-    public static final double ARM_ACCEL_LIMIT = 0.7;
+    public static final double ARM_ACCEL_LIMIT = 1.1;
     public static final double ARM_VEL_LIMIT = 0.85167;
   }
 
