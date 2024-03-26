@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -50,7 +51,6 @@ import frc.robot.subsystems.outtake.OuttakeIOSim;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -176,11 +176,16 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Create auto commands
-    autoCommands = new AutoCommands(drive, arm, intake);
+    autoCommands = new AutoCommands(drive, arm, intake, outtake);
 
     autoChooser.addOption("Wait 5 seconds", new WaitCommand(5.0));
     autoChooser.addOption("relative blue amp", autoCommands.scoreAmpRelativeBlue());
     autoChooser.addOption("relative red amp", autoCommands.scoreAmpRelativeRed());
+    autoChooser.addOption("field amp score and cross", autoCommands.scoreAmpField());
+    autoChooser.addOption(
+        "field amp score and note pickup", autoCommands.scoreAmpAndNotePickupField());
+    autoChooser.addOption(
+        "field amp score, note pickup, score", autoCommands.scoreAmpAndNotePickupScoreField());
 
     // add testing auto functions
     addTestingAutos();
@@ -275,7 +280,7 @@ public class RobotContainer {
             () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
             () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
             () -> -driveController.getRightX() * 0.7,
-            Constants.driveRobotRelative));
+            () -> Constants.driveRobotRelative));
     driveController.start().onTrue(new InstantCommand(() -> drive.resetFieldHeading()));
     driveController
         .leftTrigger(0.9)
@@ -285,7 +290,7 @@ public class RobotContainer {
                 () -> -driveController.getLeftY(),
                 () -> -driveController.getLeftX(),
                 () -> -driveController.getRightX(),
-                Constants.driveRobotRelative));
+                () -> Constants.driveRobotRelative));
 
     driveController
         .a()
@@ -295,7 +300,8 @@ public class RobotContainer {
                 () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
                 () -> 180,
-                () -> drive.getYaw()));
+                () -> drive.getYaw(),
+                () -> Constants.driveRobotRelative));
     driveController
         .y()
         .whileTrue(
@@ -304,7 +310,8 @@ public class RobotContainer {
                 () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
                 () -> 0,
-                () -> drive.getYaw()));
+                () -> drive.getYaw(),
+                () -> Constants.driveRobotRelative));
     driveController
         .x()
         .whileTrue(
@@ -313,7 +320,8 @@ public class RobotContainer {
                 () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
                 () -> 90,
-                () -> drive.getYaw()));
+                () -> drive.getYaw(),
+                () -> Constants.driveRobotRelative));
     driveController
         .b()
         .whileTrue(
@@ -322,14 +330,10 @@ public class RobotContainer {
                 () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
                 () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
                 () -> -90,
-                () -> drive.getYaw()));
+                () -> drive.getYaw(),
+                () -> Constants.driveRobotRelative));
 
     driveController.povDown().whileTrue(new DriveToAmplifier(drive));
-
-    // intake/outtake
-    driveController.rightTrigger().whileTrue(intake.runEatCommand());
-    operatorController.povUp().whileTrue(intake.runVomitCommand());
-    operatorController.rightTrigger().whileTrue(intake.runPoopCommand());
 
     // Arm Controls
     arm.setDefaultCommand(new ArmGoToPosTeleop(arm));
@@ -340,12 +344,28 @@ public class RobotContainer {
     operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armTrapPosDeg));
     operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armAmpPosDeg));
 
-    // testing, TODO get rid of these
-    operatorController.povUp().onTrue(new InstantCommand(() -> outtake.setSpeaker()));
-    operatorController.povUp().onFalse(new InstantCommand(() -> outtake.stop()));
+    // intake
+    intake.setDefaultCommand(new InstantCommand(() -> intake.stop(), intake));
+    driveController.rightTrigger().whileTrue(intake.runEatCommand());
+    operatorController.rightTrigger().whileTrue(intake.runPoopCommand());
 
-    operatorController.povDown().onTrue(new InstantCommand(() -> outtake.setAmp()));
-    operatorController.povDown().onFalse(new InstantCommand(() -> outtake.stop()));
+    // outtake
+    outtake.setDefaultCommand(new InstantCommand(() -> outtake.stop(), outtake));
+
+    // pull note through intake and deliver outtake (higher speed)
+    // This is an example of running commands while button is pressed.
+    operatorController
+        .povUp()
+        .whileTrue(
+            new ParallelCommandGroup(
+                outtake.run(() -> outtake.setDeliver()), intake.run(() -> intake.poop())));
+
+    // pull note through intake and amp outtake (lower speed)
+    // This is an example of running a command where the timing is handled by the lower level
+    // command, and therefore only a button press is required to kick off the command.
+    operatorController
+        .povDown()
+        .onTrue(new ParallelCommandGroup(outtake.runAmpCommand(), intake.runDigestCommand()));
   }
 
   /**

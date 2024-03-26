@@ -6,13 +6,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.FieldConstants;
 import frc.robot.FieldConstants.StagingLocations;
 import frc.robot.commands.arm_commands.ArmGoToPosAuto;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.outtake.Outtake;
 import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -21,14 +24,16 @@ public class AutoCommands {
   private final Drive drive;
   private final Arm arm;
   private final Intake intake;
+  private final Outtake outtake;
 
   private final LoggedDashboardNumber autoDelaySeconds =
       new LoggedDashboardNumber("Autonomous Time Delay", 0.0);
 
-  public AutoCommands(Drive drive, Arm arm, Intake intake) {
+  public AutoCommands(Drive drive, Arm arm, Intake intake, Outtake outtake) {
     this.drive = drive;
     this.arm = arm;
     this.intake = intake;
+    this.outtake = outtake;
   }
 
   public Command driveToPose(Pose2d pose) {
@@ -103,6 +108,57 @@ public class AutoCommands {
         crossLineCommand);
   }
 
+  public Command scoreAmpField() {
+    // 1) drive to the amp while raising the arm.
+    // 2) stuff note into amp
+    return new SequentialCommandGroup(
+        new DriveToAmplifier(drive),
+        new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg),
+        new ParallelCommandGroup(outtake.runAmpCommand(), intake.runDigestCommand()));
+  }
+
+  public Command scoreAmpFieldAndCross() {
+    var crossLineCommand =
+        driveToPose(
+                new Pose2d(
+                    FieldConstants.StagingLocations.spikeTranslations[2],
+                    new Rotation2d(Math.toRadians(135.0))))
+            .withTimeout(4.0);
+
+    // 1) drive to the amp while raising the arm.
+    // 2) stuff note into amp
+    // 4) raise arm and cross line
+    return new SequentialCommandGroup(
+        scoreAmpField(),
+        new ParallelCommandGroup(
+            new ArmGoToPosAuto(arm, ArmConstants.armDrivePosDeg), crossLineCommand));
+  }
+
+  public Command scoreAmpAndNotePickupField() {
+    var crossLineCommand =
+        driveToPose(
+                new Pose2d(
+                    FieldConstants.StagingLocations.spikeTranslations[2],
+                    new Rotation2d(Math.toRadians(135.0))))
+            .withTimeout(4.0);
+
+    // 1) drive to the amp while raising the arm.
+    // 2) stuff note into amp
+    // 3) drive to note while lowering arm and intaking.
+    // 4) raise arm
+    return new SequentialCommandGroup(
+        scoreAmpField(),
+        new ArmGoToPosAuto(arm, ArmConstants.armIntakePosDeg),
+        new ParallelCommandGroup(intake.runEatCommand(), crossLineCommand),
+        new ArmGoToPosAuto(arm, ArmConstants.armDrivePosDeg));
+  }
+
+  public Command scoreAmpAndNotePickupScoreField() {
+    // 1) score amp and pickup next note
+    // 2) score note in amp and cross field
+    return new SequentialCommandGroup(scoreAmpAndNotePickupField(), scoreAmpFieldAndCross());
+  }
+
   public Command scoreAmpRelativeBlue() {
     return new SequentialCommandGroup(
         new WaitCommandTunable(() -> autoDelaySeconds.get()), scoreAmpRelative(true));
@@ -133,17 +189,11 @@ public class AutoCommands {
     return sequence(
         // reset(startingPose),
         new DriveToAmplifier(drive),
-        driveToPose(
-            AllianceFlipUtil.apply(
-                new Pose2d(StagingLocations.spikeTranslations[0], Rotation2d.fromDegrees(0.0)))),
+        driveToPose(new Pose2d(StagingLocations.spikeTranslations[0], Rotation2d.fromDegrees(0.0))),
         new DriveToAmplifier(drive),
-        driveToPose(
-            AllianceFlipUtil.apply(
-                new Pose2d(StagingLocations.spikeTranslations[1], Rotation2d.fromDegrees(0.0)))),
+        driveToPose(new Pose2d(StagingLocations.spikeTranslations[1], Rotation2d.fromDegrees(0.0))),
         new DriveToAmplifier(drive),
-        driveToPose(
-            AllianceFlipUtil.apply(
-                new Pose2d(StagingLocations.spikeTranslations[2], Rotation2d.fromDegrees(0.0)))),
+        driveToPose(new Pose2d(StagingLocations.spikeTranslations[2], Rotation2d.fromDegrees(0.0))),
         new DriveToAmplifier(drive));
   }
 }
