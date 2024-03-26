@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Constants {
   private static final RobotType robot = RobotType.ROBOT_REAL;
+  public static final boolean driveRobotRelative =
+      false; // set to true to override all field relative and instead command in robot-relative.
 
   // true to place tunable numbers in dashboard for setting, false otherwise
   public static final boolean tuningMode = true;

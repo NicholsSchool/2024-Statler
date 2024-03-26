@@ -241,15 +241,21 @@ public class RobotContainer {
    * robot is disabled.
    */
   public void setStartingPose() {
-    Pose2d startPosition0 =
-        new Pose2d(startX0.get(), startY0.get(), new Rotation2d(Math.toRadians(startTheta0.get())));
-    Pose2d startPosition1 =
-        new Pose2d(startX1.get(), startY1.get(), new Rotation2d(Math.toRadians(startTheta1.get())));
+    // Set starting position only if operating robot in field-relative control.
+    // Otherwise, robot starts at 0, 0, 0.
+    if (!Constants.driveRobotRelative) {
+      Pose2d startPosition0 =
+          new Pose2d(
+              startX0.get(), startY0.get(), new Rotation2d(Math.toRadians(startTheta0.get())));
+      Pose2d startPosition1 =
+          new Pose2d(
+              startX1.get(), startY1.get(), new Rotation2d(Math.toRadians(startTheta1.get())));
 
-    drive.setPose(
-        startPositionIndex.get() == 0
-            ? AllianceFlipUtil.apply(startPosition0)
-            : AllianceFlipUtil.apply(startPosition1));
+      drive.setPose(
+          startPositionIndex.get() == 0
+              ? AllianceFlipUtil.apply(startPosition0)
+              : AllianceFlipUtil.apply(startPosition1));
+    }
   }
 
   /**
@@ -264,7 +270,8 @@ public class RobotContainer {
             drive,
             () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
             () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
-            () -> -driveController.getRightX() * 0.7));
+            () -> -driveController.getRightX() * 0.7,
+            Constants.driveRobotRelative));
     driveController.start().onTrue(new InstantCommand(() -> drive.resetFieldHeading()));
     driveController
         .leftTrigger(0.9)
@@ -273,7 +280,8 @@ public class RobotContainer {
                 drive,
                 () -> -driveController.getLeftY(),
                 () -> -driveController.getLeftX(),
-                () -> -driveController.getRightX()));
+                () -> -driveController.getRightX(),
+                Constants.driveRobotRelative));
 
     driveController
         .a()
