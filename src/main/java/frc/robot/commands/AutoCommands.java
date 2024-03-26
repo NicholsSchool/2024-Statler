@@ -14,14 +14,16 @@ import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.util.AllianceFlipUtil;
-
-// TODO: rework autos, hopefully remove the relative ones
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 public class AutoCommands {
   // Subsystems
   private final Drive drive;
   private final Arm arm;
   private final Intake intake;
+
+  private final LoggedDashboardNumber autoDelaySeconds =
+      new LoggedDashboardNumber("Autonomous Time Delay", 0.0);
 
   public AutoCommands(Drive drive, Arm arm, Intake intake) {
     this.drive = drive;
@@ -59,21 +61,37 @@ public class AutoCommands {
     return splToPose.until(splToPose::atGoal);
   }
 
-  public Command scoreAmpRelativeBlue() {
+  public Command scoreAmpRelative(boolean isBlue) {
+    double scoringAngle = isBlue ? 270.0 : 90.0;
+    double nudgeComponent = isBlue ? 0.25 : -0.25;
+    double horizontalComponent = isBlue ? -0.25 : 0.25;
+
     var relativeDriveCommand =
         driveToPoseRelative(
-                new Pose2d(Units.inchesToMeters(60.0), 0.0, new Rotation2d(Math.toRadians(270.0))))
+                new Pose2d(
+                    Units.inchesToMeters(60.0), 0.0, new Rotation2d(Math.toRadians(scoringAngle))))
             .withTimeout(4.0);
+
     var raiseArmCommand = new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg).withTimeout(3.0);
+
     var adjustCommand =
         driveToPoseRelative(
-                new Pose2d(Units.inchesToMeters(60.0), 0.25, new Rotation2d(Math.toRadians(270.0))))
+                new Pose2d(
+                    Units.inchesToMeters(60.0),
+                    nudgeComponent,
+                    new Rotation2d(Math.toRadians(scoringAngle))))
             .withTimeout(2.0);
+
     var poopCommand = intake.runPoopCommand().withTimeout(1.0);
+
     var lowerArmCommand = new ArmGoToPosAuto(arm, ArmConstants.armDrivePosDeg).withTimeout(3.0);
+
     var crossLineCommand =
         driveToPoseRelative(
-                new Pose2d(Units.inchesToMeters(120.0), -0.25, new Rotation2d(Math.toRadians(0.0))))
+                new Pose2d(
+                    Units.inchesToMeters(120.0),
+                    horizontalComponent,
+                    new Rotation2d(Math.toRadians(0.0))))
             .withTimeout(4.0);
 
     return new SequentialCommandGroup(
@@ -83,49 +101,16 @@ public class AutoCommands {
         poopCommand,
         lowerArmCommand,
         crossLineCommand);
+  }
+
+  public Command scoreAmpRelativeBlue() {
+    return new SequentialCommandGroup(
+        new WaitCommandTunable(() -> autoDelaySeconds.get()), scoreAmpRelative(true));
   }
 
   public Command scoreAmpRelativeRed() {
-    var relativeDriveCommand =
-        driveToPoseRelative(
-                new Pose2d(Units.inchesToMeters(60.0), 0.0, new Rotation2d(Math.toRadians(90.0))))
-            .withTimeout(4.0);
-    var raiseArmCommand = new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg).withTimeout(3.0);
-    var adjustCommand =
-        driveToPoseRelative(
-                new Pose2d(Units.inchesToMeters(60.0), -0.25, new Rotation2d(Math.toRadians(90.0))))
-            .withTimeout(2.0);
-    var poopCommand = intake.runPoopCommand().withTimeout(1.0);
-    var lowerArmCommand = new ArmGoToPosAuto(arm, ArmConstants.armDrivePosDeg).withTimeout(3.0);
-    var crossLineCommand =
-        driveToPoseRelative(
-                new Pose2d(Units.inchesToMeters(120.0), 0.25, new Rotation2d(Math.toRadians(0.0))))
-            .withTimeout(4.0);
-
     return new SequentialCommandGroup(
-        relativeDriveCommand,
-        raiseArmCommand,
-        adjustCommand,
-        poopCommand,
-        lowerArmCommand,
-        crossLineCommand);
-  }
-
-  public Command scoreAmpRelativeRedThenStop() {
-    var relativeDriveCommand =
-        driveToPoseRelative(
-                new Pose2d(Units.inchesToMeters(60.0), 0.0, new Rotation2d(Math.toRadians(90.0))))
-            .withTimeout(4.0);
-    var raiseArmCommand = new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg).withTimeout(3.0);
-    var adjustCommand =
-        driveToPoseRelative(
-                new Pose2d(Units.inchesToMeters(60.0), -0.25, new Rotation2d(Math.toRadians(90.0))))
-            .withTimeout(2.0);
-    var poopCommand = intake.runPoopCommand().withTimeout(1.0);
-    var lowerArmCommand = new ArmGoToPosAuto(arm, ArmConstants.armDrivePosDeg).withTimeout(3.0);
-
-    return new SequentialCommandGroup(
-        relativeDriveCommand, raiseArmCommand, adjustCommand, poopCommand, lowerArmCommand);
+        new WaitCommandTunable(() -> autoDelaySeconds.get()), scoreAmpRelative(false));
   }
 
   public Command autoTest() {
