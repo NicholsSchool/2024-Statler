@@ -51,6 +51,16 @@ public class AutoCommands {
     return drvToPose.until(drvToPose::atGoal);
   }
 
+  public Command splineToPose(Pose2d pose) {
+    var splToPose =
+        new SplineToPose(
+            this.drive,
+            () -> {
+              return AllianceFlipUtil.apply(pose);
+            });
+    return splToPose.until(splToPose::atGoal);
+  }
+
   public Command scoreAmpRelative(boolean isBlue) {
     double scoringAngle = isBlue ? 270.0 : 90.0;
     double nudgeComponent = isBlue ? 0.25 : -0.25;

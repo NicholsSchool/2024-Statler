@@ -1,6 +1,9 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -38,7 +41,9 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.util.AllianceFlipUtil;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -58,6 +63,7 @@ public class RobotContainer {
   // shuffleboard
   ShuffleboardTab lewZealandTab;
   public static GenericEntry hasNote;
+  public static GenericEntry isCurrnetProblem;
 
   // Controller
   public static CommandXboxController driveController = new CommandXboxController(0);
@@ -65,7 +71,12 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-
+  private final LoggedDashboardNumber autoDelaySeconds =
+      new LoggedDashboardNumber("Autonomous Time Delay", 0.0);
+  private final LoggedDashboardNumber startingX = new LoggedDashboardNumber("starting x", 0.0);
+  private final LoggedDashboardNumber startingY = new LoggedDashboardNumber("starting Y", 0.0);
+  private final LoggedDashboardNumber startingTheta =
+      new LoggedDashboardNumber("starting theta (degrees)", 0.0);
   // Auto Commands
   private final AutoCommands autoCommands;
 
@@ -162,10 +173,12 @@ public class RobotContainer {
     // Configure the Shuffleboard
     lewZealandTab = Shuffleboard.getTab("Lew Zealand");
     hasNote = lewZealandTab.add("Has Note", false).getEntry();
+    isCurrnetProblem = lewZealandTab.add("Current Problem", false).getEntry();
   }
 
   public void updateShuffleboard() {
     hasNote.setBoolean(intake.hasNote());
+    isCurrnetProblem.setBoolean(!arm.isCurrnetProblem());
 
     if (Constants.getRobot() == RobotType.ROBOT_REAL) {
       SmartDashboard.putNumber("PDH/Voltage", pdh.getVoltage());
@@ -178,6 +191,15 @@ public class RobotContainer {
         SmartDashboard.putNumber("PDH/Channel " + i, pdh.getCurrent(i));
       }
     }
+  }
+
+  public void setStartingPose() {
+    drive.setPose(
+        AllianceFlipUtil.apply(
+            new Pose2d(
+                startingX.get(),
+                startingY.get(),
+                new Rotation2d(Math.toRadians(startingTheta.get())))));
   }
 
   /**
@@ -281,5 +303,10 @@ public class RobotContainer {
     autoChooser.addOption(
         "Module Turn Ramp Test",
         new VoltageCommandRamp(drive, drive::runTurnCommandRampVolts, 0.5, 5.0));
+    autoChooser.addOption(
+        "Spline Test",
+        autoCommands.splineToPose(
+            new Pose2d(new Translation2d(7.5, 3.5), new Rotation2d(Math.PI / 2))));
+    autoChooser.addOption("amp blue", autoCommands.scoreAmpRelativeBlue());
   }
 }
