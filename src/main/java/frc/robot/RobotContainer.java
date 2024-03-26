@@ -4,7 +4,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -20,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.RobotType;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
@@ -45,6 +48,7 @@ import frc.robot.subsystems.outtake.Outtake;
 import frc.robot.subsystems.outtake.OuttakeIOReal;
 import frc.robot.subsystems.outtake.OuttakeIOSim;
 import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
@@ -75,12 +79,25 @@ public class RobotContainer {
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
-  private final LoggedDashboardNumber autoDelaySeconds =
-      new LoggedDashboardNumber("Autonomous Time Delay", 0.0);
-  private final LoggedDashboardNumber startingX = new LoggedDashboardNumber("starting x", 0.0);
-  private final LoggedDashboardNumber startingY = new LoggedDashboardNumber("starting Y", 0.0);
-  private final LoggedDashboardNumber startingTheta =
-      new LoggedDashboardNumber("starting theta (degrees)", 0.0);
+
+  // Start position selections
+  public static final LoggedTunableNumber startPositionIndex =
+      new LoggedTunableNumber("start pos index: 0 or 1", 0.0);
+  // Start Pos 0: Along line of the Amp.
+  public static final LoggedTunableNumber startX0 =
+      new LoggedTunableNumber(
+          "Start X0(m)", Units.inchesToMeters(RobotConstants.robotSideLengthInches / 2));
+  public static final LoggedTunableNumber startY0 = new LoggedTunableNumber("Start Y0(m)", 7.35);
+  public static final LoggedTunableNumber startTheta0 =
+      new LoggedTunableNumber("Start Theta0(deg)", 0.0);
+  // Start Pos 1: Next to human player side of Speaker.
+  public static final LoggedTunableNumber startX1 =
+      new LoggedTunableNumber(
+          "Start X1(m)", Units.inchesToMeters(RobotConstants.robotSideLengthInches / 2));
+  public static final LoggedTunableNumber startY1 = new LoggedTunableNumber("Start Y1(m)", 4.05);
+  public static final LoggedTunableNumber startTheta1 =
+      new LoggedTunableNumber("Start Theta1(deg)", 0.0);
+
   // Auto Commands
   private final AutoCommands autoCommands;
 
@@ -173,6 +190,9 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+
+    // set starting position of robot
+    setStartingPose();
   }
 
   private void initShuffleboard() {
@@ -197,15 +217,49 @@ public class RobotContainer {
         SmartDashboard.putNumber("PDH/Channel " + i, pdh.getCurrent(i));
       }
     }
+
+    resetPosWithDashboard();
   }
 
+  // changes robot pose with dashboard tunables
+  private void resetPosWithDashboard() {
+
+    // update robot position only if robot is disabled, otherwise
+    // robot could move in unexpected ways.
+    if (DriverStation.isDisabled()) {
+      if (startX0.hasChanged(hashCode())
+          || startY0.hasChanged(hashCode())
+          || startTheta0.hasChanged(hashCode())
+          || startX1.hasChanged(hashCode())
+          || startY1.hasChanged(hashCode())
+          || startTheta1.hasChanged(hashCode())
+          || startPositionIndex.hasChanged(hashCode())) {
+
+        setStartingPose();
+      }
+    }
+  }
+
+  /**
+   * Set the starting pose of the robot based on position index. This should be called only when
+   * robot is disabled.
+   */
   public void setStartingPose() {
-    drive.setPose(
-        AllianceFlipUtil.apply(
-            new Pose2d(
-                startingX.get(),
-                startingY.get(),
-                new Rotation2d(Math.toRadians(startingTheta.get())))));
+    // Set starting position only if operating robot in field-relative control.
+    // Otherwise, robot starts at 0, 0, 0.
+    if (!Constants.driveRobotRelative) {
+      Pose2d startPosition0 =
+          new Pose2d(
+              startX0.get(), startY0.get(), new Rotation2d(Math.toRadians(startTheta0.get())));
+      Pose2d startPosition1 =
+          new Pose2d(
+              startX1.get(), startY1.get(), new Rotation2d(Math.toRadians(startTheta1.get())));
+
+      drive.setPose(
+          startPositionIndex.get() == 0
+              ? AllianceFlipUtil.apply(startPosition0)
+              : AllianceFlipUtil.apply(startPosition1));
+    }
   }
 
   /**
@@ -220,7 +274,8 @@ public class RobotContainer {
             drive,
             () -> -driveController.getLeftY() * Constants.DriveConstants.lowGearScaler,
             () -> -driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
-            () -> -driveController.getRightX() * 0.7));
+            () -> -driveController.getRightX() * 0.7,
+            Constants.driveRobotRelative));
     driveController.start().onTrue(new InstantCommand(() -> drive.resetFieldHeading()));
     driveController
         .leftTrigger(0.9)
@@ -229,7 +284,8 @@ public class RobotContainer {
                 drive,
                 () -> -driveController.getLeftY(),
                 () -> -driveController.getLeftX(),
-                () -> -driveController.getRightX()));
+                () -> -driveController.getRightX(),
+                Constants.driveRobotRelative));
 
     driveController
         .a()

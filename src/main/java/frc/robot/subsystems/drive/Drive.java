@@ -29,7 +29,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants; // TJG
+import frc.robot.Constants;
 import frc.robot.util.LocalADStarAK;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -102,11 +102,11 @@ public class Drive extends SubsystemBase {
 
   public void periodic() {
     gyroIO.updateInputs(gyroInputs);
+
     Logger.processInputs("Drive/Gyro", gyroInputs);
     for (var module : modules) {
       module.periodic();
     }
-
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
       for (var module : modules) {
