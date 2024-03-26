@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -145,7 +144,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        arm = new Arm(new ArmIOSim()); // TODO: make interfaces
+        arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
         break;
     }
@@ -156,8 +155,9 @@ public class RobotContainer {
     // Create auto commands
     autoCommands = new AutoCommands(drive, arm, intake);
 
-    // TODO: add auto routines. Example on the next line
     autoChooser.addOption("Wait 5 seconds", new WaitCommand(5.0));
+    autoChooser.addOption("relative blue amp", autoCommands.scoreAmpRelativeBlue());
+    autoChooser.addOption("relative red amp", autoCommands.scoreAmpRelativeRed());
 
     // add testing auto functions
     addTestingAutos();
@@ -286,7 +286,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new SequentialCommandGroup(new WaitCommand(autoDelaySeconds.get()), autoChooser.get());
+    return autoChooser.get();
   }
 
   private void addTestingAutos() {
