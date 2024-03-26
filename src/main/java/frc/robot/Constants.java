@@ -60,13 +60,13 @@ public final class Constants {
   }
 
   public static final class RobotConstants {
-    public static final double robotSideLengthInches = 33.5;
+    public static final double robotSideLengthInches = 33;
   }
 
   public static final class DriveConstants {
     public static final double kMAX_LINEAR_SPEED = 4.8;
-    public static final double kTRACK_WIDTH_X = 0.653;
-    public static final double kTRACK_WIDTH_Y = 0.653;
+    public static final double kTRACK_WIDTH_X = 0.5969; // 23.5in
+    public static final double kTRACK_WIDTH_Y = 0.5969;
 
     public static final double lowGearScaler = 0.6;
   }
@@ -149,7 +149,7 @@ public final class Constants {
   public static final class OuttakeConstants {
     public static final double kP = 1.0; // TODO: tune these
     public static final double kD = 0.0;
-    public static final double GEAR_RATIO_REDUCTION = 3.0;
+    public static final double GEAR_RATIO_REDUCTION = 1.0;
     ;
     public static final double CURRENT_LIMIT = 35.0;
   }
