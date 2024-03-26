@@ -19,6 +19,7 @@ public class Outtake extends SubsystemBase {
   private double setpoint;
   private OuttakeIO io;
   private final OuttakeIOInputsAutoLogged inputs = new OuttakeIOInputsAutoLogged();
+  public double voltageCommand;
 
   private static final LoggedTunableNumber ampVelocity =
       new LoggedTunableNumber("Outtake/AmpVelocityRPMs");
@@ -107,8 +108,8 @@ public class Outtake extends SubsystemBase {
           setpoint = 0.0;
       }
 
-      double voltage = ffModel.calculate(setpoint);
-      io.setVoltage(MathUtil.clamp(voltage, -12.0, 12.0));
+      voltageCommand = ffModel.calculate(setpoint);
+      io.setVoltage(MathUtil.clamp(voltageCommand, -12.0, 12.0));
     }
   }
 
@@ -139,6 +140,11 @@ public class Outtake extends SubsystemBase {
   @AutoLogOutput
   public double getSetpointVelocityRPMs() {
     return setpoint;
+  }
+
+  @AutoLogOutput
+  public double getVoltageCommand() {
+    return voltageCommand;
   }
 
   @AutoLogOutput
