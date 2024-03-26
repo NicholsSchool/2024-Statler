@@ -146,8 +146,11 @@ public final class Constants {
   }
 
   public static final class OuttakeConstants {
-    public static final double kP = 6.0; // TODO: tune these
+    public static final double kP = 1.0; // TODO: tune these
     public static final double kD = 0.0;
+    public static final double GEAR_RATIO_REDUCTION = 3.0;
+    ;
+    public static final double CURRENT_LIMIT = 35.0;
   }
 
   public static final class AutoConstants {
