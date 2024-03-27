@@ -112,7 +112,10 @@ public class AutoCommands {
     // 1) drive to the amp while raising the arm.
     // 2) stuff note into amp
     return new SequentialCommandGroup(
+        new ArmGoToPosAuto(arm, 90.0),
+        waitSeconds(0.25),
         new DriveToAmplifier(drive),
+        waitSeconds(1),
         new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg),
         new ParallelCommandGroup(outtake.runAmpCommand(), intake.runDigestCommand()));
   }
@@ -122,7 +125,7 @@ public class AutoCommands {
         driveToPose(
                 new Pose2d(
                     FieldConstants.StagingLocations.spikeTranslations[2],
-                    new Rotation2d(Math.toRadians(135.0))))
+                    new Rotation2d(Math.toRadians(135.0 + 180.0))))
             .withTimeout(4.0);
 
     // 1) drive to the amp while raising the arm.

@@ -181,7 +181,7 @@ public class RobotContainer {
     autoChooser.addOption("Wait 5 seconds", new WaitCommand(5.0));
     autoChooser.addOption("relative blue amp", autoCommands.scoreAmpRelativeBlue());
     autoChooser.addOption("relative red amp", autoCommands.scoreAmpRelativeRed());
-    autoChooser.addOption("field amp score and cross", autoCommands.scoreAmpField());
+    autoChooser.addOption("field amp score and cross", autoCommands.scoreAmpFieldAndCross());
     autoChooser.addOption(
         "field amp score and note pickup", autoCommands.scoreAmpAndNotePickupField());
     autoChooser.addOption(

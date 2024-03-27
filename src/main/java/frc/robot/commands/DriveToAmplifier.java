@@ -14,7 +14,7 @@ public class DriveToAmplifier extends DriveToPose {
           FieldConstants.ampCenter.getX(),
           FieldConstants.ampCenter.getY()
               - Units.inchesToMeters(Constants.RobotConstants.robotSideLengthInches / 2.0),
-          Rotation2d.fromDegrees(90.0));
+          Rotation2d.fromDegrees(-90.0));
 
   /** Automatically drives to the amplifier. */
   public DriveToAmplifier(Drive drive) {
