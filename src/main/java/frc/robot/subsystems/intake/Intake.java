@@ -213,7 +213,7 @@ public class Intake extends SubsystemBase {
     // Run digest for set number of seconds
     return new SequentialCommandGroup(
             new InstantCommand(() -> System.out.println("Intake: Digest"), this),
-            new RunCommand(() -> this.digest(), this).withTimeout(IntakeConstants.kVomitDelay),
+            new RunCommand(() -> this.digest(), this).withTimeout(1.5),
             new InstantCommand(() -> System.out.println("Intake: Digest Done"), this))
         .finallyDo(() -> this.stop());
   }

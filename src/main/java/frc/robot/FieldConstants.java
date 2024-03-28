@@ -31,7 +31,7 @@ public final class FieldConstants {
   public static final double startingLineX = Units.inchesToMeters(74.111);
 
   public static final Translation2d ampCenter =
-      new Translation2d(Units.inchesToMeters(72.455 + 6), fieldWidth);
+      new Translation2d(Units.inchesToMeters(72.455), fieldWidth);
 
   /** Staging locations for each note */
   public static final class StagingLocations {

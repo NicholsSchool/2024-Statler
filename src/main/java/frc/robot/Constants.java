@@ -60,7 +60,8 @@ public final class Constants {
   }
 
   public static final class RobotConstants {
-    public static final double robotSideLengthInches = 33;
+    public static final double robotSideLengthInches =
+        34.0; // robot was measured bumper to bumper to be 33in, +1 in for buffer.
   }
 
   public static final class DriveConstants {
@@ -117,6 +118,7 @@ public final class Constants {
     public static final double armDrivePosDeg = 45.0;
     public static final double armAmpPosDeg = 108.0;
     public static final double armTrapPosDeg = 75.0;
+    public static final double armStartPosDeg = 90.0; // pulls arm off of brake
 
     public static final int ARM_LOCK_SOLENOID_CHANNEL = 6;
     public static final int ARM_SOLENOID_CHANNEL = 7;

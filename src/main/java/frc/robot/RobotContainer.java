@@ -27,7 +27,6 @@ import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.RobotType;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.DriveToAmplifier;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.commands.arm_commands.ArmGoToPosTeleop;
@@ -332,8 +331,6 @@ public class RobotContainer {
                 () -> -90,
                 () -> drive.getYaw(),
                 () -> Constants.driveRobotRelative));
-
-    driveController.povDown().whileTrue(new DriveToAmplifier(drive));
 
     // Arm Controls
     arm.setDefaultCommand(new ArmGoToPosTeleop(arm));

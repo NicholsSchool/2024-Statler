@@ -27,7 +27,7 @@ public class AutoCommands {
   private final Outtake outtake;
 
   private final LoggedDashboardNumber autoDelaySeconds =
-      new LoggedDashboardNumber("Autonomous Time Delay", 0.0);
+      new LoggedDashboardNumber("Autonomous Time Delay", 0.25);
 
   public AutoCommands(Drive drive, Arm arm, Intake intake, Outtake outtake) {
     this.drive = drive;
@@ -66,6 +66,12 @@ public class AutoCommands {
     return splToPose.until(splToPose::atGoal);
   }
 
+  /**
+   * Score amp using positions relative to the robot starting position of 0.0.
+   *
+   * @param isBlue
+   * @return
+   */
   public Command scoreAmpRelative(boolean isBlue) {
     double scoringAngle = isBlue ? 270.0 : 90.0;
     double nudgeComponent = isBlue ? 0.25 : -0.25;
@@ -108,16 +114,27 @@ public class AutoCommands {
         crossLineCommand);
   }
 
+  private Command DriveToAmplifierWithFudge(Drive drive) {
+    // add fudge factors (in inches) to the amplifier scoring position to
+    // accommodate inaccuracies in field layout.
+    return new DriveToAmplifier(drive, 6, 0);
+  }
+
   public Command scoreAmpField() {
     // 1) drive to the amp while raising the arm.
     // 2) stuff note into amp
     return new SequentialCommandGroup(
-        new ArmGoToPosAuto(arm, 90.0),
-        waitSeconds(0.25),
-        new DriveToAmplifier(drive),
-        waitSeconds(1),
-        new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg),
-        new ParallelCommandGroup(outtake.runAmpCommand(), intake.runDigestCommand()));
+        new ArmGoToPosAuto(arm, ArmConstants.armStartPosDeg), // raise arm release brake.
+        new WaitCommandTunable(
+            () ->
+                autoDelaySeconds
+                    .get()), // wait for tunable amount of time to allow alliance members to move
+        DriveToAmplifierWithFudge(drive), // drive to amp scoring position
+        waitSeconds(1), // wait?? not sure why.
+        new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg), // arm at amp score position
+        new ParallelCommandGroup(
+            outtake.runAmpCommand(),
+            intake.runDigestCommand())); // run intake and outtake at same time to score
   }
 
   public Command scoreAmpFieldAndCross() {
@@ -125,7 +142,7 @@ public class AutoCommands {
         driveToPose(
                 new Pose2d(
                     FieldConstants.StagingLocations.spikeTranslations[2],
-                    new Rotation2d(Math.toRadians(135.0 + 180.0))))
+                    new Rotation2d(Math.toRadians(-45.0))))
             .withTimeout(4.0);
 
     // 1) drive to the amp while raising the arm.
@@ -142,7 +159,7 @@ public class AutoCommands {
         driveToPose(
                 new Pose2d(
                     FieldConstants.StagingLocations.spikeTranslations[2],
-                    new Rotation2d(Math.toRadians(135.0))))
+                    new Rotation2d(Math.toRadians(-45.0))))
             .withTimeout(4.0);
 
     // 1) drive to the amp while raising the arm.
@@ -191,12 +208,12 @@ public class AutoCommands {
 
     return sequence(
         // reset(startingPose),
-        new DriveToAmplifier(drive),
+        new DriveToAmplifier(drive, 0, 0),
         driveToPose(new Pose2d(StagingLocations.spikeTranslations[0], Rotation2d.fromDegrees(0.0))),
-        new DriveToAmplifier(drive),
+        new DriveToAmplifier(drive, 0, 0),
         driveToPose(new Pose2d(StagingLocations.spikeTranslations[1], Rotation2d.fromDegrees(0.0))),
-        new DriveToAmplifier(drive),
+        new DriveToAmplifier(drive, 0, 0),
         driveToPose(new Pose2d(StagingLocations.spikeTranslations[2], Rotation2d.fromDegrees(0.0))),
-        new DriveToAmplifier(drive));
+        new DriveToAmplifier(drive, 0, 0));
   }
 }

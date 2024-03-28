@@ -56,7 +56,7 @@ public class Outtake extends SubsystemBase {
     speakerVelocity.initDefault(1000.0);
     trapVelocity.initDefault(0.0);
     deliverVelocity.initDefault(1000.0);
-    spinDurationSec.initDefault(0.5);
+    spinDurationSec.initDefault(1.5);
     kP.initDefault(OuttakeConstants.kP);
     kD.initDefault(OuttakeConstants.kD);
 
