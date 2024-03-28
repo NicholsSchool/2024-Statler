@@ -4,6 +4,7 @@ import static edu.wpi.first.wpilibj2.command.Commands.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -118,6 +119,10 @@ public class AutoCommands {
     // add fudge factors (in inches) to the amplifier scoring position to
     // accommodate inaccuracies in field layout.
     return new DriveToAmplifier(drive, 6, 0);
+  }
+
+  public Command TenFootTest(Drive drive) {
+    return new DriveToPose(drive, new Pose2d(new Translation2d(3.048, 0), new Rotation2d(0)));
   }
 
   public Command scoreAmpField() {

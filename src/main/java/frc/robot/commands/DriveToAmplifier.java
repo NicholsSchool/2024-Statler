@@ -24,7 +24,9 @@ public class DriveToAmplifier extends DriveToPose {
                   FieldConstants.ampCenter.getX() + Units.inchesToMeters(fudgeXinch),
                   FieldConstants.ampCenter.getY()
                       + Units.inchesToMeters(fudgeYinch)
-                      - Units.inchesToMeters(Constants.RobotConstants.robotSideLengthInches / 2.0),
+                      - Units.inchesToMeters(
+                          Constants.RobotConstants.robotSideLengthInches / 2.0
+                              + 7.75), // 7.75 to take into account the arm poking outside the frame
                   Rotation2d.fromDegrees(-90.0)));
         });
   }
