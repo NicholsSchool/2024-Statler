@@ -27,7 +27,6 @@ import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.RobotType;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.DriveToAmplifier;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.commands.arm_commands.ArmGoToPosTeleop;
@@ -181,7 +180,7 @@ public class RobotContainer {
     autoChooser.addOption("Wait 5 seconds", new WaitCommand(5.0));
     autoChooser.addOption("relative blue amp", autoCommands.scoreAmpRelativeBlue());
     autoChooser.addOption("relative red amp", autoCommands.scoreAmpRelativeRed());
-    autoChooser.addOption("field amp score and cross", autoCommands.scoreAmpField());
+    autoChooser.addOption("field amp score and cross", autoCommands.scoreAmpFieldAndCross());
     autoChooser.addOption(
         "field amp score and note pickup", autoCommands.scoreAmpAndNotePickupField());
     autoChooser.addOption(
@@ -333,13 +332,12 @@ public class RobotContainer {
                 () -> drive.getYaw(),
                 () -> Constants.driveRobotRelative));
 
-    driveController.povDown().whileTrue(new DriveToAmplifier(drive));
-
     // Arm Controls
     arm.setDefaultCommand(new ArmGoToPosTeleop(arm));
     new Trigger(() -> Math.abs(operatorController.getRightY()) >= Constants.JOYSTICK_DEADBAND)
         .whileTrue(new ArmManuel(arm, () -> -operatorController.getRightY()));
 
+    operatorController.a().onTrue(new ArmSetTargetPos(arm, ArmConstants.armIntakePosDeg));
     operatorController.b().onTrue(new ArmSetTargetPos(arm, ArmConstants.armDrivePosDeg));
     operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armTrapPosDeg));
     operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armAmpPosDeg));

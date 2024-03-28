@@ -19,6 +19,7 @@ public class Outtake extends SubsystemBase {
   private double setpoint;
   private OuttakeIO io;
   private final OuttakeIOInputsAutoLogged inputs = new OuttakeIOInputsAutoLogged();
+  public double voltageCommand;
 
   private static final LoggedTunableNumber ampVelocity =
       new LoggedTunableNumber("Outtake/AmpVelocityRPMs");
@@ -55,7 +56,7 @@ public class Outtake extends SubsystemBase {
     speakerVelocity.initDefault(1000.0);
     trapVelocity.initDefault(0.0);
     deliverVelocity.initDefault(1000.0);
-    spinDurationSec.initDefault(0.5);
+    spinDurationSec.initDefault(1.5);
     kP.initDefault(OuttakeConstants.kP);
     kD.initDefault(OuttakeConstants.kD);
 
@@ -63,7 +64,7 @@ public class Outtake extends SubsystemBase {
     // separate robot with different tuning)
     switch (Constants.getRobot()) {
       case ROBOT_REAL:
-        ffModel = new SimpleMotorFeedforward(0.001, 0.0055);
+        ffModel = new SimpleMotorFeedforward(0.001, 0.0060);
         break;
       case ROBOT_SIM:
       default:
@@ -107,8 +108,8 @@ public class Outtake extends SubsystemBase {
           setpoint = 0.0;
       }
 
-      double voltage = ffModel.calculate(setpoint);
-      io.setVoltage(MathUtil.clamp(voltage, -12.0, 12.0));
+      voltageCommand = ffModel.calculate(setpoint);
+      io.setVoltage(MathUtil.clamp(voltageCommand, -12.0, 12.0));
     }
   }
 
@@ -139,6 +140,11 @@ public class Outtake extends SubsystemBase {
   @AutoLogOutput
   public double getSetpointVelocityRPMs() {
     return setpoint;
+  }
+
+  @AutoLogOutput
+  public double getVoltageCommand() {
+    return voltageCommand;
   }
 
   @AutoLogOutput

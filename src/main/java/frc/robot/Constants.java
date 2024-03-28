@@ -60,13 +60,14 @@ public final class Constants {
   }
 
   public static final class RobotConstants {
-    public static final double robotSideLengthInches = 33.5;
+    public static final double robotSideLengthInches =
+        34.0; // robot was measured bumper to bumper to be 33in, +1 in for buffer.
   }
 
   public static final class DriveConstants {
     public static final double kMAX_LINEAR_SPEED = 4.8;
-    public static final double kTRACK_WIDTH_X = 0.653;
-    public static final double kTRACK_WIDTH_Y = 0.653;
+    public static final double kTRACK_WIDTH_X = 0.5969; // 23.5in
+    public static final double kTRACK_WIDTH_Y = 0.5969;
 
     public static final double lowGearScaler = 0.6;
   }
@@ -117,6 +118,7 @@ public final class Constants {
     public static final double armDrivePosDeg = 45.0;
     public static final double armAmpPosDeg = 108.0;
     public static final double armTrapPosDeg = 75.0;
+    public static final double armStartPosDeg = 90.0; // pulls arm off of brake
 
     public static final int ARM_LOCK_SOLENOID_CHANNEL = 6;
     public static final int ARM_SOLENOID_CHANNEL = 7;
@@ -139,10 +141,10 @@ public final class Constants {
     public static final double ARM_FF_KV = 1.91;
     public static final double ARM_FF_KA = 0.05;
 
-    public static final double ARM_P = 5.0; // TODO: tune these
+    public static final double ARM_P = 4.0;
     public static final double ARM_I = 3.0;
     public static final double ARM_D = 0.0;
-    public static final double ARM_ACCEL_LIMIT = 0.7;
+    public static final double ARM_ACCEL_LIMIT = 1.1;
     public static final double ARM_VEL_LIMIT = 0.85167;
   }
 

@@ -9,19 +9,23 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AllianceFlipUtil;
 
 public class DriveToAmplifier extends DriveToPose {
-  public static final Pose2d amplifierScoringPose =
-      new Pose2d(
-          FieldConstants.ampCenter.getX(),
-          FieldConstants.ampCenter.getY()
-              - Units.inchesToMeters(Constants.RobotConstants.robotSideLengthInches / 2.0),
-          Rotation2d.fromDegrees(90.0));
-
-  /** Automatically drives to the amplifier. */
-  public DriveToAmplifier(Drive drive) {
+  /**
+   * Automatically drives to the amplifier and places robot in a scoring position.
+   *
+   * <p>Fudge factors to account for field alyout inaccuracies: fudgeXinch - amplifier position
+   * fudge in X direction fudgeYinch - amplifier position fudge in Y direction
+   */
+  public DriveToAmplifier(Drive drive, double fudgeXinch, double fudgeYinch) {
     super(
         drive,
         () -> {
-          return AllianceFlipUtil.apply(amplifierScoringPose);
+          return AllianceFlipUtil.apply(
+              new Pose2d(
+                  FieldConstants.ampCenter.getX() + Units.inchesToMeters(fudgeXinch),
+                  FieldConstants.ampCenter.getY()
+                      + Units.inchesToMeters(fudgeYinch)
+                      - Units.inchesToMeters(Constants.RobotConstants.robotSideLengthInches / 2.0),
+                  Rotation2d.fromDegrees(-90.0)));
         });
   }
 }
