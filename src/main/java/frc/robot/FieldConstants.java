@@ -23,15 +23,18 @@ import java.util.List;
  * Width refers to the <i>y</i> direction (as described by wpilib)*
  */
 public final class FieldConstants {
-  public static final double fieldLength = Units.inchesToMeters(651.223);
-  public static final double fieldWidth = Units.inchesToMeters(323.277);
+  public static final double fieldLength = Units.inchesToMeters(653.2);
+  public static final double fieldWidth = Units.inchesToMeters(323.28);
   public static final double tapeWidth = Units.inchesToMeters(2.0);
   public static final double wingX = Units.inchesToMeters(229.201);
   public static final double podiumX = Units.inchesToMeters(126.75);
   public static final double startingLineX = Units.inchesToMeters(74.111);
 
   public static final Translation2d ampCenter =
-      new Translation2d(Units.inchesToMeters(72.455), fieldWidth);
+      new Translation2d(
+          Units.inchesToMeters(76.1),
+          fieldWidth); // turns out we did the math wrong, it's in the document with all the
+  // drawings
 
   /** Staging locations for each note */
   public static final class StagingLocations {

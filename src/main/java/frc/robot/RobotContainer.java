@@ -86,7 +86,7 @@ public class RobotContainer {
   public static final LoggedTunableNumber startX0 =
       new LoggedTunableNumber(
           "Start X0(m)", Units.inchesToMeters(RobotConstants.robotSideLengthInches / 2));
-  public static final LoggedTunableNumber startY0 = new LoggedTunableNumber("Start Y0(m)", 7.35);
+  public static final LoggedTunableNumber startY0 = new LoggedTunableNumber("Start Y0(m)", 7.335);
   public static final LoggedTunableNumber startTheta0 =
       new LoggedTunableNumber("Start Theta0(deg)", 0.0);
   // Start Pos 1: Next to human player side of Speaker.
@@ -393,7 +393,9 @@ public class RobotContainer {
 
     autoChooser.addOption(
         "Spline Test",
-        autoCommands.splineToPose(
-            new Pose2d(new Translation2d(7.5, 3.5), new Rotation2d(Math.PI / 2))));
+        autoCommands.splineToPose(new Pose2d(new Translation2d(2, 2), new Rotation2d(0))));
+
+    autoChooser.addOption( // drives 10 ft for odometry testing
+        "10 foot test", autoCommands.TenFootTest(drive));
   }
 }
