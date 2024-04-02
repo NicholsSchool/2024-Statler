@@ -208,7 +208,7 @@ public class SplineToPose extends Command {
         splineController.getSetpoint().velocity);
     double splineVelocityScalar =
         splineController.getSetpoint().velocity * ffScaler
-            + splineController.calculate(splineErrorAbs, 0.0);
+            - splineController.calculate(splineErrorAbs, 0.0);
     if (currentDistance < splineController.getPositionTolerance()) splineVelocityScalar = 0.0;
     lastSetpointTranslation =
         new Pose2d(
@@ -227,19 +227,14 @@ public class SplineToPose extends Command {
         Math.abs(currentPose.getRotation().minus(targetPose.getRotation()).getRadians());
     if (splineThetaErrorAbs < splineThetaController.getPositionTolerance()) thetaVelocity = 0.0;
 
-    // // Command speeds
-    // var driveVelocity =
-    //     new Pose2d(
-    //             new Translation2d(),
-    //             currentPose.getTranslation().minus(targetPose.getTranslation()).getAngle())
-    //         .transformBy(GeomUtil.translationToTransform(driveVelocityScalar, 0.0))
-    //         .getTranslation();
+    // Command speeds
+    var driveVelocity =
+        new Pose2d(new Translation2d(), spline.driveVector().getAngle())
+            .transformBy(GeomUtil.translationToTransform(splineVelocityScalar, 0.0))
+            .getTranslation();
     drive.runVelocity(
         ChassisSpeeds.fromFieldRelativeSpeeds(
-            spline.driveVector().getX(),
-            spline.driveVector().getY(),
-            thetaVelocity,
-            currentPose.getRotation()));
+            driveVelocity.getX(), driveVelocity.getY(), thetaVelocity, currentPose.getRotation()));
 
     // Log data
     Logger.recordOutput("SplineToPose/DistanceMeasured", currentDistance);
