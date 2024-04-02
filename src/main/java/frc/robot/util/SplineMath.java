@@ -103,9 +103,8 @@ public class SplineMath {
       vx = optimalX() - xr;
       vy = lineProjection(optimalX()) - yr;
     }
-    Translation2d unshrunkVector = new Translation2d(vx, vy);
 
-    return unshrunkVector;
+    return new Translation2d(vx / Math.hypot(vx, vy), vy / Math.hypot(vx, vy));
   }
 
   /**

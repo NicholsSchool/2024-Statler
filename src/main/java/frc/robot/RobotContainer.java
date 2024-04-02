@@ -393,7 +393,8 @@ public class RobotContainer {
 
     autoChooser.addOption(
         "Spline Test",
-        autoCommands.splineToPose(new Pose2d(new Translation2d(2, 2), new Rotation2d(0))));
+        autoCommands.splineToPose(
+            new Pose2d(new Translation2d(4, 2), new Rotation2d(Math.PI / 2))));
 
     autoChooser.addOption( // drives 10 ft for odometry testing
         "10 foot test", autoCommands.TenFootTest(drive));
