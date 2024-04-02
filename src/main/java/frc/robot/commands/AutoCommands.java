@@ -62,7 +62,7 @@ public class AutoCommands {
         new SplineToPose(
             this.drive,
             () -> {
-              return AllianceFlipUtil.apply(pose);
+              return pose;
             });
     return splToPose.until(splToPose::atGoal);
   }
