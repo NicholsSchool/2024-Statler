@@ -180,6 +180,25 @@ public class AutoCommands {
         new ArmGoToPosAuto(arm, ArmConstants.armDrivePosDeg));
   }
 
+  public Command scoreAmpAndFarNotePickupField() {
+    var crossLineCommand =
+        driveToPose(
+                new Pose2d(
+                  FieldConstants.StagingLocations.centerlineTranslations[4],
+                    new Rotation2d(Math.toRadians(0))))
+            .withTimeout(5);
+
+    // 1) drive to the amp while raising the arm.
+    // 2) stuff note into amp
+    // 3) drive to note while lowering arm and intaking.
+    // 4) raise arm
+    return new SequentialCommandGroup(
+        scoreAmpField(),
+        new ArmGoToPosAuto(arm, ArmConstants.armIntakePosDeg),
+        new ParallelCommandGroup(intake.runEatCommand(), crossLineCommand).withTimeout(6.0),
+        new ArmGoToPosAuto(arm, ArmConstants.armDrivePosDeg));
+  }
+
   public Command scoreAmpAndNotePickupScoreField() {
     // 1) score amp and pickup next note
     // 2) score note in amp and cross field

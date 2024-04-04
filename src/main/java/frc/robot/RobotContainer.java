@@ -197,6 +197,8 @@ public class RobotContainer {
         "field amp score and note pickup", autoCommands.scoreAmpAndNotePickupField());
     autoChooser.addOption(
         "field amp score, note pickup, score", autoCommands.scoreAmpAndNotePickupScoreField());
+    autoChooser.addDefaultOption(
+        "could this be a far note auto?", autoCommands.scoreAmpAndFarNotePickupField());
 
     // add testing auto functions
     addTestingAutos();

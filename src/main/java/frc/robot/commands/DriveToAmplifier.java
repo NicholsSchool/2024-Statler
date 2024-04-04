@@ -26,7 +26,7 @@ public class DriveToAmplifier extends DriveToPose {
                       + Units.inchesToMeters(fudgeYinch)
                       - Units.inchesToMeters(
                           Constants.RobotConstants.robotSideLengthInches / 2.0
-                              + 5.75), // 7.75 to take into account the arm poking outside the frame
+                              + 5.75), // 5.75 to take into account the arm poking outside the frame
                   Rotation2d.fromDegrees(-90.0)));
         });
   }
