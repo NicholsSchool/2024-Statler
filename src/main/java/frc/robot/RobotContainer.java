@@ -95,7 +95,7 @@ public class RobotContainer {
           "Start X0(m)", Units.inchesToMeters(RobotConstants.robotSideLengthInches / 2));
   public static final LoggedTunableNumber startY0 = new LoggedTunableNumber("Start Y0(m)", 7.335);
   public static final LoggedTunableNumber startTheta0 =
-      new LoggedTunableNumber("Start Theta0(deg)", 0.0);
+      new LoggedTunableNumber("Start Theta0(deg)", -90.0);
   // Start Pos 1: Next to human player side of Speaker.
   public static final LoggedTunableNumber startX1 =
       new LoggedTunableNumber(
