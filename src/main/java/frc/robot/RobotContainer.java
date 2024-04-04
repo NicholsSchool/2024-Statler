@@ -215,7 +215,7 @@ public class RobotContainer {
     // Configure the Shuffleboard
     lewZealandTab = Shuffleboard.getTab("Lew Zealand");
     hasNote = lewZealandTab.add("Has Note", false).getEntry();
-    isCurrnetProblem = lewZealandTab.add("Current Problem", false).getEntry();
+    isCurrnetProblem = lewZealandTab.add("35 -0 ?????", false).getEntry();
   }
 
   public void updateShuffleboard() {

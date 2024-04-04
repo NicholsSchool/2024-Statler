@@ -118,7 +118,7 @@ public class AutoCommands {
   private Command DriveToAmplifierWithFudge(Drive drive) {
     // add fudge factors (in inches) to the amplifier scoring position to
     // accommodate inaccuracies in field layout.
-    return new DriveToAmplifier(drive, 6, 0);
+    return new DriveToAmplifier(drive, 0, 0);
   }
 
   public Command TenFootTest(Drive drive) {
@@ -135,7 +135,7 @@ public class AutoCommands {
             () ->
                 autoDelaySeconds
                     .get()), // wait for tunable amount of time to allow alliance members to move
-        DriveToAmplifierWithFudge(drive).withTimeout(2.5), // drive to amp scoring position
+        DriveToAmplifierWithFudge(drive).withTimeout(4), // drive to amp scoring position
         waitSeconds(0.5), // wait?? not sure why.
         new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg)
             .withTimeout(0.3), // arm at amp score position
