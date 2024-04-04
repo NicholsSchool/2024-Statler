@@ -148,7 +148,7 @@ public class Arm extends SubsystemBase {
   // sure arm does not extend passed danger position.
   public double softLimit(double inputVel) {
     // weird ranges due to [0, 360] angle range of the arm angle input
-    if ((inputs.angleDegs >= 100.0 && inputs.angleDegs <= 200.0) && inputVel > 0
+    if ((inputs.angleDegs >= 96.0 && inputs.angleDegs <= 200.0) && inputVel > 0
         || (inputs.angleDegs <= 2.0 || inputs.angleDegs >= 200.0) && inputVel < 0) {
       return 0.0;
     }

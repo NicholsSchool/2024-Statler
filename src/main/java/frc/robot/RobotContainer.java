@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -26,6 +27,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.RobotType;
 import frc.robot.commands.AutoCommands;
+import frc.robot.commands.ClimbManual;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.VoltageCommandRamp;
@@ -35,6 +37,9 @@ import frc.robot.commands.arm_commands.ArmSetTargetPos;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
+import frc.robot.subsystems.climb.Climb;
+import frc.robot.subsystems.climb.ClimbIOReal;
+import frc.robot.subsystems.climb.ClimbIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONAVX;
@@ -50,6 +55,7 @@ import frc.robot.subsystems.outtake.OuttakeIOSim;
 import frc.robot.util.AllianceFlipUtil;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -63,6 +69,7 @@ public class RobotContainer {
   private final Arm arm;
   private final Intake intake;
   private final Outtake outtake;
+  private final Climb climb;
 
   public final Solenoid armLock;
   private PowerDistribution pdh;
@@ -96,7 +103,8 @@ public class RobotContainer {
   public static final LoggedTunableNumber startY1 = new LoggedTunableNumber("Start Y1(m)", 4.05);
   public static final LoggedTunableNumber startTheta1 =
       new LoggedTunableNumber("Start Theta1(deg)", 0.0);
-
+  private final LoggedDashboardNumber climbMaxV =
+      new LoggedDashboardNumber("Climb max voltage", 5.0);
   // Auto Commands
   private final AutoCommands autoCommands;
 
@@ -121,6 +129,7 @@ public class RobotContainer {
         arm = new Arm(new ArmIOReal());
         intake = new Intake(new IntakeIOReal());
         outtake = new Outtake(new OuttakeIOReal());
+        climb = new Climb(new ClimbIOReal());
         break;
 
       case ROBOT_SIM:
@@ -136,6 +145,7 @@ public class RobotContainer {
         arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
         outtake = new Outtake(new OuttakeIOSim());
+        climb = new Climb(new ClimbIOSim());
         break;
 
       case ROBOT_FOOTBALL:
@@ -150,6 +160,7 @@ public class RobotContainer {
         arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
         outtake = new Outtake(new OuttakeIOSim());
+        climb = new Climb(new ClimbIOSim());
         break;
 
       default:
@@ -168,6 +179,7 @@ public class RobotContainer {
         arm = new Arm(new ArmIOSim());
         intake = new Intake(new IntakeIOSim());
         outtake = new Outtake(new OuttakeIOSim());
+        climb = new Climb(new ClimbIOSim());
         break;
     }
 
@@ -364,6 +376,14 @@ public class RobotContainer {
     operatorController
         .povDown()
         .onTrue(new ParallelCommandGroup(outtake.runAmpCommand(), intake.runDigestCommand()));
+
+    climb.setDefaultCommand(
+        new ClimbManual(
+            climb,
+            () ->
+                MathUtil.applyDeadband(
+                    -operatorController.getLeftY() * climbMaxV.get(),
+                    Constants.JOYSTICK_DEADBAND)));
   }
 
   /**

@@ -117,7 +117,7 @@ public final class Constants {
     // NO GO TO POSITION ANGLES SHOULD BE OVER 108 DEGREES
     public static final double armIntakePosDeg = 0.0;
     public static final double armDrivePosDeg = 45.0;
-    public static final double armAmpPosDeg = 108.0;
+    public static final double armAmpPosDeg = 96.0;
     public static final double armTrapPosDeg = 75.0;
     public static final double armStartPosDeg = 90.0; // pulls arm off of brake
 
