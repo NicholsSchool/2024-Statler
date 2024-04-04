@@ -357,7 +357,7 @@ public class RobotContainer {
     // intake
     intake.setDefaultCommand(new InstantCommand(() -> intake.stop(), intake));
     driveController.rightTrigger().whileTrue(intake.runEatCommand());
-    operatorController.rightTrigger().whileTrue(intake.runPoopCommand());
+    // operatorController.rightTrigger().whileTrue(intake.runPoopCommand());
 
     // outtake
     outtake.setDefaultCommand(new InstantCommand(() -> outtake.stop(), outtake));
@@ -365,17 +365,18 @@ public class RobotContainer {
     // pull note through intake and deliver outtake (higher speed)
     // This is an example of running commands while button is pressed.
     operatorController
-        .povUp()
+        .rightTrigger(0.8)
         .whileTrue(
             new ParallelCommandGroup(
                 outtake.run(() -> outtake.setDeliver()), intake.run(() -> intake.poop())));
+    operatorController.povUp().whileTrue(intake.run(() -> intake.vomit()));
 
     // pull note through intake and amp outtake (lower speed)
     // This is an example of running a command where the timing is handled by the lower level
     // command, and therefore only a button press is required to kick off the command.
-    operatorController
-        .povDown()
-        .onTrue(new ParallelCommandGroup(outtake.runAmpCommand(), intake.runDigestCommand()));
+    // operatorController
+    //     .povDown()
+    //     .onTrue(new ParallelCommandGroup(outtake.runAmpCommand(), intake.runDigestCommand()));
 
     climb.setDefaultCommand(
         new ClimbManual(
