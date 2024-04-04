@@ -129,14 +129,16 @@ public class AutoCommands {
     // 1) drive to the amp while raising the arm.
     // 2) stuff note into amp
     return new SequentialCommandGroup(
-        new ArmGoToPosAuto(arm, ArmConstants.armStartPosDeg), // raise arm release brake.
+        new ArmGoToPosAuto(arm, ArmConstants.armStartPosDeg)
+            .withTimeout(1), // raise arm release brake.
         new WaitCommandTunable(
             () ->
                 autoDelaySeconds
                     .get()), // wait for tunable amount of time to allow alliance members to move
-        DriveToAmplifierWithFudge(drive), // drive to amp scoring position
-        waitSeconds(1), // wait?? not sure why.
-        new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg), // arm at amp score position
+        DriveToAmplifierWithFudge(drive).withTimeout(2.5), // drive to amp scoring position
+        waitSeconds(0.5), // wait?? not sure why.
+        new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg)
+            .withTimeout(0.3), // arm at amp score position
         new ParallelCommandGroup(
             outtake.runAmpCommand(),
             intake.runDigestCommand())); // run intake and outtake at same time to score
@@ -148,7 +150,7 @@ public class AutoCommands {
                 new Pose2d(
                     FieldConstants.StagingLocations.spikeTranslations[2],
                     new Rotation2d(Math.toRadians(-45.0))))
-            .withTimeout(4.0);
+            .withTimeout(2.0);
 
     // 1) drive to the amp while raising the arm.
     // 2) stuff note into amp
@@ -165,7 +167,7 @@ public class AutoCommands {
                 new Pose2d(
                     FieldConstants.StagingLocations.spikeTranslations[2],
                     new Rotation2d(Math.toRadians(-45.0))))
-            .withTimeout(4.0);
+            .withTimeout(2.0);
 
     // 1) drive to the amp while raising the arm.
     // 2) stuff note into amp

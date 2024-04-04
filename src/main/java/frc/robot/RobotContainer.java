@@ -220,7 +220,7 @@ public class RobotContainer {
 
   public void updateShuffleboard() {
     hasNote.setBoolean(intake.hasNote());
-    isCurrnetProblem.setBoolean(!arm.isCurrnetProblem());
+    isCurrnetProblem.setBoolean(arm.isCurrnetProblem());
 
     if (Constants.getRobot() == RobotType.ROBOT_REAL) {
       SmartDashboard.putNumber("PDH/Voltage", pdh.getVoltage());
