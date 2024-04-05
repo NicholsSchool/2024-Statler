@@ -136,7 +136,7 @@ public class AutoCommands {
                 autoDelaySeconds
                     .get()), // wait for tunable amount of time to allow alliance members to move
         new ParallelCommandGroup(
-                DriveToAmplifierWithFudge(drive).withTimeout(2),
+                DriveToAmplifierWithFudge(drive).withTimeout(4.0),
                 new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg))
             .withTimeout(1),
         new ParallelCommandGroup(
