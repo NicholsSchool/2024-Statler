@@ -181,14 +181,6 @@ public class AutoCommands {
   }
 
   public Command scoreAmpAndFarNotePickupField() {
-    var realign =
-        driveToPose(
-                new Pose2d(
-                    new Translation2d(
-                        FieldConstants.ampCenter.getX(),
-                        FieldConstants.ampCenter.getY() - Units.inchesToMeters(24.5)),
-                    new Rotation2d(0)))
-            .withTimeout(0.75);
     var crossLineCommand =
         driveToPose(
                 new Pose2d(
@@ -205,7 +197,29 @@ public class AutoCommands {
     // 4) raise arm
     return new SequentialCommandGroup(
         scoreAmpField(),
-        realign.withTimeout(2),
+        new ArmGoToPosAuto(arm, ArmConstants.armIntakePosDeg),
+        new ParallelCommandGroup(intake.runEatCommand(), crossLineCommand).withTimeout(6.0),
+        new ArmGoToPosAuto(arm, ArmConstants.armDrivePosDeg).withTimeout(2),
+        scoreAmpField());
+  }
+
+  public Command scoreAmpAndFarNoteScore() {
+    var crossLineCommand =
+        driveToPose(
+                new Pose2d(
+                    new Translation2d(
+                        FieldConstants.StagingLocations.centerlineTranslations[4].getX()
+                            + Units.inchesToMeters(14),
+                        FieldConstants.StagingLocations.centerlineTranslations[4].getY()),
+                    new Rotation2d(Math.toRadians(0))))
+            .withTimeout(5);
+
+    // 1) drive to the amp while raising the arm.
+    // 2) stuff note into amp
+    // 3) drive to note while lowering arm and intaking.
+    // 4) raise arm
+    return new SequentialCommandGroup(
+        scoreAmpField(),
         new ArmGoToPosAuto(arm, ArmConstants.armIntakePosDeg),
         new ParallelCommandGroup(intake.runEatCommand(), crossLineCommand).withTimeout(6.0),
         new ArmGoToPosAuto(arm, ArmConstants.armDrivePosDeg).withTimeout(2),
