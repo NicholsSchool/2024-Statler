@@ -181,10 +181,21 @@ public class AutoCommands {
   }
 
   public Command scoreAmpAndFarNotePickupField() {
+    var realign =
+        driveToPose(
+                new Pose2d(
+                    new Translation2d(
+                        FieldConstants.ampCenter.getX(),
+                        FieldConstants.ampCenter.getY() - Units.inchesToMeters(24.5)),
+                    new Rotation2d(0)))
+            .withTimeout(0.75);
     var crossLineCommand =
         driveToPose(
                 new Pose2d(
-                  FieldConstants.StagingLocations.centerlineTranslations[4],
+                    new Translation2d(
+                        FieldConstants.StagingLocations.centerlineTranslations[4].getX()
+                            + Units.inchesToMeters(14),
+                        FieldConstants.StagingLocations.centerlineTranslations[4].getY()),
                     new Rotation2d(Math.toRadians(0))))
             .withTimeout(5);
 
@@ -194,9 +205,11 @@ public class AutoCommands {
     // 4) raise arm
     return new SequentialCommandGroup(
         scoreAmpField(),
+        realign.withTimeout(2),
         new ArmGoToPosAuto(arm, ArmConstants.armIntakePosDeg),
         new ParallelCommandGroup(intake.runEatCommand(), crossLineCommand).withTimeout(6.0),
-        new ArmGoToPosAuto(arm, ArmConstants.armDrivePosDeg));
+        new ArmGoToPosAuto(arm, ArmConstants.armDrivePosDeg).withTimeout(2),
+        new DriveToAmplifier(drive, 0, 0));
   }
 
   public Command scoreAmpAndNotePickupScoreField() {
