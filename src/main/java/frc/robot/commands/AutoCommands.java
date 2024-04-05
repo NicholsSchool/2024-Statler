@@ -130,15 +130,14 @@ public class AutoCommands {
     // 2) stuff note into amp
     return new SequentialCommandGroup(
         new ArmGoToPosAuto(arm, ArmConstants.armStartPosDeg)
-            .withTimeout(1), // raise arm release brake.
+            .withTimeout(0.5), // raise arm release brake.
         new WaitCommandTunable(
             () ->
                 autoDelaySeconds
                     .get()), // wait for tunable amount of time to allow alliance members to move
-        DriveToAmplifierWithFudge(drive).withTimeout(4), // drive to amp scoring position
-        waitSeconds(0.5), // wait?? not sure why.
+        DriveToAmplifierWithFudge(drive).withTimeout(3.1), // drive to amp scoring position
         new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg)
-            .withTimeout(0.3), // arm at amp score position
+            .withTimeout(0.5), // arm at amp score position
         new ParallelCommandGroup(
             outtake.runAmpCommand(),
             intake.runDigestCommand())); // run intake and outtake at same time to score
@@ -189,7 +188,7 @@ public class AutoCommands {
                             + Units.inchesToMeters(14),
                         FieldConstants.StagingLocations.centerlineTranslations[4].getY()),
                     new Rotation2d(Math.toRadians(0))))
-            .withTimeout(5);
+            .withTimeout(3);
 
     // 1) drive to the amp while raising the arm.
     // 2) stuff note into amp
@@ -198,8 +197,8 @@ public class AutoCommands {
     return new SequentialCommandGroup(
         scoreAmpField(),
         new ArmGoToPosAuto(arm, ArmConstants.armIntakePosDeg),
-        new ParallelCommandGroup(intake.runEatCommand(), crossLineCommand).withTimeout(6.0),
-        new ArmGoToPosAuto(arm, ArmConstants.armDrivePosDeg).withTimeout(2),
+        new ParallelCommandGroup(intake.runEatCommand(), crossLineCommand).withTimeout(4.0),
+        new ArmGoToPosAuto(arm, ArmConstants.armDrivePosDeg).withTimeout(1.0),
         scoreAmpField());
   }
 
