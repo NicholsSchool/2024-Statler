@@ -186,7 +186,7 @@ public class AutoCommands {
                 new Pose2d(
                     FieldConstants.StagingLocations.spikeTranslations[2],
                     new Rotation2d(Math.toRadians(-45.0))))
-            .withTimeout(2.0);
+            .withTimeout(3.5);
 
     // 1) drive to the amp while raising the arm.
     // 2) stuff note into amp
