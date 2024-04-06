@@ -138,7 +138,7 @@ public class AutoCommands {
         new ParallelCommandGroup(
                 DriveToAmplifierWithFudge(drive).withTimeout(4.0),
                 new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg))
-            .withTimeout(1),
+            .withTimeout(4),
         new ParallelCommandGroup(
             outtake.runAmpCommand(),
             intake.runDigestCommand())); // run intake and outtake at same time to score
@@ -155,9 +155,9 @@ public class AutoCommands {
                 autoDelaySeconds
                     .get()), // wait for tunable amount of time to allow alliance members to move
         new ParallelCommandGroup(
-                DriveToAmplifierWithFudge(drive).withTimeout(5),
+                DriveToAmplifierWithFudge(drive),
                 new ArmGoToPosAuto(arm, ArmConstants.armAmpPosDeg))
-            .withTimeout(5),
+            .withTimeout(6),
         new ParallelCommandGroup(
             outtake.runAmpCommand(),
             intake.runDigestCommand())); // run intake and outtake at same time to score
