@@ -118,7 +118,7 @@ public class AutoCommands {
   private Command DriveToAmplifierWithFudge(Drive drive) {
     // add fudge factors (in inches) to the amplifier scoring position to
     // accommodate inaccuracies in field layout.
-    return new DriveToAmplifier(drive, 0, 0);
+    return new DriveToAmplifier(drive, 0, 2.0);
   }
 
   public Command TenFootTest(Drive drive) {
