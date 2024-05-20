@@ -20,6 +20,7 @@ import frc.robot.commands.arm_commands.ArmGoToPosTeleop;
 import frc.robot.commands.arm_commands.ArmManuel;
 import frc.robot.commands.arm_commands.ArmSetTargetPos;
 import frc.robot.commands.drive_commands.DriveCommands;
+import frc.robot.commands.drive_commands.ParabolicSplineToPoint;
 import frc.robot.commands.drive_commands.ResetPoseCommand;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
@@ -212,6 +213,8 @@ public class RobotContainer {
                 () -> -90,
                 () -> drive.getYaw(),
                 () -> Constants.driveRobotRelative));
+
+    driveController.povUp().whileTrue(new ParabolicSplineToPoint(drive));
 
     // Arm Controls
     arm.setDefaultCommand(new ArmGoToPosTeleop(arm));
