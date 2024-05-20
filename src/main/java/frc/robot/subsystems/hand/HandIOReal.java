@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.hand;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants.CAN;
 import frc.robot.Constants.IntakeConstants;
 
-public class IntakeIOReal implements IntakeIO {
+public class HandIOReal implements HandIO {
   private DigitalInput breamBreak;
   private CANSparkMax motor;
   private RelativeEncoder encoder;
 
-  public IntakeIOReal() {
+  public HandIOReal() {
     System.out.println("[Init] Creating IntakeIOReal");
 
     breamBreak = new DigitalInput(IntakeConstants.kBeamBreakChannel);

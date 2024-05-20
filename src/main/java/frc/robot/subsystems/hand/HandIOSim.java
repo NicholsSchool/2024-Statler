@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.hand;
 
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
 import java.util.Random;
 
-public class IntakeIOSim implements IntakeIO {
+public class HandIOSim implements HandIO {
   private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 5, 0.004);
 
   private double appliedVolts = 0.0;
@@ -19,7 +19,7 @@ public class IntakeIOSim implements IntakeIO {
   private boolean hasNote = false;
   Random rand = new Random();
 
-  public IntakeIOSim() {
+  public HandIOSim() {
     System.out.println("[Init] Creating IntakeIOSim");
     // Create filter of velocity to determine which direction motor is going.
     // this is used to simulate a note retrieval
@@ -28,8 +28,6 @@ public class IntakeIOSim implements IntakeIO {
 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
-    // TODO: do fancy pretending for hasNote
-
     sim.setInputVoltage(appliedVolts);
     sim.update(Constants.loopPeriodSecs);
 

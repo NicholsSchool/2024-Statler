@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.hand;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -12,10 +12,8 @@ import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-// TODO: rework intake and outtake for the coulson wheels
-
-public class Intake extends SubsystemBase {
-  private IntakeIO io;
+public class Hand extends SubsystemBase {
+  private HandIO io;
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
   private static final LoggedTunableNumber kP = new LoggedTunableNumber("Intake/kP", 0.1);
@@ -46,7 +44,7 @@ public class Intake extends SubsystemBase {
 
   private IntakeMode mode = IntakeMode.kStopped;
 
-  public Intake(IntakeIO io) {
+  public Hand(HandIO io) {
     System.out.println("[Init] Creating Intake");
     this.io = io;
     io.setBrakeMode(false);

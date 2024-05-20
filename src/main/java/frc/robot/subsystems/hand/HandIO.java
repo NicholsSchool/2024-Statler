@@ -1,8 +1,8 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.hand;
 
 import org.littletonrobotics.junction.AutoLog;
 
-public interface IntakeIO {
+public interface HandIO {
   @AutoLog
   public static class IntakeIOInputs {
     public double velocityRadPerSec = 0.0;

@@ -92,7 +92,6 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      // TODO change back to angle supplier
       DoubleSupplier desiredAngle,
       DoubleSupplier robotYawSupplier,
       BooleanSupplier robotRelative) {
@@ -140,7 +139,6 @@ public class DriveCommands {
       Drive drive,
       DoubleSupplier xSupplier,
       DoubleSupplier ySupplier,
-      // TODO change to pose supplier??
       Pose2d facingPose,
       DoubleSupplier robotYawSupplier) {
     return Commands.run(

@@ -78,16 +78,16 @@ public final class Constants {
     public static final double kWheelDiameterMeters = 0.0762; // 3 inch wheels
     public static final double kWheelRadiusMeters = kWheelDiameterMeters / 2.0;
     public static final double kDrivingMotorFreeSpinRPM = 5676; // NEO 550s max RPM
-    public static final double odometryCoefficient = 1.0; // TODO: tune odometry and use this
+    public static final double odometryCoefficient = 1.0;
 
-    public static final double kDrivingP = 0.02; // TODO: tune these
+    public static final double kDrivingP = 0.02;
     public static final double kDrivingI = 0.0;
     public static final double kDrivingD = 0.0;
     public static final double kDrivingFF = 0.0;
     public static final double kDrivingStaticFF = 0.1;
     public static final double kDrivingVelocityFF = 0.13;
 
-    public static final double kTurningP = 1.78; // TODO: tune these
+    public static final double kTurningP = 1.78;
     public static final double kTurningI = 0.0;
     public static final double kTurningD = 0.0;
     public static final double kTurningFF = 0.0;
@@ -137,7 +137,7 @@ public final class Constants {
     public static final double ARM_GEAR_REDUCTION = 98.0;
     public static final double ARM_GEAR_RATIO = 1.0 / ARM_GEAR_REDUCTION;
 
-    public static final double ARM_FF_KS = 0.0; // TODO: tune these
+    public static final double ARM_FF_KS = 0.0;
     public static final double ARM_FF_KG = 0.4;
     public static final double ARM_FF_KV = 1.91;
     public static final double ARM_FF_KA = 0.05;
@@ -150,7 +150,7 @@ public final class Constants {
   }
 
   public static final class OuttakeConstants {
-    public static final double kP = 1.0; // TODO: tune these
+    public static final double kP = 1.0;
     public static final double kD = 0.0;
     public static final double GEAR_RATIO_REDUCTION = 3.0;
     ;
@@ -158,12 +158,12 @@ public final class Constants {
   }
 
   public static final class AutoConstants {
-    public static final double driveFinishThreshold = 0.075; // TODO: tune these
+    public static final double driveFinishThreshold = 0.075;
     public static final double angleFinishThreshold = Math.PI / 12.0;
   }
 
   public static final class FiddleSongs {
-    public static final String ALL_STAR = "all-star.chrp"; // TODO: add fnaf
+    public static final String ALL_STAR = "all-star.chrp";
     public static final String IMPERIAL_MARCH = "Imperial-March.chrp";
     public static final String WII_SONG = "Wii-Song.chrp";
   }

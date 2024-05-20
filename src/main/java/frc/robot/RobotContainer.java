@@ -1,11 +1,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -19,15 +16,11 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.RobotType;
-import frc.robot.commands.AutoCommands;
-import frc.robot.commands.ClimbManual;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.VoltageCommandRamp;
@@ -37,25 +30,17 @@ import frc.robot.commands.arm_commands.ArmSetTargetPos;
 import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
-import frc.robot.subsystems.climb.Climb;
-import frc.robot.subsystems.climb.ClimbIOReal;
-import frc.robot.subsystems.climb.ClimbIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIONAVX;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
 import frc.robot.subsystems.drive.ModuleIOSim;
-import frc.robot.subsystems.intake.Intake;
-import frc.robot.subsystems.intake.IntakeIOReal;
-import frc.robot.subsystems.intake.IntakeIOSim;
-import frc.robot.subsystems.outtake.Outtake;
-import frc.robot.subsystems.outtake.OuttakeIOReal;
-import frc.robot.subsystems.outtake.OuttakeIOSim;
-import frc.robot.util.AllianceFlipUtil;
+import frc.robot.subsystems.hand.Hand;
+import frc.robot.subsystems.hand.HandIOReal;
+import frc.robot.subsystems.hand.HandIOSim;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
-import org.littletonrobotics.junction.networktables.LoggedDashboardNumber;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -67,9 +52,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Arm arm;
-  private final Intake intake;
-  private final Outtake outtake;
-  private final Climb climb;
+  private final Hand intake;
 
   public final Solenoid armLock;
   private PowerDistribution pdh;
@@ -86,27 +69,10 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
-  // Start position selections
-  public static final LoggedTunableNumber startPositionIndex =
-      new LoggedTunableNumber("start pos index: 0 or 1", 0.0);
-  // Start Pos 0: Along line of the Amp.
-  public static final LoggedTunableNumber startX0 =
-      new LoggedTunableNumber(
-          "Start X0(m)", Units.inchesToMeters(RobotConstants.robotSideLengthInches / 2));
-  public static final LoggedTunableNumber startY0 = new LoggedTunableNumber("Start Y0(m)", 7.335);
+  public static final LoggedTunableNumber startX0 = new LoggedTunableNumber("Start X(m)", 0.0);
+  public static final LoggedTunableNumber startY0 = new LoggedTunableNumber("Start Y(m)", 0.0);
   public static final LoggedTunableNumber startTheta0 =
-      new LoggedTunableNumber("Start Theta0(deg)", -90.0);
-  // Start Pos 1: Next to human player side of Speaker.
-  public static final LoggedTunableNumber startX1 =
-      new LoggedTunableNumber(
-          "Start X1(m)", Units.inchesToMeters(RobotConstants.robotSideLengthInches / 2));
-  public static final LoggedTunableNumber startY1 = new LoggedTunableNumber("Start Y1(m)", 4.05);
-  public static final LoggedTunableNumber startTheta1 =
-      new LoggedTunableNumber("Start Theta1(deg)", 0.0);
-  private final LoggedDashboardNumber climbMaxV =
-      new LoggedDashboardNumber("Climb max voltage", 5.0);
-  // Auto Commands
-  private final AutoCommands autoCommands;
+      new LoggedTunableNumber("Start Theta(deg)", 0.0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -127,9 +93,7 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(2),
                 new ModuleIOMaxSwerve(3));
         arm = new Arm(new ArmIOReal());
-        intake = new Intake(new IntakeIOReal());
-        outtake = new Outtake(new OuttakeIOReal());
-        climb = new Climb(new ClimbIOReal());
+        intake = new Hand(new HandIOReal());
         break;
 
       case ROBOT_SIM:
@@ -143,9 +107,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         arm = new Arm(new ArmIOSim());
-        intake = new Intake(new IntakeIOSim());
-        outtake = new Outtake(new OuttakeIOSim());
-        climb = new Climb(new ClimbIOSim());
+        intake = new Hand(new HandIOSim());
         break;
 
       case ROBOT_FOOTBALL:
@@ -158,9 +120,7 @@ public class RobotContainer {
                 new ModuleIOSim(),
                 new ModuleIOSim());
         arm = new Arm(new ArmIOSim());
-        intake = new Intake(new IntakeIOSim());
-        outtake = new Outtake(new OuttakeIOSim());
-        climb = new Climb(new ClimbIOSim());
+        intake = new Hand(new HandIOSim());
         break;
 
       default:
@@ -177,28 +137,13 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
         arm = new Arm(new ArmIOSim());
-        intake = new Intake(new IntakeIOSim());
-        outtake = new Outtake(new OuttakeIOSim());
-        climb = new Climb(new ClimbIOSim());
+        intake = new Hand(new HandIOSim());
         break;
     }
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
-    // Create auto commands
-    autoCommands = new AutoCommands(drive, arm, intake, outtake);
-
     autoChooser.addOption("Wait 5 seconds", new WaitCommand(5.0));
-    autoChooser.addOption("relative blue amp", autoCommands.scoreAmpRelativeBlue());
-    autoChooser.addOption("relative red amp", autoCommands.scoreAmpRelativeRed());
-    autoChooser.addOption("field amp score and cross", autoCommands.scoreAmpFieldAndCross());
-    autoChooser.addOption(
-        "field amp score and note pickup", autoCommands.scoreAmpAndNotePickupField());
-    autoChooser.addOption(
-        "field amp score, note pickup, score", autoCommands.scoreAmpAndNotePickupScoreField());
-    autoChooser.addDefaultOption(
-        "could this be a far note auto?", autoCommands.scoreAmpAndFarNotePickupField());
 
     // add testing auto functions
     addTestingAutos();
@@ -247,14 +192,7 @@ public class RobotContainer {
     if (DriverStation.isDisabled()) {
       if (startX0.hasChanged(hashCode())
           || startY0.hasChanged(hashCode())
-          || startTheta0.hasChanged(hashCode())
-          || startX1.hasChanged(hashCode())
-          || startY1.hasChanged(hashCode())
-          || startTheta1.hasChanged(hashCode())
-          || startPositionIndex.hasChanged(hashCode())) {
-
-        setStartingPose();
-      }
+          || startTheta0.hasChanged(hashCode())) setStartingPose();
     }
   }
 
@@ -266,17 +204,11 @@ public class RobotContainer {
     // Set starting position only if operating robot in field-relative control.
     // Otherwise, robot starts at 0, 0, 0.
     if (!Constants.driveRobotRelative) {
-      Pose2d startPosition0 =
+      Pose2d startPosition =
           new Pose2d(
               startX0.get(), startY0.get(), new Rotation2d(Math.toRadians(startTheta0.get())));
-      Pose2d startPosition1 =
-          new Pose2d(
-              startX1.get(), startY1.get(), new Rotation2d(Math.toRadians(startTheta1.get())));
 
-      drive.setPose(
-          startPositionIndex.get() == 0
-              ? AllianceFlipUtil.apply(startPosition0)
-              : AllianceFlipUtil.apply(startPosition1));
+      drive.setPose(startPosition);
     }
   }
 
@@ -359,34 +291,6 @@ public class RobotContainer {
     // intake
     intake.setDefaultCommand(new InstantCommand(() -> intake.stop(), intake));
     driveController.rightTrigger().whileTrue(intake.runEatCommand());
-    // operatorController.rightTrigger().whileTrue(intake.runPoopCommand());
-
-    // outtake
-    outtake.setDefaultCommand(new InstantCommand(() -> outtake.stop(), outtake));
-
-    // pull note through intake and deliver outtake (higher speed)
-    // This is an example of running commands while button is pressed.
-    operatorController
-        .rightTrigger(0.8)
-        .whileTrue(
-            new ParallelCommandGroup(
-                outtake.run(() -> outtake.setDeliver()), intake.run(() -> intake.poop())));
-    operatorController.povUp().whileTrue(intake.run(() -> intake.vomit()));
-
-    // pull note through intake and amp outtake (lower speed)
-    // This is an example of running a command where the timing is handled by the lower level
-    // command, and therefore only a button press is required to kick off the command.
-    // operatorController
-    //     .povDown()
-    //     .onTrue(new ParallelCommandGroup(outtake.runAmpCommand(), intake.runDigestCommand()));
-
-    climb.setDefaultCommand(
-        new ClimbManual(
-            climb,
-            () ->
-                MathUtil.applyDeadband(
-                    -operatorController.getLeftY() * climbMaxV.get(),
-                    Constants.JOYSTICK_DEADBAND)));
   }
 
   /**
@@ -410,16 +314,5 @@ public class RobotContainer {
     autoChooser.addOption(
         "Module Turn Ramp Test",
         new VoltageCommandRamp(drive, drive::runTurnCommandRampVolts, 0.5, 5.0));
-
-    autoChooser.addOption(
-        "Outtake Ramp Test", new VoltageCommandRamp(outtake, outtake::setVoltage, 0.5, 5.0));
-
-    autoChooser.addOption(
-        "Spline Test",
-        autoCommands.splineToPose(
-            new Pose2d(new Translation2d(4, 2), new Rotation2d(Math.PI / 2))));
-
-    autoChooser.addOption( // drives 10 ft for odometry testing
-        "10 foot test", autoCommands.TenFootTest(drive));
   }
 }
