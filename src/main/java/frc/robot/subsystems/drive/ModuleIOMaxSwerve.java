@@ -79,7 +79,7 @@ public class ModuleIOMaxSwerve implements ModuleIO {
     // Setup driving encoder (hall sensor on brushless motor connected to front port of spark max)
     drivingEncoder = drivingSparkMax.getEncoder();
     // Setup turning encoder (connected absolute encoder)
-    turningEncoder = turningSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
+    turningEncoder = drivingSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
 
     // Invert the turning encoder, since the output shaft rotates in the opposite
     // direction of the steering motor in the REV MAXSwerve Module.

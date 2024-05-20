@@ -2,7 +2,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.RobotType;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -88,9 +87,6 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
-    // updates shuffleboard outputs periodically
-    robotContainer.updateShuffleboard();
   }
 
   /** This function is called once when the robot is disabled. */
@@ -105,10 +101,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     robotContainer.setStartingPose();
-
-    if (Constants.getRobot() == RobotType.ROBOT_REAL) {
-      robotContainer.armLock.set(true);
-    }
 
     autonomousCommand = robotContainer.getAutonomousCommand();
 
@@ -125,9 +117,6 @@ public class Robot extends LoggedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    if (Constants.getRobot() == RobotType.ROBOT_REAL) {
-      robotContainer.armLock.set(true);
-    }
 
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to
