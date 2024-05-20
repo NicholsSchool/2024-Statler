@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.FeedForwardCharacterization;
+import frc.robot.commands.ResetPoseCommand;
 import frc.robot.commands.VoltageCommandRamp;
 import frc.robot.commands.arm_commands.ArmGoToPosTeleop;
 import frc.robot.commands.arm_commands.ArmManuel;
@@ -167,7 +168,9 @@ public class RobotContainer {
             () -> driveController.getLeftX() * Constants.DriveConstants.lowGearScaler,
             () -> -driveController.getRightX() * Constants.DriveConstants.lowGearScaler,
             () -> Constants.driveRobotRelative));
-    driveController.start().onTrue(new InstantCommand(() -> drive.resetFieldHeading()));
+
+    driveController.start().onTrue(new ResetPoseCommand(drive));
+    driveController.back().onTrue(new ResetPoseCommand(drive));
 
     driveController
         .a()
