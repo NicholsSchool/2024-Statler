@@ -138,8 +138,8 @@ public final class Constants {
     public static final double ARM_GEAR_RATIO = 1.0 / ARM_GEAR_REDUCTION;
 
     public static final double ARM_FF_KS = 0.0;
-    public static final double ARM_FF_KG = 0.4;
-    public static final double ARM_FF_KV = 1.91;
+    public static final double ARM_FF_KG = 1.04;
+    public static final double ARM_FF_KV = 0.52;
     public static final double ARM_FF_KA = 0.05;
 
     public static final double ARM_P = 4.0;
