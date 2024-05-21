@@ -11,18 +11,13 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.commands.FeedForwardCharacterization;
 import frc.robot.commands.VoltageCommandRamp;
-import frc.robot.commands.arm_commands.ArmGoToPosTeleop;
 import frc.robot.commands.arm_commands.ArmManuel;
-import frc.robot.commands.arm_commands.ArmSetTargetPos;
 import frc.robot.commands.drive_commands.DriveCommands;
 import frc.robot.commands.drive_commands.ParabolicSplineToPoint;
 import frc.robot.commands.drive_commands.ResetPoseCommand;
 import frc.robot.subsystems.arm.Arm;
-import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -76,7 +71,7 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(1),
                 new ModuleIOMaxSwerve(2),
                 new ModuleIOMaxSwerve(3));
-        arm = new Arm(new ArmIOReal());
+        arm = new Arm(new ArmIOSim());
         hand = new Hand(new HandIOSim());
         break;
 
@@ -202,14 +197,7 @@ public class RobotContainer {
     driveController.povUp().whileTrue(new ParabolicSplineToPoint(drive));
 
     // Arm Controls
-    arm.setDefaultCommand(new ArmGoToPosTeleop(arm));
-    new Trigger(() -> Math.abs(operatorController.getRightY()) >= Constants.JOYSTICK_DEADBAND)
-        .whileTrue(new ArmManuel(arm, () -> -operatorController.getRightY()));
-
-    operatorController.a().onTrue(new ArmSetTargetPos(arm, ArmConstants.armIntakePosDeg));
-    operatorController.b().onTrue(new ArmSetTargetPos(arm, ArmConstants.armDrivePosDeg));
-    operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armDrivePosDeg));
-    operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armVerticalPosDeg));
+    arm.setDefaultCommand(new ArmManuel(arm, () -> -operatorController.getLeftY()));
 
     // intake
     hand.setDefaultCommand(new InstantCommand(() -> hand.stop(), hand));

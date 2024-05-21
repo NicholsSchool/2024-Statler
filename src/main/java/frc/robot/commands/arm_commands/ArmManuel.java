@@ -29,6 +29,5 @@ public class ArmManuel extends Command {
   public void end(boolean interrupted) {
     System.out.println("Manual Cancelled");
     arm.setManuel(0);
-    arm.setTargetPos(arm.getAngleDeg());
   }
 }

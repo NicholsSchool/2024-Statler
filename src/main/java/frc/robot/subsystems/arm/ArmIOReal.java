@@ -4,6 +4,7 @@ import static frc.robot.Constants.ArmConstants.*;
 import static frc.robot.Constants.CAN.*;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.revrobotics.AbsoluteEncoder;
@@ -21,8 +22,8 @@ public class ArmIOReal implements ArmIO {
     motorOne = new TalonSRX(kShoulderOneCanId);
     motorTwo = new TalonSRX(kShoulderTwoCanId);
 
-    motorOne.setNeutralMode(NeutralMode.Coast);
-    motorTwo.setNeutralMode(NeutralMode.Coast);
+    motorOne.setNeutralMode(NeutralMode.Brake);
+    motorTwo.setNeutralMode(NeutralMode.Brake);
 
     TalonSRXConfiguration config = new TalonSRXConfiguration();
     config.peakCurrentLimit = ARM_CURRENT_LIMIT;
@@ -62,7 +63,7 @@ public class ArmIOReal implements ArmIO {
 
   @Override
   public void setVoltage(double voltage) {
-    // motorOne.set(TalonSRXControlMode.PercentOutput, voltage / motorOne.getBusVoltage());
-    // motorTwo.set(TalonSRXControlMode.PercentOutput, voltage / motorTwo.getBusVoltage());
+    motorOne.set(TalonSRXControlMode.PercentOutput, voltage / motorOne.getBusVoltage());
+    motorTwo.set(TalonSRXControlMode.PercentOutput, voltage / motorTwo.getBusVoltage());
   }
 }

@@ -112,17 +112,12 @@ public final class Constants {
   }
 
   public static final class ArmConstants {
-    // NO GO TO POSITION ANGLES SHOULD BE OVER 90 DEGREES
-    public static final double armIntakePosDeg = -8.0;
-    public static final double armDrivePosDeg = 45.0;
-    public static final double armVerticalPosDeg = 90.0;
-
     public static final int ARM_CURRENT_LIMIT = 35;
 
     public static final double MIN_ANGLE_RADS = -8.0;
     public static final double MAX_ANGLE_RADS = Math.PI;
 
-    public static final double ARM_MASS_LBS = 7.0;
+    public static final double ARM_MASS_LBS = 10.0;
     public static final double ARM_COM_DISTANCE_INCHES = 20.0;
     public static final double ARM_LENGTH_METERS = ARM_COM_DISTANCE_INCHES * MeterPerInch;
 
@@ -131,15 +126,12 @@ public final class Constants {
     public static final double ARM_GEAR_RATIO = 1.0 / ARM_GEAR_REDUCTION;
 
     public static final double ARM_FF_KS = 0.0;
-    public static final double ARM_FF_KG = 1.62;
+    public static final double ARM_FF_KG = 3.0;
     public static final double ARM_FF_KV = 0.52;
-    public static final double ARM_FF_KA = 0.08;
+    public static final double ARM_FF_KA = 0.12;
 
-    public static final double ARM_P = 4.0;
-    public static final double ARM_I = 3.0;
-    public static final double ARM_D = 0.0;
-    public static final double ARM_ACCEL_LIMIT = 1.1;
-    public static final double ARM_VEL_LIMIT = 0.85167;
+    public static final double ARM_ACCEL_LIMIT = 0.5;
+    public static final double ARM_VEL_LIMIT = 3.0;
   }
 
   public static final class AutoConstants {
