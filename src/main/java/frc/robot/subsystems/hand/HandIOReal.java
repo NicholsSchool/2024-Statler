@@ -1,46 +1,78 @@
 package frc.robot.subsystems.hand;
 
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.Constants.IntakeConstants;
+import static frc.robot.Constants.CAN.*;
+
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 
 public class HandIOReal implements HandIO {
-  private DigitalInput breamBreak;
-  private CANSparkMax motor;
-  private RelativeEncoder encoder;
+  private TalonSRX frontLeftMotor;
+  private TalonSRX backLeftMotor;
+  private TalonSRX frontRightMotor;
+  private TalonSRX backRightMotor;
 
   public HandIOReal() {
-    System.out.println("[Init] Creating IntakeIOReal");
+    System.out.println("[Init] Creating HandIOReal");
 
-    breamBreak = new DigitalInput(IntakeConstants.kBeamBreakChannel);
-    motor = new CANSparkMax(6969, MotorType.kBrushless);
-    motor.restoreFactoryDefaults();
-    motor.setInverted(true);
-    encoder = motor.getEncoder();
-    motor.setIdleMode(IdleMode.kCoast);
-    encoder.setPositionConversionFactor(2.0 * Math.PI);
-    encoder.setVelocityConversionFactor(2.0 * Math.PI / 60.0 / 5.0);
-    motor.burnFlash();
+    frontLeftMotor = new TalonSRX(kFrontLeftShooter);
+    frontRightMotor = new TalonSRX(kFrontRightShooter);
+    backLeftMotor = new TalonSRX(kBackLeftShooter);
+    backRightMotor = new TalonSRX(kBackRightShooter);
+
+    frontRightMotor.setInverted(true);
+    backRightMotor.setInverted(true);
+
+    frontLeftMotor.setNeutralMode(NeutralMode.Brake);
+    frontRightMotor.setNeutralMode(NeutralMode.Brake);
+    backLeftMotor.setNeutralMode(NeutralMode.Brake);
+    backRightMotor.setNeutralMode(NeutralMode.Brake);
+
+    TalonSRXConfiguration frontConfig = new TalonSRXConfiguration();
+    frontConfig.peakCurrentLimit = 35;
+    frontConfig.peakCurrentDuration = 500;
+    frontConfig.continuousCurrentLimit = 35;
+
+    TalonSRXConfiguration backConfig = new TalonSRXConfiguration();
+    backConfig.peakCurrentLimit = 25;
+    backConfig.peakCurrentDuration = 500;
+    backConfig.continuousCurrentLimit = 25;
+
+    frontLeftMotor.configAllSettings(frontConfig);
+    frontRightMotor.configAllSettings(frontConfig);
+    backLeftMotor.configAllSettings(backConfig);
+    backRightMotor.configAllSettings(backConfig);
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
-    inputs.velocityRadPerSec = encoder.getVelocity();
-    inputs.appliedVolts = motor.getAppliedOutput() * motor.getBusVoltage();
-    inputs.currentAmps = motor.getOutputCurrent();
-    inputs.hasNote = !breamBreak.get();
+  public void updateInputs(HandIOInputs inputs) {
+    inputs.appliedVolts =
+        new double[] {
+          frontLeftMotor.getMotorOutputPercent() * frontLeftMotor.getBusVoltage(),
+          frontRightMotor.getMotorOutputPercent() * frontRightMotor.getBusVoltage(),
+          backLeftMotor.getMotorOutputPercent() * backLeftMotor.getBusVoltage(),
+          backRightMotor.getMotorOutputPercent() * backRightMotor.getBusVoltage()
+        };
+
+    inputs.currentAmps =
+        new double[] {
+          frontLeftMotor.getStatorCurrent(),
+          frontRightMotor.getStatorCurrent(),
+          backLeftMotor.getStatorCurrent(),
+          backRightMotor.getStatorCurrent()
+        };
   }
 
   @Override
-  public void setVoltage(double voltage) {
-    motor.setVoltage(voltage);
-  }
-
-  @Override
-  public void setBrakeMode(boolean brake) {
-    motor.setIdleMode(brake ? IdleMode.kBrake : IdleMode.kCoast);
+  public void setVoltage(double frontVoltage, double backVoltage) {
+    frontLeftMotor.set(
+        TalonSRXControlMode.PercentOutput, frontVoltage / frontLeftMotor.getBusVoltage());
+    frontRightMotor.set(
+        TalonSRXControlMode.PercentOutput, frontVoltage / frontRightMotor.getBusVoltage());
+    backLeftMotor.set(
+        TalonSRXControlMode.PercentOutput, backVoltage / backLeftMotor.getBusVoltage());
+    backRightMotor.set(
+        TalonSRXControlMode.PercentOutput, backVoltage / backRightMotor.getBusVoltage());
   }
 }

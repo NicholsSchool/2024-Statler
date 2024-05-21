@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.FeedForwardCharacterization;
@@ -21,11 +22,10 @@ import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
-import frc.robot.subsystems.drive.GyroIONAVX;
 import frc.robot.subsystems.drive.ModuleIO;
-import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.hand.Hand;
+import frc.robot.subsystems.hand.HandIOReal;
 import frc.robot.subsystems.hand.HandIOSim;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -62,17 +62,25 @@ public class RobotContainer {
     switch (Constants.getRobot()) {
       case ROBOT_REAL:
         // Real robot, instantiate hardware IO implementations
-        pdh = new PowerDistribution(Constants.CAN.kPowerDistributionHub, ModuleType.kRev);
+        pdh = new PowerDistribution(Constants.CAN.kPowerDistributionHub, ModuleType.kCTRE);
 
+        // drive =
+        //     new Drive(
+        //         new GyroIONAVX(),
+        //         new ModuleIOMaxSwerve(0),
+        //         new ModuleIOMaxSwerve(1),
+        //         new ModuleIOMaxSwerve(2),
+        //         new ModuleIOMaxSwerve(3));
         drive =
             new Drive(
-                new GyroIONAVX(),
-                new ModuleIOMaxSwerve(0),
-                new ModuleIOMaxSwerve(1),
-                new ModuleIOMaxSwerve(2),
-                new ModuleIOMaxSwerve(3));
+                new GyroIO() {},
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim(),
+                new ModuleIOSim());
+
         arm = new Arm(new ArmIOSim());
-        hand = new Hand(new HandIOSim());
+        hand = new Hand(new HandIOReal());
         break;
 
       case ROBOT_SIM:
@@ -102,7 +110,6 @@ public class RobotContainer {
                 new ModuleIO() {});
         arm = new Arm(new ArmIOSim());
         hand = new Hand(new HandIOSim());
-        break;
     }
 
     // Set up auto routines
@@ -201,7 +208,8 @@ public class RobotContainer {
 
     // intake
     hand.setDefaultCommand(new InstantCommand(() -> hand.stop(), hand));
-    driveController.rightTrigger().whileTrue(hand.runEatCommand());
+    operatorController.leftTrigger().whileTrue(new RunCommand(() -> hand.intake(), hand));
+    operatorController.rightTrigger().whileTrue(hand.runShootCommand());
   }
 
   /**

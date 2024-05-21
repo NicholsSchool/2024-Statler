@@ -1,75 +1,33 @@
 package frc.robot.subsystems.hand;
 
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import frc.robot.Constants;
-import java.util.Random;
 
 public class HandIOSim implements HandIO {
-  private FlywheelSim sim = new FlywheelSim(DCMotor.getNEO(1), 5, 0.004);
+  private FlywheelSim sim = new FlywheelSim(DCMotor.getCIM(1), 1, 0.004);
 
   private double appliedVolts = 0.0;
-  private LinearFilter velocityFilter;
-  private boolean isIntaking = false;
-  private double minVelocityRadPerSec = 10.0;
-  private Timer timer = new Timer();
-  private boolean isTimerRunning = false;
-  private boolean hasNote = false;
-  Random rand = new Random();
 
   public HandIOSim() {
     System.out.println("[Init] Creating IntakeIOSim");
     // Create filter of velocity to determine which direction motor is going.
     // this is used to simulate a note retrieval
-    velocityFilter = LinearFilter.singlePoleIIR(0.1, Constants.loopPeriodSecs);
   }
 
   @Override
-  public void updateInputs(IntakeIOInputs inputs) {
+  public void updateInputs(HandIOInputs inputs) {
     sim.setInputVoltage(appliedVolts);
     sim.update(Constants.loopPeriodSecs);
 
-    inputs.velocityRadPerSec = sim.getAngularVelocityRadPerSec();
-    inputs.appliedVolts = appliedVolts;
-    inputs.currentAmps = sim.getCurrentDrawAmps();
-    inputs.hasNote = hasNote;
-
-    simulateNote();
-  }
-
-  // simulate eating and vomiting a note
-  private void simulateNote() {
-    double filteredVelocity = velocityFilter.calculate(sim.getAngularVelocityRadPerSec());
-    if (Math.abs(filteredVelocity) > minVelocityRadPerSec) {
-      // assumes intaking is positive velocity)
-      boolean intaking = (Math.signum(filteredVelocity) > 0);
-
-      // if changed then start timer for intaking/outtaking
-      if (isIntaking != intaking) {
-        isIntaking = intaking;
-        timer.restart();
-        isTimerRunning = true;
-      }
-      // flip state after timeout time.
-      if (isTimerRunning) {
-        double timeoutSec = isIntaking ? 2 : 0.25; // up to 2 secs to intake, 0.25 sec to outtake
-        if (timer.hasElapsed(timeoutSec)) {
-          hasNote = !hasNote;
-          timer.stop();
-          isTimerRunning = false;
-        }
-      }
-    }
+    inputs.velocityRadPerSec = new double[] {sim.getAngularVelocityRadPerSec(), 0.0, 0.0, 0.0};
+    inputs.appliedVolts = new double[] {appliedVolts, 0.0, 0.0, 0.0};
+    inputs.currentAmps = new double[] {sim.getCurrentDrawAmps(), 0.0, 0.0, 0.0};
   }
 
   @Override
-  public void setVoltage(double voltage) {
-    appliedVolts = voltage;
+  public void setVoltage(double front, double back) {
+    appliedVolts = front;
     sim.setInputVoltage(appliedVolts);
   }
-
-  @Override
-  public void setBrakeMode(boolean brake) {}
 }

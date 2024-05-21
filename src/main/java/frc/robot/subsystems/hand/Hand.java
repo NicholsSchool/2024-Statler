@@ -1,60 +1,48 @@
 package frc.robot.subsystems.hand;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants;
-import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.HandConstants;
 import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class Hand extends SubsystemBase {
   private HandIO io;
-  private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+  private final HandIOInputsAutoLogged inputs = new HandIOInputsAutoLogged();
 
-  private static final LoggedTunableNumber kP = new LoggedTunableNumber("Intake/kP", 0.1);
-  private static final LoggedTunableNumber kI = new LoggedTunableNumber("Intake/kI", 0.5);
+  private static final LoggedTunableNumber intakeVelocity =
+      new LoggedTunableNumber("Hand/IntakeVelocityRPMs");
+  private static final LoggedTunableNumber shootVelocity =
+      new LoggedTunableNumber("Hand/ShootVelocityRPMs");
 
-  private static final LoggedTunableNumber eatVelocity =
-      new LoggedTunableNumber("Intake/EatVelocityRPMs");
-  private static final LoggedTunableNumber vomitVelocity =
-      new LoggedTunableNumber("Intake/VomitVelocityRPMs");
-  private static final LoggedTunableNumber poopVelocity =
-      new LoggedTunableNumber("Intake/PoopVelocityRPMs");
-  private static final LoggedTunableNumber digestVelocity =
-      new LoggedTunableNumber("Intake/DigestVelocityRPMs");
-
-  private PIDController controller = new PIDController(0.0, 0.0, 0.0);
   private final SimpleMotorFeedforward ffModel;
 
-  private static double setpointRPMs = 0.0;
-  private static double setpointRadPerSec = 0.0;
+  private static double backSetpointRPMs = 0.0;
+  private static double backSetpointRadPerSec = 0.0;
 
-  private static enum IntakeMode {
+  private static double frontSetpointRPMs = 0.0;
+  private static double frontSetpointRadPerSec = 0.0;
+
+  private static enum HandMode {
     kStopped,
-    kEating,
-    kDigesting,
-    kVomiting,
-    kPooping
+    kIntaking,
+    kRevving,
+    kShooting
   };
 
-  private IntakeMode mode = IntakeMode.kStopped;
+  private HandMode mode = HandMode.kStopped;
 
   public Hand(HandIO io) {
-    System.out.println("[Init] Creating Intake");
+    System.out.println("[Init] Creating Hand");
     this.io = io;
-    io.setBrakeMode(false);
 
-    controller.setPID(kP.get(), kI.get(), 0.0);
-
-    eatVelocity.initDefault(Constants.IntakeConstants.kEatRPM);
-    vomitVelocity.initDefault(Constants.IntakeConstants.kVomitRPM);
-    poopVelocity.initDefault(Constants.IntakeConstants.kPoopRPM);
-    digestVelocity.initDefault(Constants.IntakeConstants.kDigestRPM);
+    intakeVelocity.initDefault(Constants.HandConstants.kIntakeRPM);
+    shootVelocity.initDefault(Constants.HandConstants.kShootRMP);
 
     // Switch constants based on mode (the physics simulator is treated as a
     // separate robot with different tuning)
@@ -72,147 +60,97 @@ public class Hand extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Intake", inputs);
-
-    // Update tunable numbers
-    if (kP.hasChanged(hashCode()) || kI.hasChanged(hashCode())) {
-      controller.setPID(kP.get(), kI.get(), 0.0);
-      controller.reset();
-    }
+    Logger.processInputs("Hand", inputs);
 
     // Reset when disabled
     if (DriverStation.isDisabled()) {
-      io.setVoltage(0.0);
-      controller.reset();
-      mode = IntakeMode.kStopped;
+      io.setVoltage(0.0, 0.0);
+      mode = HandMode.kStopped;
     } else {
       switch (mode) {
-        case kEating:
-          setpointRPMs = eatVelocity.get();
+        case kIntaking:
+          frontSetpointRPMs = intakeVelocity.get();
+          backSetpointRPMs = intakeVelocity.get();
           break;
-        case kDigesting:
-          setpointRPMs = digestVelocity.get();
+        case kRevving:
+          frontSetpointRPMs = shootVelocity.get();
+          backSetpointRPMs = 0.0;
           break;
-        case kVomiting:
-          setpointRPMs = vomitVelocity.get();
-          break;
-        case kPooping:
-          setpointRPMs = poopVelocity.get();
+        case kShooting:
+          frontSetpointRPMs = shootVelocity.get();
+          backSetpointRPMs = shootVelocity.get();
           break;
         case kStopped:
-          setpointRPMs = 0.0;
+          frontSetpointRPMs = 0.0;
+          backSetpointRPMs = 0.0;
       }
 
-      setpointRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(setpointRPMs);
-      controller.setSetpoint(setpointRadPerSec);
-      double voltage = ffModel.calculate(setpointRadPerSec);
-      // + controller.calculate(inputs.velocityRadPerSec);
-      io.setVoltage(MathUtil.clamp(voltage, -12.0, 12.0));
+      frontSetpointRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(frontSetpointRPMs);
+      backSetpointRadPerSec = Units.rotationsPerMinuteToRadiansPerSecond(backSetpointRPMs);
+
+      double frontVoltage = ffModel.calculate(frontSetpointRadPerSec);
+      double backVoltage = ffModel.calculate(backSetpointRadPerSec);
+      io.setVoltage(
+          MathUtil.clamp(frontVoltage, -12.0, 12.0), MathUtil.clamp(backVoltage, -12.0, 12.0));
     }
   }
 
-  public boolean hasNote() {
-    return inputs.hasNote;
+  public void intake() {
+    mode = HandMode.kIntaking;
   }
 
-  public boolean hasNoNote() {
-    return !inputs.hasNote;
+  public void rev() {
+    mode = HandMode.kRevving;
   }
 
-  public void eat() {
-    mode = IntakeMode.kEating;
-  }
-
-  public void digest() {
-    mode = IntakeMode.kDigesting;
-  }
-
-  public void vomit() {
-    mode = IntakeMode.kVomiting;
-  }
-
-  public void poop() {
-    mode = IntakeMode.kPooping;
+  public void shoot() {
+    mode = HandMode.kShooting;
   }
 
   public void stop() {
-    mode = IntakeMode.kStopped;
+    mode = HandMode.kStopped;
   }
 
   @AutoLogOutput
-  public double getSetpointRadians() {
-    return setpointRadPerSec;
+  public double getFrontSetpointRadians() {
+    return frontSetpointRadPerSec;
   }
 
   @AutoLogOutput
-  public double getFF() {
-    return ffModel.calculate(setpointRadPerSec);
+  public double getBacktSetpointRadians() {
+    return backSetpointRadPerSec;
   }
 
   @AutoLogOutput
-  public double getPID() {
-    return controller.calculate(inputs.velocityRadPerSec);
+  public double getFrontFF() {
+    return ffModel.calculate(frontSetpointRadPerSec);
   }
 
   @AutoLogOutput
-  public IntakeMode getState() {
+  public double getBackFF() {
+    return ffModel.calculate(backSetpointRadPerSec);
+  }
+
+  @AutoLogOutput
+  public HandMode getState() {
     return mode;
   }
 
   @AutoLogOutput
-  public double getSetPointRPMs() {
-    return setpointRPMs;
+  public double getFrontSetPointRPMs() {
+    return frontSetpointRPMs;
   }
 
   @AutoLogOutput
-  public double getVelocityRPMs() {
-    return Units.radiansPerSecondToRotationsPerMinute(inputs.velocityRadPerSec);
+  public double getBackSetPointRPMs() {
+    return backSetpointRPMs;
   }
 
-  public Command runEatCommand() {
-    // run eat mode until a note is obtained
-    return new FunctionalCommand(
-        () -> System.out.println("Intake: Eat"),
-        () -> this.eat(),
-        interrupted -> this.stop(),
-        this::hasNote,
-        this);
-  }
-
-  public Command runVomitCommand() {
-    // Run vomit until a note is expelled.
-
-    // run a sequence that runs vomit mode until note is moved off sensor,
-    // then keep running motors for a second to keep advancing,
-    // then stop.
+  public Command runShootCommand() {
     return new SequentialCommandGroup(
-            new InstantCommand(() -> System.out.println("Intake: Vomit"), this),
-            new RunCommand(() -> this.vomit(), this).unless(this::hasNoNote).until(this::hasNoNote),
-            new WaitCommand(IntakeConstants.kVomitDelay) // run a bit more to advance the note
-            )
-        .finallyDo(() -> this.stop());
-  }
-
-  public Command runPoopCommand() {
-    // Run poop until a note is expelled.
-
-    // run a sequence that runs poop mode until note is moved off sensor,
-    // then keep running motors for a second to keep advancing,
-    // then stop.
-    return new SequentialCommandGroup(
-            new InstantCommand(() -> System.out.println("Intake: Poop"), this),
-            new RunCommand(() -> this.poop(), this).unless(this::hasNoNote).until(this::hasNoNote),
-            new WaitCommand(IntakeConstants.kVomitDelay) // run a bit more to advance the note
-            )
-        .finallyDo(() -> this.stop());
-  }
-
-  public Command runDigestCommand() {
-    // Run digest for set number of seconds
-    return new SequentialCommandGroup(
-            new InstantCommand(() -> System.out.println("Intake: Digest"), this),
-            new RunCommand(() -> this.digest(), this).withTimeout(1.5),
-            new InstantCommand(() -> System.out.println("Intake: Digest Done"), this))
+            new InstantCommand(() -> System.out.println("Hand: Shoot"), this),
+            new RunCommand(() -> this.rev(), this).withTimeout(HandConstants.kShootDelay),
+            new RunCommand(() -> this.shoot(), this).withTimeout(HandConstants.kShootDelay))
         .finallyDo(() -> this.stop());
   }
 }

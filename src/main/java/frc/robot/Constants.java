@@ -100,15 +100,12 @@ public final class Constants {
     public static final double kTURN_GEAR_RATIO = 150.0 / 7.0;
   }
 
-  public static final class IntakeConstants {
-    public static final int kBeamBreakChannel = 0;
-    public static final double kVomitDelay = 0.5;
+  public static final class HandConstants {
     public static final double kP = 6.0;
     public static final double kI = 0.0;
-    public static final double kEatRPM = 800.0;
-    public static final double kVomitRPM = -1000.0;
-    public static final double kPoopRPM = 1000.0;
-    public static final double kDigestRPM = 600.0;
+    public static final double kIntakeRPM = 350.0;
+    public static final double kShootRMP = -1000.0;
+    public static final double kShootDelay = 1.5;
   }
 
   public static final class ArmConstants {
