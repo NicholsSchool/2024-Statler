@@ -13,18 +13,12 @@ import org.littletonrobotics.junction.Logger;
 
 public class Arm extends SubsystemBase {
   private ArmIO io;
-  private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
-  private double manuelInput = 0.0;
-
+  private ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
   private ArmFeedforward ARM_FF = new ArmFeedforward(ARM_FF_KS, ARM_FF_KG, ARM_FF_KV, ARM_FF_KA);
-
-  private double previousVelocity = 0.0;
-  private double acclerationRad = 0.0;
-
+  private double manuelInput = 0.0;
   private double voltageCmdFF = 0.0;
 
   // tunable booleans
-
   private static final LoggedTunableNumber currentThreshold =
       new LoggedTunableNumber("Arm/DesparityThreshold");
 
@@ -32,11 +26,8 @@ public class Arm extends SubsystemBase {
   private static final LoggedTunableNumber armKg = new LoggedTunableNumber("Arm/kG");
   private static final LoggedTunableNumber armKv = new LoggedTunableNumber("Arm/kV");
   private static final LoggedTunableNumber armKa = new LoggedTunableNumber("Arm/kA");
-
   private static final LoggedTunableNumber armMaxVelocityRad =
       new LoggedTunableNumber("Arm/MaxVelocityRad");
-  private static final LoggedTunableNumber armMaxAccelerationRad =
-      new LoggedTunableNumber("Arm/MaxAccelerationRad");
 
   public Arm(ArmIO io) {
     System.out.println("[Init] Creating Arm");
@@ -46,8 +37,7 @@ public class Arm extends SubsystemBase {
     armKv.initDefault(ARM_FF_KV);
     armKa.initDefault(ARM_FF_KA);
     armMaxVelocityRad.initDefault(Constants.ArmConstants.ARM_VEL_LIMIT);
-    armMaxAccelerationRad.initDefault(Constants.ArmConstants.ARM_ACCEL_LIMIT);
-    currentThreshold.initDefault(0.25);
+    currentThreshold.initDefault(0.5);
   }
 
   @Override
@@ -56,9 +46,6 @@ public class Arm extends SubsystemBase {
     Logger.processInputs("Arm", inputs);
 
     updateTunables();
-
-    acclerationRad = (inputs.velocityRadsPerSec - previousVelocity) / 0.02;
-    previousVelocity = inputs.velocityRadsPerSec;
 
     // Reset when disabled
     if (DriverStation.isDisabled()) {}
@@ -99,11 +86,6 @@ public class Arm extends SubsystemBase {
   @AutoLogOutput
   public double getAngleDeg() {
     return inputs.angleDegs;
-  }
-
-  @AutoLogOutput
-  public double getAcceleration() {
-    return acclerationRad;
   }
 
   @AutoLogOutput

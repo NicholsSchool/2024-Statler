@@ -130,8 +130,7 @@ public final class Constants {
     public static final double ARM_FF_KV = 0.52;
     public static final double ARM_FF_KA = 0.12;
 
-    public static final double ARM_ACCEL_LIMIT = 0.5;
-    public static final double ARM_VEL_LIMIT = 3.0;
+    public static final double ARM_VEL_LIMIT = 1.0;
   }
 
   public static final class AutoConstants {
