@@ -42,7 +42,6 @@ public class Module {
     // separate robot with different tuning)
     switch (Constants.getRobot()) {
       case ROBOT_REAL:
-      case ROBOT_REPLAY:
         driveFeedforward =
             new SimpleMotorFeedforward(
                 Constants.ModuleConstants.kDrivingStaticFF,
@@ -58,7 +57,6 @@ public class Module {
                 Constants.ModuleConstants.kTurningI,
                 Constants.ModuleConstants.kTurningD);
         break;
-      case ROBOT_FOOTBALL:
       case ROBOT_SIM:
         driveFeedforward = new SimpleMotorFeedforward(0.0, 0.13);
         driveFeedback = new PIDController(0.1, 0.0, 0.0);

@@ -71,9 +71,7 @@ public class DriveToPose extends Command {
 
   static {
     switch (Constants.getRobot()) {
-      case ROBOT_FOOTBALL:
       case ROBOT_REAL:
-      case ROBOT_REPLAY:
       case ROBOT_SIM:
         driveKp.initDefault(1.5);
         driveKd.initDefault(0.0);

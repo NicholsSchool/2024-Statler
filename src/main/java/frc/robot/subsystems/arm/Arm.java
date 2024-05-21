@@ -110,11 +110,11 @@ public class Arm extends SubsystemBase {
     previousVelocity = inputs.velocityRadsPerSec;
 
     // if no target pose has been set yet,
-    // then set to vertical (90 degrees)
+    // then set to horizontal
     // so the arm raises on enable
     if (!targetPosSet) {
       targetPosSet = true;
-      setTargetPos(90.0);
+      setTargetPos(0.0);
     }
 
     // Reset when disabled
@@ -148,7 +148,7 @@ public class Arm extends SubsystemBase {
   // sure arm does not extend passed danger position.
   public double softLimit(double inputVel) {
     // weird ranges due to [0, 360] angle range of the arm angle input
-    if ((inputs.angleDegs >= 96.0 && inputs.angleDegs <= 200.0) && inputVel > 0
+    if ((inputs.angleDegs >= 90.0 && inputs.angleDegs <= 200.0) && inputVel > 0
         || (inputs.angleDegs <= 2.0 || inputs.angleDegs >= 200.0) && inputVel < 0) {
       return 0.0;
     }

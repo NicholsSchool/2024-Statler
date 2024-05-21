@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.Constants.CAN;
 import frc.robot.Constants.IntakeConstants;
 
 public class HandIOReal implements HandIO {
@@ -17,7 +16,7 @@ public class HandIOReal implements HandIO {
     System.out.println("[Init] Creating IntakeIOReal");
 
     breamBreak = new DigitalInput(IntakeConstants.kBeamBreakChannel);
-    motor = new CANSparkMax(CAN.kIntakeCanId, MotorType.kBrushless);
+    motor = new CANSparkMax(6969, MotorType.kBrushless);
     motor.restoreFactoryDefaults();
     motor.setInverted(true);
     encoder = motor.getEncoder();

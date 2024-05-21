@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -30,22 +31,19 @@ public final class Constants {
 
   public static enum RobotType {
     ROBOT_REAL, // a real robot
-    ROBOT_REPLAY, // data file replay (could be on real bot or simulation)
     ROBOT_SIM, // simulation
-    ROBOT_FOOTBALL // Football for simulating
   }
 
   // CAN IDs (Controller Area Network)
   public static final class CAN {
 
-    public static final int kIntakeCanId = 41;
-    public static final int kOuttakeCanId = 42;
+    public static final int kFrontLeftShooter = 41;
+    public static final int kBackLeftShooter = 42;
+    public static final int kFrontRightShooter = 43;
+    public static final int kBackRightShooter = 44;
 
-    public static final int kLeftClimberId = 34;
-    public static final int kRightClimberId = 33;
-
-    public static final int kArmLeaderCanId = 31;
-    public static final int kArmFollowerCanId = 32;
+    public static final int kShoulderOneCanId = 31;
+    public static final int kShoulderTwoCanId = 32;
 
     public static final int kRearRightDrivingCanId = 28;
     public static final int kRearRightTurningCanId = 27;
@@ -56,13 +54,13 @@ public final class Constants {
     public static final int kRearLeftDrivingCanId = 22;
     public static final int kRearLeftTurningCanId = 21;
 
-    public static final int kPowerDistributionHub = 50;
+    public static final int kPowerDistributionHub = 0;
   }
 
   public static final class RobotConstants {
     public static final double robotSideLengthInches =
         // 34.0; // robot was measured bumper to bumper to be 33in, +1 in for buffer.
-        33.0; // why do we need a +1 buffer? J-Burnett
+        24.0; // why do we need a +1 buffer? J-Burnett
   }
 
   public static final class DriveConstants {
@@ -114,33 +112,28 @@ public final class Constants {
   }
 
   public static final class ArmConstants {
-    // NO GO TO POSITION ANGLES SHOULD BE OVER 108 DEGREES
-    public static final double armIntakePosDeg = 0.0;
+    // NO GO TO POSITION ANGLES SHOULD BE OVER 90 DEGREES
+    public static final double armIntakePosDeg = -8.0;
     public static final double armDrivePosDeg = 45.0;
-    public static final double armAmpPosDeg = 96.0;
-    public static final double armTrapPosDeg = 75.0;
-    public static final double armStartPosDeg = 90.0; // pulls arm off of brake
-
-    public static final int ARM_LOCK_SOLENOID_CHANNEL = 6;
-    public static final int ARM_SOLENOID_CHANNEL = 7;
+    public static final double armVerticalPosDeg = 90.0;
 
     public static final int ARM_CURRENT_LIMIT = 35;
 
-    public static final double MIN_ANGLE_RADS = 0.0;
+    public static final double MIN_ANGLE_RADS = -8.0;
     public static final double MAX_ANGLE_RADS = Math.PI;
 
-    public static final double ARM_MASS_LBS = 25.0;
+    public static final double ARM_MASS_LBS = 7.0;
     public static final double ARM_COM_DISTANCE_INCHES = 20.0;
     public static final double ARM_LENGTH_METERS = ARM_COM_DISTANCE_INCHES * MeterPerInch;
 
     // 1:98 planetary gear ratio
-    public static final double ARM_GEAR_REDUCTION = 98.0;
+    public static final double ARM_GEAR_REDUCTION = 24.27;
     public static final double ARM_GEAR_RATIO = 1.0 / ARM_GEAR_REDUCTION;
 
     public static final double ARM_FF_KS = 0.0;
-    public static final double ARM_FF_KG = 1.04;
+    public static final double ARM_FF_KG = 1.62;
     public static final double ARM_FF_KV = 0.52;
-    public static final double ARM_FF_KA = 0.05;
+    public static final double ARM_FF_KA = 0.08;
 
     public static final double ARM_P = 4.0;
     public static final double ARM_I = 3.0;
@@ -149,22 +142,10 @@ public final class Constants {
     public static final double ARM_VEL_LIMIT = 0.85167;
   }
 
-  public static final class OuttakeConstants {
-    public static final double kP = 1.0;
-    public static final double kD = 0.0;
-    public static final double GEAR_RATIO_REDUCTION = 3.0;
-    ;
-    public static final double CURRENT_LIMIT = 35.0;
-  }
-
   public static final class AutoConstants {
     public static final double driveFinishThreshold = 0.075;
     public static final double angleFinishThreshold = Math.PI / 12.0;
   }
 
-  public static final class FiddleSongs {
-    public static final String ALL_STAR = "all-star.chrp";
-    public static final String IMPERIAL_MARCH = "Imperial-March.chrp";
-    public static final String WII_SONG = "Wii-Song.chrp";
-  }
+  public static AbsoluteEncoder armEncoder;
 }

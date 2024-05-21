@@ -71,6 +71,9 @@ public class ModuleIOMaxSwerve implements ModuleIO {
     turningSparkMax = new CANSparkMax(turnIds[index], MotorType.kBrushless);
     turnAngleOffset = new Rotation2d(turnOffsets[index]);
 
+    if (turnIds[index] == Constants.CAN.kRearLeftTurningCanId)
+      Constants.armEncoder = turningSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
+
     // Factory reset, set the SPARKS MAX(s) to a known state before configuration.
     // This is useful in case a SPARK MAX is swapped out.
     drivingSparkMax.restoreFactoryDefaults();

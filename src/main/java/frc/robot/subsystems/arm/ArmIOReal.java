@@ -3,54 +3,53 @@ package frc.robot.subsystems.arm;
 import static frc.robot.Constants.ArmConstants.*;
 import static frc.robot.Constants.CAN.*;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants;
 
 public class ArmIOReal implements ArmIO {
-  private CANSparkMax leader;
-  private CANSparkMax follower;
-  private AbsoluteEncoder armEncoder;
+  private final TalonSRX motorOne;
+  private final TalonSRX motorTwo;
+  private final AbsoluteEncoder armEncoder;
 
   public ArmIOReal() {
     System.out.println("[Init] Creating ArmIOReal");
 
-    leader = new CANSparkMax(kArmLeaderCanId, MotorType.kBrushless);
-    leader.restoreFactoryDefaults();
-    armEncoder = leader.getAbsoluteEncoder(Type.kDutyCycle);
+    motorOne = new TalonSRX(kShoulderOneCanId);
+    motorTwo = new TalonSRX(kShoulderTwoCanId);
 
-    leader.setInverted(false);
-    leader.setSmartCurrentLimit(ARM_CURRENT_LIMIT);
-    leader.setIdleMode(IdleMode.kBrake);
-    armEncoder.setPositionConversionFactor(2.0 * Math.PI);
-    armEncoder.setVelocityConversionFactor(2.0 * Math.PI);
-    leader.burnFlash();
+    motorOne.setNeutralMode(NeutralMode.Coast);
+    motorTwo.setNeutralMode(NeutralMode.Coast);
 
-    follower = new CANSparkMax(kArmFollowerCanId, MotorType.kBrushless);
-    follower.setInverted(false);
-    follower.restoreFactoryDefaults();
-    follower.setIdleMode(IdleMode.kBrake);
-    follower.setSmartCurrentLimit(ARM_CURRENT_LIMIT);
-    follower.burnFlash();
+    TalonSRXConfiguration config = new TalonSRXConfiguration();
+    config.peakCurrentLimit = ARM_CURRENT_LIMIT;
+    config.peakCurrentDuration = 500;
+    config.continuousCurrentLimit = ARM_CURRENT_LIMIT;
+
+    motorOne.configAllSettings(config);
+    motorTwo.configAllSettings(config);
+
+    armEncoder = Constants.armEncoder;
   }
 
   /** Updates the set of loggable inputs. */
   @Override
   public void updateInputs(ArmIOInputs inputs) {
-    inputs.angleRads = checkRangeRadians(armEncoder.getPosition());
+    inputs.angleRads = checkRangeRadians(armEncoder.getPosition() * 2.0 * Math.PI);
     inputs.angleDegs = checkRangeDegrees(Units.radiansToDegrees(inputs.angleRads));
     inputs.velocityRadsPerSec = armEncoder.getVelocity();
-    inputs.appliedOutput = new double[] {leader.getAppliedOutput(), follower.getAppliedOutput()};
-    inputs.busVoltage = new double[] {leader.getBusVoltage(), follower.getBusVoltage()};
+    inputs.appliedOutput =
+        new double[] {motorOne.getMotorOutputPercent(), motorTwo.getMotorOutputPercent()};
+    inputs.busVoltage = new double[] {motorOne.getBusVoltage(), motorTwo.getBusVoltage()};
     inputs.appliedVolts =
         new double[] {
           inputs.busVoltage[0] * inputs.appliedOutput[0],
           inputs.busVoltage[1] * inputs.appliedOutput[1]
         };
-    inputs.currentAmps = new double[] {leader.getOutputCurrent(), follower.getOutputCurrent()};
+    inputs.currentAmps = new double[] {motorOne.getStatorCurrent(), motorTwo.getStatorCurrent()};
   }
 
   private double checkRangeRadians(double angle) {
@@ -63,7 +62,7 @@ public class ArmIOReal implements ArmIO {
 
   @Override
   public void setVoltage(double voltage) {
-    leader.setVoltage(voltage);
-    follower.setVoltage(voltage);
+    // motorOne.set(TalonSRXControlMode.PercentOutput, voltage / motorOne.getBusVoltage());
+    // motorTwo.set(TalonSRXControlMode.PercentOutput, voltage / motorTwo.getBusVoltage());
   }
 }

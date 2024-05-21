@@ -3,7 +3,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -23,6 +22,7 @@ import frc.robot.commands.drive_commands.DriveCommands;
 import frc.robot.commands.drive_commands.ParabolicSplineToPoint;
 import frc.robot.commands.drive_commands.ResetPoseCommand;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -50,9 +50,6 @@ public class RobotContainer {
   @SuppressWarnings("unused")
   private PowerDistribution pdh;
 
-  // shuffleboard
-  public static GenericEntry isCurrnetProblem;
-
   // Controller
   public static CommandXboxController driveController = new CommandXboxController(0);
   public static CommandXboxController operatorController = new CommandXboxController(1);
@@ -79,24 +76,12 @@ public class RobotContainer {
                 new ModuleIOMaxSwerve(1),
                 new ModuleIOMaxSwerve(2),
                 new ModuleIOMaxSwerve(3));
-        arm = new Arm(new ArmIOSim());
+        arm = new Arm(new ArmIOReal());
         hand = new Hand(new HandIOSim());
         break;
 
       case ROBOT_SIM:
         // Sim robot, instantiate physics sim IO implementations
-        drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
-        arm = new Arm(new ArmIOSim());
-        hand = new Hand(new HandIOSim());
-        break;
-
-      case ROBOT_FOOTBALL:
         drive =
             new Drive(
                 new GyroIO() {},
@@ -223,8 +208,8 @@ public class RobotContainer {
 
     operatorController.a().onTrue(new ArmSetTargetPos(arm, ArmConstants.armIntakePosDeg));
     operatorController.b().onTrue(new ArmSetTargetPos(arm, ArmConstants.armDrivePosDeg));
-    operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armTrapPosDeg));
-    operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armAmpPosDeg));
+    operatorController.x().onTrue(new ArmSetTargetPos(arm, ArmConstants.armDrivePosDeg));
+    operatorController.y().onTrue(new ArmSetTargetPos(arm, ArmConstants.armVerticalPosDeg));
 
     // intake
     hand.setDefaultCommand(new InstantCommand(() -> hand.stop(), hand));
