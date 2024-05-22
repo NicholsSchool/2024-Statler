@@ -19,10 +19,13 @@ import frc.robot.commands.drive_commands.DriveCommands;
 import frc.robot.commands.drive_commands.ParabolicSplineToPoint;
 import frc.robot.commands.drive_commands.ResetPoseCommand;
 import frc.robot.subsystems.arm.Arm;
+import frc.robot.subsystems.arm.ArmIOReal;
 import frc.robot.subsystems.arm.ArmIOSim;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIONAVX;
 import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOMaxSwerve;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.hand.Hand;
 import frc.robot.subsystems.hand.HandIOReal;
@@ -64,22 +67,15 @@ public class RobotContainer {
         // Real robot, instantiate hardware IO implementations
         pdh = new PowerDistribution(Constants.CAN.kPowerDistributionHub, ModuleType.kCTRE);
 
-        // drive =
-        //     new Drive(
-        //         new GyroIONAVX(),
-        //         new ModuleIOMaxSwerve(0),
-        //         new ModuleIOMaxSwerve(1),
-        //         new ModuleIOMaxSwerve(2),
-        //         new ModuleIOMaxSwerve(3));
         drive =
             new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim(),
-                new ModuleIOSim());
+                new GyroIONAVX(),
+                new ModuleIOMaxSwerve(0),
+                new ModuleIOMaxSwerve(1),
+                new ModuleIOMaxSwerve(2),
+                new ModuleIOMaxSwerve(3));
 
-        arm = new Arm(new ArmIOSim());
+        arm = new Arm(new ArmIOReal());
         hand = new Hand(new HandIOReal());
         break;
 

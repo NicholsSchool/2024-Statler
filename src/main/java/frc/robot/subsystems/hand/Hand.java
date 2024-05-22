@@ -150,7 +150,7 @@ public class Hand extends SubsystemBase {
     return new SequentialCommandGroup(
             new InstantCommand(() -> System.out.println("Hand: Shoot"), this),
             new RunCommand(() -> this.rev(), this).withTimeout(HandConstants.kShootDelay),
-            new RunCommand(() -> this.shoot(), this).withTimeout(HandConstants.kShootDelay))
+            new RunCommand(() -> this.shoot(), this).withTimeout(2.0 * HandConstants.kShootDelay))
         .finallyDo(() -> this.stop());
   }
 }
